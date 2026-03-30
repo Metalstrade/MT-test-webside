@@ -1,0 +1,1496 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Metals Trading — Gold · Silver · Steel · Copper</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;500;600;700&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet" />
+
+  <style>
+    :root {
+      --gold:    #C9A227;
+      --gold-lt: #E4BF5A;
+      --gold-dk: #8B6F14;
+      --silver:  #8FA3B1;
+      --silver-lt: #B8C9D4;
+      --steel:   #5A6E7A;
+      --ink:     #0D1117;
+      --ink-2:   #141C24;
+      --ink-3:   #1B2733;
+      --muted:   #6B8090;
+    }
+
+    * { box-sizing: border-box; }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      margin: 0;
+      background: var(--ink);
+      color: #E8EEF2;
+      font-family: 'Inter', sans-serif;
+      font-size: 16px;
+      line-height: 1.7;
+      overflow-x: hidden;
+    }
+
+    h1, h2, h3, h4 {
+      font-family: 'Cormorant Garamond', serif;
+      line-height: 1.15;
+      letter-spacing: -0.02em;
+    }
+
+    /* ── NOISE TEXTURE ── */
+    body::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='300' height='300'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.75' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='300' height='300' filter='url(%23n)' opacity='0.04'/%3E%3C/svg%3E");
+      pointer-events: none;
+      z-index: 0;
+      opacity: 0.6;
+    }
+
+    /* ── SCROLLBAR ── */
+    ::-webkit-scrollbar { width: 6px; }
+    ::-webkit-scrollbar-track { background: var(--ink); }
+    ::-webkit-scrollbar-thumb { background: var(--gold-dk); border-radius: 3px; }
+
+    /* ── GOLD TEXT ── */
+    .text-gold { color: var(--gold); }
+    .text-gold-lt { color: var(--gold-lt); }
+    .text-silver { color: var(--silver-lt); }
+    .text-muted { color: var(--muted); }
+
+    /* ── GRADIENT TEXT ── */
+    .gradient-gold {
+      background: linear-gradient(135deg, var(--gold-lt) 0%, var(--gold) 50%, var(--gold-dk) 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    /* ── BUTTONS ── */
+    .btn-primary {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 14px 32px;
+      background: linear-gradient(135deg, var(--gold-lt), var(--gold), var(--gold-dk));
+      color: var(--ink);
+      font-family: 'Inter', sans-serif;
+      font-weight: 600;
+      font-size: 13px;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      text-decoration: none;
+      border: none;
+      cursor: pointer;
+      position: relative;
+      overflow: hidden;
+      box-shadow:
+        0 2px 8px rgba(201,162,39,0.3),
+        0 8px 32px rgba(201,162,39,0.15),
+        inset 0 1px 0 rgba(255,255,255,0.25);
+      transition: transform 0.2s cubic-bezier(0.34,1.56,0.64,1), box-shadow 0.2s ease;
+    }
+    .btn-primary:hover {
+      transform: translateY(-2px);
+      box-shadow:
+        0 4px 12px rgba(201,162,39,0.45),
+        0 16px 48px rgba(201,162,39,0.2),
+        inset 0 1px 0 rgba(255,255,255,0.3);
+    }
+    .btn-primary:active { transform: translateY(0); }
+
+    .btn-outline {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 13px 32px;
+      background: transparent;
+      color: var(--silver-lt);
+      font-family: 'Inter', sans-serif;
+      font-weight: 500;
+      font-size: 13px;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      text-decoration: none;
+      border: 1px solid rgba(143,163,177,0.35);
+      cursor: pointer;
+      transition: border-color 0.2s ease, color 0.2s ease, transform 0.2s cubic-bezier(0.34,1.56,0.64,1);
+    }
+    .btn-outline:hover {
+      border-color: var(--silver-lt);
+      color: #fff;
+      transform: translateY(-2px);
+    }
+    .btn-outline:active { transform: translateY(0); }
+
+    /* ── NAV ── */
+    nav {
+      position: fixed;
+      top: 0; left: 0; right: 0;
+      z-index: 100;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 48px;
+      height: 72px;
+      background: rgba(13,17,23,0.85);
+      backdrop-filter: blur(20px);
+      border-bottom: 1px solid rgba(201,162,39,0.12);
+    }
+    .nav-logo {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      text-decoration: none;
+    }
+    .nav-logo img { height: 36px; }
+    .nav-logo-text {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 18px;
+      font-weight: 600;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: #E8EEF2;
+    }
+    .nav-links {
+      display: flex;
+      align-items: center;
+      gap: 36px;
+      list-style: none;
+      margin: 0; padding: 0;
+    }
+    .nav-links a {
+      font-size: 12px;
+      font-weight: 500;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--muted);
+      text-decoration: none;
+      transition: color 0.2s ease;
+      position: relative;
+    }
+    .nav-links a::after {
+      content: '';
+      position: absolute;
+      bottom: -4px; left: 0; right: 0;
+      height: 1px;
+      background: var(--gold);
+      transform: scaleX(0);
+      transition: transform 0.2s ease;
+    }
+    .nav-links a:hover { color: var(--gold-lt); }
+    .nav-links a:hover::after { transform: scaleX(1); }
+    .nav-cta { padding: 9px 24px; font-size: 11px; }
+
+    /* ── HERO ── */
+    .hero {
+      position: relative;
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      overflow: hidden;
+    }
+    .hero-bg {
+      position: absolute;
+      inset: 0;
+      background:
+        radial-gradient(ellipse 80% 60% at 60% 40%, rgba(201,162,39,0.07) 0%, transparent 65%),
+        radial-gradient(ellipse 60% 80% at 20% 80%, rgba(143,163,177,0.06) 0%, transparent 60%),
+        radial-gradient(ellipse 40% 40% at 85% 15%, rgba(201,162,39,0.04) 0%, transparent 50%),
+        var(--ink);
+    }
+    /* diagonal lines accent */
+    .hero-bg::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background-image: repeating-linear-gradient(
+        -45deg,
+        transparent,
+        transparent 80px,
+        rgba(201,162,39,0.02) 80px,
+        rgba(201,162,39,0.02) 81px
+      );
+    }
+    .hero-inner {
+      position: relative;
+      z-index: 1;
+      max-width: 1280px;
+      margin: 0 auto;
+      padding: 120px 48px 80px;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 80px;
+      align-items: center;
+      width: 100%;
+    }
+    .hero-eyebrow {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: var(--gold);
+      margin-bottom: 24px;
+    }
+    .hero-eyebrow-line {
+      width: 32px;
+      height: 1px;
+      background: var(--gold);
+    }
+    .hero h1 {
+      font-size: clamp(48px, 5.5vw, 80px);
+      font-weight: 600;
+      margin: 0 0 24px;
+      color: #F0F4F7;
+    }
+    .hero-sub {
+      font-size: 17px;
+      line-height: 1.75;
+      color: var(--muted);
+      max-width: 480px;
+      margin: 0 0 40px;
+    }
+    .hero-actions {
+      display: flex;
+      gap: 16px;
+      flex-wrap: wrap;
+    }
+    .hero-stats {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 1px;
+      margin-top: 56px;
+      background: rgba(201,162,39,0.15);
+      border: 1px solid rgba(201,162,39,0.15);
+    }
+    .hero-stat {
+      background: rgba(13,17,23,0.9);
+      padding: 24px 20px;
+      text-align: center;
+    }
+    .hero-stat-value {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 36px;
+      font-weight: 700;
+      color: var(--gold-lt);
+      line-height: 1;
+      margin-bottom: 6px;
+    }
+    .hero-stat-label {
+      font-size: 11px;
+      font-weight: 500;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--muted);
+    }
+
+    /* hero right: logo + metals grid */
+    .hero-visual {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 40px;
+    }
+    .hero-logo-wrap {
+      position: relative;
+    }
+    .hero-logo-wrap img {
+      width: 320px;
+      filter: drop-shadow(0 20px 60px rgba(201,162,39,0.25)) drop-shadow(0 4px 16px rgba(0,0,0,0.6));
+    }
+    .hero-logo-glow {
+      position: absolute;
+      inset: -40px;
+      background: radial-gradient(ellipse at center, rgba(201,162,39,0.12) 0%, transparent 70%);
+      pointer-events: none;
+    }
+    .metals-ticker {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 12px;
+      width: 100%;
+    }
+    .ticker-card {
+      background: linear-gradient(135deg, rgba(27,39,51,0.9) 0%, rgba(20,28,36,0.95) 100%);
+      border: 1px solid rgba(143,163,177,0.12);
+      padding: 16px 20px;
+      position: relative;
+      overflow: hidden;
+      transition: border-color 0.25s ease, transform 0.25s cubic-bezier(0.34,1.56,0.64,1);
+    }
+    .ticker-card::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; right: 0;
+      height: 2px;
+    }
+    .ticker-card.gold-card::before  { background: linear-gradient(90deg, var(--gold-dk), var(--gold-lt)); }
+    .ticker-card.silver-card::before { background: linear-gradient(90deg, var(--steel), var(--silver-lt)); }
+    .ticker-card.steel-card::before  { background: linear-gradient(90deg, #4A6070, #8FA3B1); }
+    .ticker-card.copper-card::before { background: linear-gradient(90deg, #7A3B1E, #C17A50); }
+    .ticker-card:hover {
+      border-color: rgba(143,163,177,0.28);
+      transform: translateY(-3px);
+    }
+    .ticker-metal {
+      font-size: 10px;
+      font-weight: 600;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      color: var(--muted);
+      margin-bottom: 4px;
+    }
+    .ticker-price {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 22px;
+      font-weight: 700;
+      color: #E8EEF2;
+      line-height: 1;
+    }
+    .ticker-change {
+      font-size: 11px;
+      font-weight: 600;
+      margin-top: 4px;
+    }
+    .ticker-change.up   { color: #5CB87A; }
+    .ticker-change.down { color: #E05252; }
+
+    /* ── SECTION BASE ── */
+    section { position: relative; z-index: 1; }
+    .section-inner {
+      max-width: 1280px;
+      margin: 0 auto;
+      padding: 0 48px;
+    }
+    .section-eyebrow {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: var(--gold);
+      margin-bottom: 16px;
+    }
+    .section-eyebrow::before {
+      content: '';
+      width: 24px;
+      height: 1px;
+      background: var(--gold);
+    }
+    .section-title {
+      font-size: clamp(36px, 3.5vw, 56px);
+      font-weight: 600;
+      color: #F0F4F7;
+      margin: 0 0 16px;
+    }
+    .section-sub {
+      font-size: 16px;
+      line-height: 1.75;
+      color: var(--muted);
+      max-width: 560px;
+    }
+    .divider {
+      width: 100%;
+      height: 1px;
+      background: linear-gradient(90deg, transparent, rgba(201,162,39,0.2), transparent);
+    }
+
+    /* ── METALS SECTION ── */
+    .metals-section {
+      padding: 100px 0;
+      background:
+        radial-gradient(ellipse 70% 50% at 15% 50%, rgba(143,163,177,0.05) 0%, transparent 60%),
+        var(--ink-2);
+    }
+    .metals-header {
+      text-align: center;
+      margin-bottom: 64px;
+    }
+    .metals-header .section-sub {
+      margin: 0 auto;
+    }
+    .metals-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 1px;
+      background: rgba(143,163,177,0.1);
+      border: 1px solid rgba(143,163,177,0.1);
+      margin-top: 48px;
+    }
+    .metal-card {
+      background: var(--ink-2);
+      padding: 48px 32px;
+      position: relative;
+      overflow: hidden;
+      transition: background 0.3s ease;
+    }
+    .metal-card:hover { background: var(--ink-3); }
+    .metal-card::before {
+      content: '';
+      position: absolute;
+      bottom: 0; left: 0; right: 0;
+      height: 3px;
+    }
+    .metal-card.gold::before    { background: linear-gradient(90deg, var(--gold-dk), var(--gold-lt), var(--gold-dk)); }
+    .metal-card.silver::before  { background: linear-gradient(90deg, var(--steel), var(--silver-lt), var(--steel)); }
+    .metal-card.steel::before   { background: linear-gradient(90deg, #3A5060, #7A9BAD, #3A5060); }
+    .metal-card.copper::before  { background: linear-gradient(90deg, #6A2F14, #B97040, #6A2F14); }
+
+    .metal-icon {
+      width: 56px;
+      height: 56px;
+      margin-bottom: 24px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 28px;
+      font-weight: 700;
+      border: 1px solid;
+    }
+    .metal-icon.gold   { color: var(--gold-lt);    border-color: rgba(201,162,39,0.4);   background: rgba(201,162,39,0.08); }
+    .metal-icon.silver { color: var(--silver-lt);  border-color: rgba(143,163,177,0.4); background: rgba(143,163,177,0.08); }
+    .metal-icon.steel  { color: #8FA3B1;            border-color: rgba(90,110,122,0.5);  background: rgba(90,110,122,0.1);  }
+    .metal-icon.copper { color: #C17A50;            border-color: rgba(193,122,80,0.4);  background: rgba(193,122,80,0.08); }
+
+    .metal-name {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 26px;
+      font-weight: 600;
+      color: #E8EEF2;
+      margin-bottom: 12px;
+    }
+    .metal-desc {
+      font-size: 14px;
+      line-height: 1.7;
+      color: var(--muted);
+      margin-bottom: 24px;
+    }
+    .metal-specs {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+    .metal-spec {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 12px;
+      padding-bottom: 8px;
+      border-bottom: 1px solid rgba(143,163,177,0.08);
+    }
+    .metal-spec:last-child { border-bottom: none; }
+    .spec-key { color: var(--muted); font-weight: 500; letter-spacing: 0.05em; }
+    .spec-val { color: #C8D4DC; font-weight: 600; }
+
+    /* ── WHY US ── */
+    .why-section {
+      padding: 100px 0;
+      background: var(--ink);
+    }
+    .why-layout {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 80px;
+      align-items: start;
+    }
+    .why-left { position: sticky; top: 100px; }
+    .why-image {
+      position: relative;
+      margin-top: 40px;
+    }
+    .why-image img {
+      width: 100%;
+      aspect-ratio: 4/3;
+      object-fit: cover;
+      display: block;
+    }
+    .why-image-overlay {
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(135deg, rgba(201,162,39,0.15) 0%, transparent 60%);
+      mix-blend-mode: multiply;
+    }
+    .why-image-frame {
+      position: absolute;
+      top: 16px; left: 16px; right: -16px; bottom: -16px;
+      border: 1px solid rgba(201,162,39,0.2);
+      pointer-events: none;
+      z-index: -1;
+    }
+    .feature-list {
+      display: flex;
+      flex-direction: column;
+      gap: 0;
+      margin-top: 16px;
+    }
+    .feature-item {
+      display: flex;
+      gap: 24px;
+      padding: 32px 0;
+      border-bottom: 1px solid rgba(143,163,177,0.1);
+      transition: padding-left 0.25s ease;
+    }
+    .feature-item:first-child { padding-top: 0; }
+    .feature-item:last-child { border-bottom: none; }
+    .feature-item:hover { padding-left: 8px; }
+    .feature-num {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 48px;
+      font-weight: 700;
+      color: rgba(201,162,39,0.2);
+      line-height: 1;
+      min-width: 48px;
+      transition: color 0.25s ease;
+    }
+    .feature-item:hover .feature-num { color: rgba(201,162,39,0.5); }
+    .feature-body h3 {
+      font-size: 20px;
+      font-weight: 600;
+      color: #E8EEF2;
+      margin: 0 0 8px;
+    }
+    .feature-body p {
+      font-size: 14px;
+      line-height: 1.75;
+      color: var(--muted);
+      margin: 0;
+    }
+
+    /* ── PROCESS ── */
+    .process-section {
+      padding: 100px 0;
+      background:
+        radial-gradient(ellipse 60% 60% at 80% 40%, rgba(201,162,39,0.06) 0%, transparent 60%),
+        var(--ink-2);
+    }
+    .process-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 32px;
+      margin-top: 64px;
+    }
+    .process-step {
+      position: relative;
+    }
+    .process-step:not(:last-child)::after {
+      content: '→';
+      position: absolute;
+      top: 28px;
+      right: -20px;
+      color: rgba(201,162,39,0.3);
+      font-size: 20px;
+    }
+    .step-num {
+      width: 56px;
+      height: 56px;
+      border: 1px solid rgba(201,162,39,0.3);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 22px;
+      font-weight: 700;
+      color: var(--gold);
+      margin-bottom: 24px;
+      position: relative;
+      background: rgba(201,162,39,0.05);
+    }
+    .step-title {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 22px;
+      font-weight: 600;
+      color: #E8EEF2;
+      margin: 0 0 10px;
+    }
+    .step-desc {
+      font-size: 14px;
+      line-height: 1.75;
+      color: var(--muted);
+    }
+
+    /* ── TESTIMONIALS ── */
+    .testimonials-section {
+      padding: 100px 0;
+      background: var(--ink);
+    }
+    .testimonials-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 24px;
+      margin-top: 56px;
+    }
+    .testimonial-card {
+      background: linear-gradient(135deg, rgba(27,39,51,0.8) 0%, rgba(20,28,36,0.9) 100%);
+      border: 1px solid rgba(143,163,177,0.1);
+      padding: 36px;
+      position: relative;
+      transition: border-color 0.25s ease, transform 0.25s cubic-bezier(0.34,1.56,0.64,1);
+    }
+    .testimonial-card:hover {
+      border-color: rgba(201,162,39,0.25);
+      transform: translateY(-4px);
+    }
+    .testimonial-card::before {
+      content: '"';
+      position: absolute;
+      top: 20px; right: 28px;
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 80px;
+      line-height: 1;
+      color: rgba(201,162,39,0.12);
+    }
+    .testimonial-text {
+      font-size: 15px;
+      line-height: 1.8;
+      color: #C0CDD6;
+      margin-bottom: 28px;
+      font-style: italic;
+    }
+    .testimonial-author {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+    }
+    .author-avatar {
+      width: 44px;
+      height: 44px;
+      border-radius: 50%;
+      object-fit: cover;
+      border: 2px solid rgba(201,162,39,0.3);
+    }
+    .author-name {
+      font-weight: 600;
+      font-size: 14px;
+      color: #E8EEF2;
+      margin-bottom: 2px;
+    }
+    .author-title {
+      font-size: 12px;
+      color: var(--muted);
+      letter-spacing: 0.05em;
+    }
+
+    /* ── CTA BANNER ── */
+    .cta-section {
+      padding: 80px 0;
+      background: linear-gradient(135deg, rgba(201,162,39,0.12) 0%, rgba(143,163,177,0.06) 100%);
+      border-top: 1px solid rgba(201,162,39,0.15);
+      border-bottom: 1px solid rgba(201,162,39,0.15);
+    }
+    .cta-inner {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 40px;
+      flex-wrap: wrap;
+    }
+    .cta-text h2 {
+      font-size: clamp(32px, 3vw, 48px);
+      font-weight: 600;
+      color: #F0F4F7;
+      margin: 0 0 12px;
+    }
+    .cta-text p {
+      font-size: 16px;
+      color: var(--muted);
+      margin: 0;
+    }
+    .cta-actions {
+      display: flex;
+      gap: 16px;
+      flex-shrink: 0;
+      flex-wrap: wrap;
+    }
+
+    /* ── CONTACT ── */
+    .contact-section {
+      padding: 100px 0;
+      background: var(--ink-2);
+    }
+    .contact-layout {
+      display: grid;
+      grid-template-columns: 1fr 1.2fr;
+      gap: 80px;
+      align-items: start;
+    }
+    .contact-info {
+      display: flex;
+      flex-direction: column;
+      gap: 32px;
+      margin-top: 32px;
+    }
+    .contact-item {
+      display: flex;
+      gap: 16px;
+      align-items: flex-start;
+    }
+    .contact-icon {
+      width: 40px;
+      height: 40px;
+      border: 1px solid rgba(201,162,39,0.3);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      background: rgba(201,162,39,0.05);
+    }
+    .contact-icon svg {
+      width: 18px; height: 18px;
+      stroke: var(--gold);
+      fill: none;
+      stroke-width: 1.5;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+    }
+    .contact-label {
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--muted);
+      margin-bottom: 4px;
+    }
+    .contact-val {
+      font-size: 15px;
+      color: #C8D4DC;
+    }
+    form {
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+    }
+    .form-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 16px;
+    }
+    .form-group {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+    label {
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--muted);
+    }
+    input, select, textarea {
+      background: rgba(13,17,23,0.8);
+      border: 1px solid rgba(143,163,177,0.18);
+      color: #E8EEF2;
+      font-family: 'Inter', sans-serif;
+      font-size: 14px;
+      padding: 12px 16px;
+      outline: none;
+      transition: border-color 0.2s ease, box-shadow 0.2s ease;
+      width: 100%;
+    }
+    input::placeholder, textarea::placeholder { color: rgba(107,128,144,0.6); }
+    input:focus, select:focus, textarea:focus {
+      border-color: rgba(201,162,39,0.5);
+      box-shadow: 0 0 0 3px rgba(201,162,39,0.08);
+    }
+    select {
+      appearance: none;
+      cursor: pointer;
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%238FA3B1' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");
+      background-repeat: no-repeat;
+      background-position: right 16px center;
+      padding-right: 40px;
+    }
+    select option { background: var(--ink-2); }
+    textarea { resize: vertical; min-height: 120px; }
+
+    /* ── FOOTER ── */
+    footer {
+      background: var(--ink);
+      border-top: 1px solid rgba(143,163,177,0.1);
+      padding: 60px 0 32px;
+    }
+    .footer-inner {
+      max-width: 1280px;
+      margin: 0 auto;
+      padding: 0 48px;
+    }
+    .footer-top {
+      display: grid;
+      grid-template-columns: 2fr 1fr 1fr 1fr;
+      gap: 48px;
+      padding-bottom: 48px;
+      border-bottom: 1px solid rgba(143,163,177,0.08);
+    }
+    .footer-brand {
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+    .footer-brand img { height: 40px; width: auto; max-width: 180px; object-fit: contain; }
+    .footer-brand p {
+      font-size: 13px;
+      line-height: 1.75;
+      color: var(--muted);
+      max-width: 280px;
+      margin: 0;
+    }
+    .footer-col h4 {
+      font-family: 'Inter', sans-serif;
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      color: var(--gold);
+      margin: 0 0 20px;
+    }
+    .footer-col ul {
+      list-style: none;
+      margin: 0; padding: 0;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+    .footer-col ul li a {
+      font-size: 13px;
+      color: var(--muted);
+      text-decoration: none;
+      transition: color 0.2s ease;
+    }
+    .footer-col ul li a:hover { color: var(--silver-lt); }
+    .footer-bottom {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding-top: 28px;
+      flex-wrap: wrap;
+      gap: 16px;
+    }
+    .footer-copy {
+      font-size: 12px;
+      color: var(--steel);
+      letter-spacing: 0.05em;
+    }
+    .footer-metals {
+      display: flex;
+      gap: 24px;
+    }
+    .footer-metals span {
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+    }
+
+    /* responsive */
+    @media (max-width: 1024px) {
+      .hero-inner { grid-template-columns: 1fr; gap: 48px; }
+      .hero-visual { display: none; }
+      .metals-grid { grid-template-columns: repeat(2, 1fr); }
+      .why-layout { grid-template-columns: 1fr; }
+      .why-left { position: static; }
+      .process-grid { grid-template-columns: repeat(2, 1fr); }
+      .process-step:not(:last-child)::after { display: none; }
+      .testimonials-grid { grid-template-columns: 1fr; }
+      .contact-layout { grid-template-columns: 1fr; }
+      .footer-top { grid-template-columns: 1fr 1fr; }
+    }
+    @media (max-width: 640px) {
+      nav { padding: 0 24px; }
+      .nav-links, .nav-cta { display: none; }
+      .section-inner { padding: 0 24px; }
+      .hero-inner { padding: 100px 24px 60px; }
+      .metals-grid { grid-template-columns: 1fr; }
+      .process-grid { grid-template-columns: 1fr; }
+      .form-row { grid-template-columns: 1fr; }
+      .footer-inner { padding: 0 24px; }
+      .footer-top { grid-template-columns: 1fr; }
+      .cta-inner { flex-direction: column; }
+      .hero-stats { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- ── NAV ── -->
+  <nav>
+    <a href="#" class="nav-logo">
+      <img src="brand_assets/LOGO.png" alt="Metals Trading" />
+    </a>
+    <ul class="nav-links">
+      <li><a href="#metals">Metals</a></li>
+      <li><a href="#why">About</a></li>
+      <li><a href="#process">Process</a></li>
+      <li><a href="#contact">Contact</a></li>
+    </ul>
+    <button class="btn-primary nav-cta" onclick="openRegModal()">Start Trading</button>
+  </nav>
+
+  <!-- ── HERO ── -->
+  <section class="hero">
+    <div class="hero-bg"></div>
+    <div class="hero-inner">
+      <div class="hero-content">
+        <div class="hero-eyebrow">
+          <span class="hero-eyebrow-line"></span>
+          Global Metals Exchange
+        </div>
+        <h1>Trade the World's <span class="gradient-gold">Finest Metals</span> with Confidence</h1>
+        <p class="hero-sub">
+          Access live spot pricing, institutional-grade execution, and expert market intelligence across Gold, Silver, Steel, and Copper markets.
+        </p>
+        <div class="hero-actions">
+          <button onclick="openRegModal()" class="btn-primary">
+            Open an Account
+            <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 8h10M9 4l4 4-4 4"/></svg>
+          </button>
+          <a href="markets.html" class="btn-outline">Explore Markets</a>
+        </div>
+
+        <div class="hero-stats">
+          <div class="hero-stat">
+            <div class="hero-stat-value">$2.4B+</div>
+            <div class="hero-stat-label">Volume Traded</div>
+          </div>
+          <div class="hero-stat">
+            <div class="hero-stat-value">48</div>
+            <div class="hero-stat-label">Countries Served</div>
+          </div>
+          <div class="hero-stat">
+            <div class="hero-stat-value">24/7</div>
+            <div class="hero-stat-label">Market Access</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="hero-visual">
+        <div class="hero-logo-wrap">
+          <div class="hero-logo-glow"></div>
+          <img src="brand_assets/LOGO.png" alt="Metals Trading" />
+        </div>
+        <div class="metals-ticker">
+          <div class="ticker-card gold-card">
+            <div class="ticker-metal">Gold (XAU)</div>
+            <div class="ticker-price">$2,341.80</div>
+            <div class="ticker-change up">▲ +0.82%</div>
+          </div>
+          <div class="ticker-card silver-card">
+            <div class="ticker-metal">Silver (XAG)</div>
+            <div class="ticker-price">$27.45</div>
+            <div class="ticker-change up">▲ +1.14%</div>
+          </div>
+          <div class="ticker-card steel-card">
+            <div class="ticker-metal">Steel (HRC)</div>
+            <div class="ticker-price">$684.00</div>
+            <div class="ticker-change down">▼ −0.29%</div>
+          </div>
+          <div class="ticker-card copper-card">
+            <div class="ticker-metal">Copper (HG)</div>
+            <div class="ticker-price">$4.21</div>
+            <div class="ticker-change up">▲ +0.47%</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <div class="divider"></div>
+
+  <!-- ── METALS ── -->
+  <section class="metals-section" id="metals">
+    <div class="section-inner">
+      <div class="metals-header">
+        <div class="section-eyebrow">Our Markets</div>
+        <h2 class="section-title">Four Metals. One Platform.</h2>
+        <p class="section-sub">We provide access to the world's most actively traded metals with competitive spreads and unmatched depth.</p>
+      </div>
+    </div>
+    <div class="section-inner">
+      <div class="metals-grid">
+        <div class="metal-card gold">
+          <div class="metal-icon gold">Au</div>
+          <div class="metal-name">Gold</div>
+          <p class="metal-desc">The ultimate store of value. Trade spot, forwards, and options on the world's most recognized precious metal with institutional-grade liquidity.</p>
+          <div class="metal-specs">
+            <div class="metal-spec"><span class="spec-key">Purity</span><span class="spec-val">99.99% Fine</span></div>
+            <div class="metal-spec"><span class="spec-key">Settlement</span><span class="spec-val">T+2 / T+0</span></div>
+            <div class="metal-spec"><span class="spec-key">Min. Lot</span><span class="spec-val">1 Troy Oz</span></div>
+          </div>
+        </div>
+        <div class="metal-card silver">
+          <div class="metal-icon silver">Ag</div>
+          <div class="metal-name">Silver</div>
+          <p class="metal-desc">Industrial demand meets monetary heritage. Access deep silver markets with tight spreads across global exchanges and OTC venues.</p>
+          <div class="metal-specs">
+            <div class="metal-spec"><span class="spec-key">Purity</span><span class="spec-val">99.9% Fine</span></div>
+            <div class="metal-spec"><span class="spec-key">Settlement</span><span class="spec-val">T+2 / T+0</span></div>
+            <div class="metal-spec"><span class="spec-key">Min. Lot</span><span class="spec-val">5,000 Oz</span></div>
+          </div>
+        </div>
+        <div class="metal-card steel">
+          <div class="metal-icon steel">Fe</div>
+          <div class="metal-name">Steel</div>
+          <p class="metal-desc">The backbone of modern infrastructure. We cover HRC, CRC, and rebar contracts across major steel hubs in Europe, Asia, and the Americas.</p>
+          <div class="metal-specs">
+            <div class="metal-spec"><span class="spec-key">Grade</span><span class="spec-val">HRC / CRC / Rebar</span></div>
+            <div class="metal-spec"><span class="spec-key">Settlement</span><span class="spec-val">Physical / Cash</span></div>
+            <div class="metal-spec"><span class="spec-key">Min. Lot</span><span class="spec-val">25 MT</span></div>
+          </div>
+        </div>
+        <div class="metal-card copper">
+          <div class="metal-icon copper">Cu</div>
+          <div class="metal-name">Copper</div>
+          <p class="metal-desc">The metal of electrification. Trade copper cathodes, wire rod, and concentrates as global demand surges with the green energy transition.</p>
+          <div class="metal-specs">
+            <div class="metal-spec"><span class="spec-key">Grade</span><span class="spec-val">Grade A Cathode</span></div>
+            <div class="metal-spec"><span class="spec-key">Settlement</span><span class="spec-val">LME / OTC</span></div>
+            <div class="metal-spec"><span class="spec-key">Min. Lot</span><span class="spec-val">5 MT</span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <div class="divider"></div>
+
+  <!-- ── WHY US ── -->
+  <section class="why-section" id="why">
+    <div class="section-inner">
+      <div class="why-layout">
+        <div class="why-left">
+          <div class="section-eyebrow">Why Metals Trading</div>
+          <h2 class="section-title">Built for Serious Market Participants</h2>
+          <p class="section-sub">We combine decades of metals expertise with cutting-edge technology to deliver an edge that matters.</p>
+          <div class="why-image">
+            <img src="https://placehold.co/560x420/141C24/8FA3B1?text=Metals+Trading+Floor" alt="Trading Floor" />
+            <div class="why-image-overlay"></div>
+            <div class="why-image-frame"></div>
+          </div>
+        </div>
+        <div class="feature-list">
+          <div class="feature-item">
+            <div class="feature-num">01</div>
+            <div class="feature-body">
+              <h3>Live Spot Pricing</h3>
+              <p>Real-time bid/ask quotes sourced from 12+ global exchanges, updated every 100ms. No stale prices, no surprises — just the market as it is.</p>
+            </div>
+          </div>
+          <div class="feature-item">
+            <div class="feature-num">02</div>
+            <div class="feature-body">
+              <h3>Physical Delivery Network</h3>
+              <p>Access 40+ accredited vaults and warehouses across London, Zurich, Singapore, and New York. We handle logistics so you can focus on trading.</p>
+            </div>
+          </div>
+          <div class="feature-item">
+            <div class="feature-num">03</div>
+            <div class="feature-body">
+              <h3>Dedicated Relationship Managers</h3>
+              <p>Every client is assigned a senior metals specialist who understands your portfolio, your risk appetite, and your market outlook.</p>
+            </div>
+          </div>
+          <div class="feature-item">
+            <div class="feature-num">04</div>
+            <div class="feature-body">
+              <h3>Regulated &amp; Transparent</h3>
+              <p>Fully licensed and regulated. Segregated client accounts, daily mark-to-market reporting, and real-time position visibility at all times.</p>
+            </div>
+          </div>
+          <div class="feature-item">
+            <div class="feature-num">05</div>
+            <div class="feature-body">
+              <h3>Competitive Financing</h3>
+              <p>Tailored margin and financing solutions for miners, refiners, manufacturers, and institutional investors. Flexible terms, fast execution.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <div class="divider"></div>
+
+  <!-- ── PROCESS ── -->
+  <section class="process-section" id="process">
+    <div class="section-inner">
+      <div style="text-align:center; margin-bottom: 0;">
+        <div class="section-eyebrow" style="justify-content:center;">How It Works</div>
+        <h2 class="section-title">From Signup to First Trade in 48 Hours</h2>
+        <p class="section-sub" style="margin: 0 auto;">Our streamlined onboarding process gets you to market fast without compromising compliance or security.</p>
+      </div>
+      <div class="process-grid">
+        <div class="process-step">
+          <div class="step-num">01</div>
+          <div class="step-title">Apply Online</div>
+          <p class="step-desc">Complete our digital application in under 20 minutes. Submit KYC documents and entity verification — all in one place.</p>
+        </div>
+        <div class="process-step">
+          <div class="step-num">02</div>
+          <div class="step-title">Account Review</div>
+          <p class="step-desc">Our compliance team reviews your application within 24 hours. You'll receive your account credentials and platform access immediately upon approval.</p>
+        </div>
+        <div class="process-step">
+          <div class="step-num">03</div>
+          <div class="step-title">Fund &amp; Configure</div>
+          <p class="step-desc">Wire funds or transfer assets to your segregated account. Configure alerts, set risk limits, and connect via API or our web platform.</p>
+        </div>
+        <div class="process-step">
+          <div class="step-num">04</div>
+          <div class="step-title">Start Trading</div>
+          <p class="step-desc">Execute your first trade with support from your dedicated relationship manager. Access real-time pricing, research, and execution tools.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <div class="divider"></div>
+
+  <!-- ── TESTIMONIALS ── -->
+  <section class="testimonials-section">
+    <div class="section-inner">
+      <div class="section-eyebrow">Client Voices</div>
+      <h2 class="section-title">Trusted by Industry Leaders</h2>
+      <div class="testimonials-grid">
+        <div class="testimonial-card">
+          <p class="testimonial-text">"Metals Trading gave our treasury team direct access to spot markets we couldn't reach before. The pricing is tight, execution is fast, and the reporting is exactly what our CFO needs."</p>
+          <div class="testimonial-author">
+            <img src="https://placehold.co/44x44/1B2733/8FA3B1?text=JM" class="author-avatar" alt="" />
+            <div>
+              <div class="author-name">James Morrow</div>
+              <div class="author-title">CFO, Redstone Manufacturing</div>
+            </div>
+          </div>
+        </div>
+        <div class="testimonial-card">
+          <p class="testimonial-text">"We've been hedging our gold exposure with MT for three years. Their desk understands miners, not just traders. The relationship adds real value beyond just the execution."</p>
+          <div class="testimonial-author">
+            <img src="https://placehold.co/44x44/1B2733/8FA3B1?text=SL" class="author-avatar" alt="" />
+            <div>
+              <div class="author-name">Sofia Larsson</div>
+              <div class="author-title">Head of Risk, Vantage Gold Corp</div>
+            </div>
+          </div>
+        </div>
+        <div class="testimonial-card">
+          <p class="testimonial-text">"The copper desk at Metals Trading consistently finds us better prices than our previous prime broker. They've become a core part of our procurement strategy."</p>
+          <div class="testimonial-author">
+            <img src="https://placehold.co/44x44/1B2733/8FA3B1?text=DK" class="author-avatar" alt="" />
+            <div>
+              <div class="author-name">David Kim</div>
+              <div class="author-title">Director of Procurement, ElectroCon</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ── CTA BANNER ── -->
+  <section class="cta-section">
+    <div class="section-inner">
+      <div class="cta-inner">
+        <div class="cta-text">
+          <h2>Ready to Trade at the <span class="gradient-gold">Highest Level?</span></h2>
+          <p>Speak with a metals specialist today. No commitment, no pressure — just expertise.</p>
+        </div>
+        <div class="cta-actions">
+          <a href="#contact" class="btn-primary">
+            Request a Consultation
+            <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 8h10M9 4l4 4-4 4"/></svg>
+          </a>
+          <a href="#metals" class="btn-outline">View Markets</a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ── CONTACT ── -->
+  <section class="contact-section" id="contact">
+    <div class="section-inner">
+      <div class="contact-layout">
+        <div>
+          <div class="section-eyebrow">Get in Touch</div>
+          <h2 class="section-title">Speak with a Specialist</h2>
+          <p class="section-sub">Our team is available around the clock during market hours. Reach out to discuss your trading needs, account setup, or market outlook.</p>
+          <div class="contact-info">
+            <div class="contact-item">
+              <div class="contact-icon">
+                <svg viewBox="0 0 24 24"><path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07A19.5 19.5 0 013.07 10.8 19.79 19.79 0 01.1 2.18 2 2 0 012.08 0h3a2 2 0 012 1.72 12.84 12.84 0 00.7 2.81 2 2 0 01-.45 2.11L6.09 7.91a16 16 0 006 6l1.27-1.27a2 2 0 012.11-.45 12.84 12.84 0 002.81.7A2 2 0 0122 14.92z"/></svg>
+              </div>
+              <div>
+                <div class="contact-label">Trading Desk</div>
+                <div class="contact-val">+1 (212) 555-0192</div>
+              </div>
+            </div>
+            <div class="contact-item">
+              <div class="contact-icon">
+                <svg viewBox="0 0 24 24"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
+              </div>
+              <div>
+                <div class="contact-label">Email</div>
+                <div class="contact-val">trading@metalsTrading.com</div>
+              </div>
+            </div>
+            <div class="contact-item">
+              <div class="contact-icon">
+                <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+              </div>
+              <div>
+                <div class="contact-label">Market Hours</div>
+                <div class="contact-val">Mon–Fri 06:00–22:00 EST</div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <form>
+          <div class="form-row">
+            <div class="form-group">
+              <label for="fname">First Name</label>
+              <input type="text" id="fname" placeholder="James" />
+            </div>
+            <div class="form-group">
+              <label for="lname">Last Name</label>
+              <input type="text" id="lname" placeholder="Morrow" />
+            </div>
+          </div>
+          <div class="form-group">
+            <label for="email">Email Address</label>
+            <input type="email" id="email" placeholder="james@company.com" />
+          </div>
+          <div class="form-group">
+            <label for="company">Company</label>
+            <input type="text" id="company" placeholder="Your organization" />
+          </div>
+          <div class="form-group">
+            <label for="interest">Metal of Interest</label>
+            <select id="interest">
+              <option value="" disabled selected>Select a metal</option>
+              <option>Gold (XAU)</option>
+              <option>Silver (XAG)</option>
+              <option>Steel (HRC)</option>
+              <option>Copper (HG)</option>
+              <option>Multiple / Portfolio</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label for="message">Message</label>
+            <textarea id="message" placeholder="Tell us about your trading needs or questions..."></textarea>
+          </div>
+          <button type="submit" class="btn-primary" style="width:100%; justify-content:center;">
+            Send Message
+            <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 8h10M9 4l4 4-4 4"/></svg>
+          </button>
+        </form>
+      </div>
+    </div>
+  </section>
+
+  <!-- ── FOOTER ── -->
+  <footer>
+    <div class="footer-inner">
+      <div class="footer-top">
+        <div class="footer-brand">
+          <img src="brand_assets/LOGO.png" alt="Metals Trading" />
+          <p>Global metals trading solutions for institutions, miners, refiners, and sophisticated investors. Precision execution. Unrivaled expertise.</p>
+          <div class="footer-metals">
+            <span class="text-gold">Gold</span>
+            <span style="color:var(--steel)">·</span>
+            <span class="text-silver">Silver</span>
+            <span style="color:var(--steel)">·</span>
+            <span style="color:#8FA3B1">Steel</span>
+            <span style="color:var(--steel)">·</span>
+            <span style="color:#C17A50">Copper</span>
+          </div>
+        </div>
+        <div class="footer-col">
+          <h4>Markets</h4>
+          <ul>
+            <li><a href="#">Gold Spot</a></li>
+            <li><a href="#">Silver Spot</a></li>
+            <li><a href="#">Steel Futures</a></li>
+            <li><a href="#">Copper Futures</a></li>
+            <li><a href="#">Options &amp; Swaps</a></li>
+          </ul>
+        </div>
+        <div class="footer-col">
+          <h4>Company</h4>
+          <ul>
+            <li><a href="#">About Us</a></li>
+            <li><a href="#">Our Team</a></li>
+            <li><a href="#">Careers</a></li>
+            <li><a href="#">Regulatory</a></li>
+            <li><a href="#">News</a></li>
+          </ul>
+        </div>
+        <div class="footer-col">
+          <h4>Support</h4>
+          <ul>
+            <li><a href="#">Trading Platform</a></li>
+            <li><a href="#">API Documentation</a></li>
+            <li><a href="#">Account Portal</a></li>
+            <li><a href="#">Contact</a></li>
+            <li><a href="#">FAQ</a></li>
+          </ul>
+        </div>
+      </div>
+      <div class="footer-bottom">
+        <span class="footer-copy">© 2026 Metals Trading. All rights reserved. Trading in metals carries risk of loss.</span>
+        <div style="display:flex; gap:24px;">
+          <a href="#" style="font-size:12px; color:var(--steel); text-decoration:none;">Privacy Policy</a>
+          <a href="#" style="font-size:12px; color:var(--steel); text-decoration:none;">Terms of Service</a>
+          <a href="#" style="font-size:12px; color:var(--steel); text-decoration:none;">Disclosures</a>
+        </div>
+      </div>
+    </div>
+  </footer>
+
+
+<!-- ── REGISTRATION MODAL ── -->
+<div id="reg-modal" style="
+  display:none;
+  position:fixed; inset:0; z-index:9999;
+  background:rgba(13,17,23,0.85);
+  backdrop-filter:blur(8px);
+  -webkit-backdrop-filter:blur(8px);
+  align-items:center; justify-content:center;
+" onclick="if(event.target===this)closeRegModal()">
+  <div style="
+    position:relative;
+    background:var(--ink-2);
+    border:1px solid rgba(201,162,39,0.25);
+    border-radius:4px;
+    padding:48px 44px 44px;
+    width:100%; max-width:480px;
+    margin:16px;
+    box-shadow:0 8px 60px rgba(0,0,0,0.6), 0 0 0 1px rgba(201,162,39,0.08);
+  ">
+    <!-- close -->
+    <button onclick="closeRegModal()" style="
+      position:absolute; top:16px; right:20px;
+      background:none; border:none; color:var(--muted);
+      font-size:22px; cursor:pointer; line-height:1;
+      transition:color 0.15s ease;
+    " onmouseover="this.style.color='var(--gold)'" onmouseout="this.style.color='var(--muted)'">&#x2715;</button>
+
+    <!-- heading -->
+    <div style="margin-bottom:8px; font-size:11px; letter-spacing:0.12em; text-transform:uppercase; color:var(--gold); font-family:'Inter',sans-serif; font-weight:500;">
+      Začetek trgovanja
+    </div>
+    <h2 style="margin:0 0 28px; font-family:'Cormorant Garamond',serif; font-size:28px; color:#E8EEF2; letter-spacing:-0.02em; line-height:1.15;">
+      Odprite račun
+    </h2>
+
+    <form id="reg-form" onsubmit="submitRegForm(event)" style="display:flex; flex-direction:column; gap:16px;">
+      <div style="display:grid; grid-template-columns:1fr 1fr; gap:16px;">
+        <!-- Ime -->
+        <div>
+          <label style="display:block; font-size:11px; letter-spacing:0.08em; text-transform:uppercase; color:var(--muted); margin-bottom:6px; font-family:'Inter',sans-serif;">Ime</label>
+          <input type="text" name="ime" required placeholder="npr. Janez" style="
+            width:100%; padding:11px 14px;
+            background:var(--ink-3); border:1px solid rgba(143,163,177,0.2);
+            border-radius:3px; color:#E8EEF2; font-family:'Inter',sans-serif; font-size:14px;
+            outline:none; transition:border-color 0.2s ease;
+          " onfocus="this.style.borderColor='var(--gold)'" onblur="this.style.borderColor='rgba(143,163,177,0.2)'" />
+        </div>
+        <!-- Priimek -->
+        <div>
+          <label style="display:block; font-size:11px; letter-spacing:0.08em; text-transform:uppercase; color:var(--muted); margin-bottom:6px; font-family:'Inter',sans-serif;">Priimek</label>
+          <input type="text" name="priimek" required placeholder="npr. Novak" style="
+            width:100%; padding:11px 14px;
+            background:var(--ink-3); border:1px solid rgba(143,163,177,0.2);
+            border-radius:3px; color:#E8EEF2; font-family:'Inter',sans-serif; font-size:14px;
+            outline:none; transition:border-color 0.2s ease;
+          " onfocus="this.style.borderColor='var(--gold)'" onblur="this.style.borderColor='rgba(143,163,177,0.2)'" />
+        </div>
+      </div>
+
+      <!-- Email -->
+      <div>
+        <label style="display:block; font-size:11px; letter-spacing:0.08em; text-transform:uppercase; color:var(--muted); margin-bottom:6px; font-family:'Inter',sans-serif;">E-pošta</label>
+        <input type="email" name="email" required placeholder="janez@primer.si" style="
+          width:100%; padding:11px 14px;
+          background:var(--ink-3); border:1px solid rgba(143,163,177,0.2);
+          border-radius:3px; color:#E8EEF2; font-family:'Inter',sans-serif; font-size:14px;
+          outline:none; transition:border-color 0.2s ease;
+        " onfocus="this.style.borderColor='var(--gold)'" onblur="this.style.borderColor='rgba(143,163,177,0.2)'" />
+      </div>
+
+      <!-- Telefon -->
+      <div>
+        <label style="display:block; font-size:11px; letter-spacing:0.08em; text-transform:uppercase; color:var(--muted); margin-bottom:6px; font-family:'Inter',sans-serif;">Telefonska številka</label>
+        <input type="tel" name="telefon" required placeholder="+386 41 123 456" style="
+          width:100%; padding:11px 14px;
+          background:var(--ink-3); border:1px solid rgba(143,163,177,0.2);
+          border-radius:3px; color:#E8EEF2; font-family:'Inter',sans-serif; font-size:14px;
+          outline:none; transition:border-color 0.2s ease;
+        " onfocus="this.style.borderColor='var(--gold)'" onblur="this.style.borderColor='rgba(143,163,177,0.2)'" />
+      </div>
+
+      <!-- Davčna -->
+      <div>
+        <label style="display:block; font-size:11px; letter-spacing:0.08em; text-transform:uppercase; color:var(--muted); margin-bottom:6px; font-family:'Inter',sans-serif;">Davčna številka</label>
+        <input type="text" name="davcna" required placeholder="SI12345678" style="
+          width:100%; padding:11px 14px;
+          background:var(--ink-3); border:1px solid rgba(143,163,177,0.2);
+          border-radius:3px; color:#E8EEF2; font-family:'Inter',sans-serif; font-size:14px;
+          outline:none; transition:border-color 0.2s ease;
+        " onfocus="this.style.borderColor='var(--gold)'" onblur="this.style.borderColor='rgba(143,163,177,0.2)'" />
+      </div>
+
+      <!-- Submit -->
+      <button type="submit" class="btn-primary" style="width:100%; justify-content:center; margin-top:8px; padding:15px 32px; font-size:13px;">
+        Registriraj se
+      </button>
+
+      <p style="margin:0; font-size:11px; color:var(--muted); text-align:center; font-family:'Inter',sans-serif; line-height:1.6;">
+        Z registracijo se strinjate s <a href="#" style="color:var(--gold); text-decoration:none;">pogoji uporabe</a> in <a href="#" style="color:var(--gold); text-decoration:none;">politiko zasebnosti</a>.
+      </p>
+    </form>
+
+    <!-- Success state (hidden) -->
+    <div id="reg-success" style="display:none; text-align:center; padding:20px 0;">
+      <div style="font-size:40px; margin-bottom:16px;">✓</div>
+      <h3 style="font-family:'Cormorant Garamond',serif; font-size:24px; color:var(--gold); margin:0 0 8px;">Uspešno ste se registrirali!</h3>
+      <p style="color:var(--muted); font-size:14px; font-family:'Inter',sans-serif; margin:0 0 24px;">Kmalu vas bomo kontaktirali.</p>
+      <button onclick="closeRegModal()" class="btn-primary" style="justify-content:center;">Zapri</button>
+    </div>
+  </div>
+</div>
+
+<script>
+  function openRegModal() {
+    const m = document.getElementById('reg-modal');
+    m.style.display = 'flex';
+    document.body.style.overflow = 'hidden';
+    document.getElementById('reg-form').style.display = 'flex';
+    document.getElementById('reg-success').style.display = 'none';
+    document.getElementById('reg-form').reset();
+  }
+  function closeRegModal() {
+    document.getElementById('reg-modal').style.display = 'none';
+    document.body.style.overflow = '';
+  }
+  function submitRegForm(e) {
+    e.preventDefault();
+    document.getElementById('reg-form').style.display = 'none';
+    document.getElementById('reg-success').style.display = 'block';
+  }
+  document.addEventListener('keydown', function(e) {
+    if (e.key === 'Escape') closeRegModal();
+  });
+</script>
+
+</body>
+</html>

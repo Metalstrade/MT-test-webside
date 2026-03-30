@@ -1,0 +1,917 @@
+<!DOCTYPE html>
+<html lang="sl">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Trg kovin — Metals Trading</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;500;600;700&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet" />
+
+  <style>
+    :root {
+      --gold:      #C9A227;
+      --gold-lt:   #E4BF5A;
+      --gold-dk:   #8B6F14;
+      --silver:    #8FA3B1;
+      --silver-lt: #B8C9D4;
+      --steel:     #5A6E7A;
+      --ink:       #0D1117;
+      --ink-2:     #141C24;
+      --ink-3:     #1B2733;
+      --muted:     #6B8090;
+    }
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body {
+      margin: 0;
+      background: var(--ink);
+      color: #E8EEF2;
+      font-family: 'Inter', sans-serif;
+      font-size: 15px;
+      line-height: 1.7;
+      overflow-x: hidden;
+      min-height: 100vh;
+    }
+    h1,h2,h3,h4 { font-family: 'Cormorant Garamond', serif; line-height: 1.15; letter-spacing: -0.02em; }
+
+    body::before {
+      content: '';
+      position: fixed; inset: 0;
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='300' height='300'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.75' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='300' height='300' filter='url(%23n)' opacity='0.04'/%3E%3C/svg%3E");
+      pointer-events: none; z-index: 0; opacity: 0.6;
+    }
+    ::-webkit-scrollbar { width: 6px; }
+    ::-webkit-scrollbar-track { background: var(--ink); }
+    ::-webkit-scrollbar-thumb { background: var(--gold-dk); border-radius: 3px; }
+
+    /* ── NAV ── */
+    nav {
+      position: sticky; top: 0; z-index: 100;
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 0 48px;
+      height: 68px;
+      background: rgba(13,17,23,0.9);
+      backdrop-filter: blur(12px);
+      border-bottom: 1px solid rgba(201,162,39,0.12);
+    }
+    .nav-logo img { height: 32px; width: auto; object-fit: contain; }
+    .nav-back {
+      display: inline-flex; align-items: center; gap: 8px;
+      color: var(--muted); font-size: 13px; font-weight: 500;
+      text-decoration: none; letter-spacing: 0.04em;
+      transition: color 0.2s ease;
+    }
+    .nav-back:hover { color: var(--gold-lt); }
+    .nav-back svg { transition: transform 0.2s ease; }
+    .nav-back:hover svg { transform: translateX(-3px); }
+
+    /* ── BUTTONS ── */
+    .btn-primary {
+      display: inline-flex; align-items: center; gap: 8px;
+      padding: 12px 28px;
+      background: linear-gradient(135deg, var(--gold-lt), var(--gold), var(--gold-dk));
+      color: var(--ink); font-family: 'Inter', sans-serif; font-weight: 600;
+      font-size: 12px; letter-spacing: 0.08em; text-transform: uppercase;
+      border: none; cursor: pointer; border-radius: 2px;
+      box-shadow: 0 2px 8px rgba(201,162,39,0.3), 0 8px 32px rgba(201,162,39,0.12);
+      transition: transform 0.2s cubic-bezier(0.34,1.56,0.64,1), box-shadow 0.2s ease;
+    }
+    .btn-primary:hover { transform: translateY(-1px); box-shadow: 0 4px 16px rgba(201,162,39,0.4), 0 12px 40px rgba(201,162,39,0.18); }
+    .btn-primary:active { transform: translateY(0); }
+
+    /* ── PAGE HEADER ── */
+    .page-header {
+      position: relative; z-index: 1;
+      padding: 60px 48px 40px;
+      border-bottom: 1px solid rgba(143,163,177,0.08);
+    }
+    .page-header-eyebrow {
+      font-size: 11px; letter-spacing: 0.14em; text-transform: uppercase;
+      color: var(--gold); font-weight: 500; margin-bottom: 10px;
+      display: flex; align-items: center; gap: 10px;
+    }
+    .page-header-eyebrow::before {
+      content: ''; display: block; width: 24px; height: 1px; background: var(--gold);
+    }
+    .page-header h1 { font-size: clamp(32px, 4vw, 52px); margin: 0 0 10px; color: #E8EEF2; }
+    .page-header p { color: var(--muted); font-size: 14px; max-width: 520px; margin: 0; }
+
+    /* ── CURRENCY TOGGLE ── */
+    .currency-bar {
+      display: flex; align-items: center; gap: 8px;
+      background: var(--ink-3); border: 1px solid rgba(143,163,177,0.12);
+      border-radius: 3px; padding: 4px; width: fit-content;
+    }
+    .currency-btn {
+      padding: 6px 16px; border: none; cursor: pointer; border-radius: 2px;
+      font-family: 'Inter', sans-serif; font-size: 12px; font-weight: 600;
+      letter-spacing: 0.06em; text-transform: uppercase;
+      background: transparent; color: var(--muted);
+      transition: background 0.2s ease, color 0.2s ease;
+    }
+    .currency-btn.active {
+      background: linear-gradient(135deg, var(--gold-lt), var(--gold));
+      color: var(--ink);
+    }
+
+    /* ── MAIN LAYOUT ── */
+    .market-layout {
+      position: relative; z-index: 1;
+      display: grid;
+      grid-template-columns: 320px 1fr;
+      gap: 0;
+      min-height: calc(100vh - 68px - 160px);
+    }
+
+    /* ── FILTER PANEL ── */
+    .filter-panel {
+      background: var(--ink-2);
+      border-right: 1px solid rgba(143,163,177,0.08);
+      padding: 28px 24px;
+      overflow-y: auto;
+      position: sticky;
+      top: 68px;
+      height: calc(100vh - 68px);
+    }
+    .filter-panel-header {
+      display: flex; align-items: center; justify-content: space-between;
+      margin-bottom: 24px;
+    }
+    .filter-panel-title {
+      font-size: 11px; letter-spacing: 0.12em; text-transform: uppercase;
+      color: var(--muted); font-weight: 500;
+    }
+    .filter-reset {
+      font-size: 11px; color: var(--gold); background: none; border: none;
+      cursor: pointer; letter-spacing: 0.04em; padding: 0;
+      font-family: 'Inter', sans-serif;
+      transition: color 0.2s ease;
+    }
+    .filter-reset:hover { color: var(--gold-lt); }
+
+    /* Main type toggle */
+    .type-toggle {
+      display: grid; grid-template-columns: 1fr 1fr;
+      gap: 0;
+      border: 1px solid rgba(201,162,39,0.25);
+      border-radius: 3px; overflow: hidden;
+      margin-bottom: 28px;
+    }
+    .type-btn {
+      padding: 14px 8px; border: none; cursor: pointer;
+      font-family: 'Inter', sans-serif; font-size: 12px; font-weight: 600;
+      letter-spacing: 0.06em; text-transform: uppercase;
+      background: transparent; color: var(--muted);
+      transition: background 0.25s ease, color 0.25s ease;
+      text-align: center; line-height: 1.3;
+    }
+    .type-btn:first-child { border-right: 1px solid rgba(201,162,39,0.25); }
+    .type-btn.active {
+      background: linear-gradient(135deg, var(--gold-lt), var(--gold), var(--gold-dk));
+      color: var(--ink);
+    }
+    .type-btn .type-sub {
+      display: block; font-size: 9px; font-weight: 400;
+      letter-spacing: 0.04em; opacity: 0.7; margin-top: 2px;
+    }
+
+    /* Filter section */
+    .filter-section { margin-bottom: 24px; }
+    .filter-section-label {
+      font-size: 10px; letter-spacing: 0.12em; text-transform: uppercase;
+      color: var(--steel); font-weight: 500; margin-bottom: 10px;
+      display: flex; align-items: center; gap: 8px;
+    }
+    .filter-section-label::after {
+      content: ''; flex: 1; height: 1px; background: rgba(143,163,177,0.1);
+    }
+
+    /* Chip filters */
+    .chip-group { display: flex; flex-wrap: wrap; gap: 6px; }
+    .chip {
+      padding: 5px 12px; border: 1px solid rgba(143,163,177,0.2);
+      border-radius: 100px; font-size: 11px; font-weight: 500;
+      color: var(--muted); background: transparent; cursor: pointer;
+      font-family: 'Inter', sans-serif; letter-spacing: 0.02em;
+      transition: border-color 0.2s ease, color 0.2s ease, background 0.2s ease;
+      white-space: nowrap;
+    }
+    .chip:hover { border-color: rgba(201,162,39,0.4); color: var(--gold-lt); }
+    .chip.active {
+      border-color: var(--gold);
+      background: rgba(201,162,39,0.12);
+      color: var(--gold-lt);
+    }
+    .chip .symbol {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 10px; opacity: 0.7; margin-left: 3px;
+    }
+
+    /* Toggle (DA/NE) */
+    .toggle-group { display: flex; flex-direction: column; gap: 8px; }
+    .toggle-row {
+      display: flex; align-items: center; justify-content: space-between;
+      font-size: 12px; color: var(--silver-lt);
+    }
+    .toggle-switch {
+      display: flex; gap: 0;
+      border: 1px solid rgba(143,163,177,0.2);
+      border-radius: 2px; overflow: hidden;
+    }
+    .toggle-opt {
+      padding: 4px 12px; border: none; cursor: pointer;
+      font-size: 10px; font-weight: 600; letter-spacing: 0.06em;
+      font-family: 'Inter', sans-serif; text-transform: uppercase;
+      background: transparent; color: var(--muted);
+      transition: background 0.15s, color 0.15s;
+    }
+    .toggle-opt:first-child { border-right: 1px solid rgba(143,163,177,0.15); }
+    .toggle-opt.active-yes { background: rgba(72,199,142,0.15); color: #48c78e; }
+    .toggle-opt.active-no  { background: rgba(240,100,90,0.12); color: #f0645a; }
+    .toggle-opt.active-any { background: rgba(201,162,39,0.12); color: var(--gold); }
+
+    /* Slider */
+    .range-wrap { padding: 4px 0; }
+    .range-labels { display: flex; justify-content: space-between; font-size: 10px; color: var(--muted); margin-bottom: 6px; }
+    input[type=range] {
+      width: 100%; -webkit-appearance: none; height: 2px;
+      background: rgba(143,163,177,0.2); border-radius: 2px; outline: none;
+    }
+    input[type=range]::-webkit-slider-thumb {
+      -webkit-appearance: none; width: 14px; height: 14px; border-radius: 50%;
+      background: var(--gold); cursor: pointer; border: 2px solid var(--ink-2);
+      box-shadow: 0 0 0 1px var(--gold-dk);
+    }
+    .range-val { text-align: center; font-size: 13px; color: var(--gold-lt); font-weight: 600; margin-top: 6px; }
+
+    /* Select */
+    .filter-select {
+      width: 100%; padding: 9px 12px;
+      background: var(--ink-3); border: 1px solid rgba(143,163,177,0.15);
+      border-radius: 3px; color: #E8EEF2; font-family: 'Inter', sans-serif;
+      font-size: 13px; outline: none; cursor: pointer;
+      transition: border-color 0.2s ease;
+      appearance: none;
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' fill='none' stroke='%236B8090' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M1 1l5 5 5-5'/%3E%3C/svg%3E");
+      background-repeat: no-repeat; background-position: right 12px center;
+      padding-right: 32px;
+    }
+    .filter-select:focus { border-color: var(--gold); }
+
+    /* Price filter */
+    .price-row { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+    .price-input-wrap { position: relative; }
+    .price-input-wrap .prefix {
+      position: absolute; left: 10px; top: 50%; transform: translateY(-50%);
+      font-size: 11px; color: var(--muted); pointer-events: none;
+    }
+    .price-input {
+      width: 100%; padding: 9px 10px 9px 24px;
+      background: var(--ink-3); border: 1px solid rgba(143,163,177,0.15);
+      border-radius: 3px; color: #E8EEF2; font-family: 'Inter', sans-serif;
+      font-size: 13px; outline: none;
+      transition: border-color 0.2s ease;
+    }
+    .price-input:focus { border-color: var(--gold); }
+
+    /* ── RESULTS PANEL ── */
+    .results-panel { padding: 28px 36px; }
+    .results-bar {
+      display: flex; align-items: center; justify-content: space-between;
+      margin-bottom: 24px; flex-wrap: wrap; gap: 12px;
+    }
+    .results-count { font-size: 13px; color: var(--muted); }
+    .results-count strong { color: var(--gold-lt); }
+
+    /* Active filter tags */
+    .active-tags { display: flex; flex-wrap: wrap; gap: 6px; }
+    .active-tag {
+      display: inline-flex; align-items: center; gap: 6px;
+      padding: 4px 10px; background: rgba(201,162,39,0.1);
+      border: 1px solid rgba(201,162,39,0.25); border-radius: 100px;
+      font-size: 11px; color: var(--gold-lt);
+    }
+    .active-tag button {
+      background: none; border: none; cursor: pointer; color: var(--gold);
+      padding: 0; line-height: 1; font-size: 13px;
+      transition: color 0.15s ease;
+    }
+    .active-tag button:hover { color: #f0645a; }
+
+    /* Sort bar */
+    .sort-bar { display: flex; align-items: center; gap: 8px; font-size: 12px; color: var(--muted); }
+    .sort-bar select {
+      background: var(--ink-3); border: 1px solid rgba(143,163,177,0.15);
+      border-radius: 2px; color: #E8EEF2; font-family: 'Inter', sans-serif;
+      font-size: 12px; padding: 5px 10px; outline: none; cursor: pointer;
+    }
+
+    /* ── LISTINGS GRID ── */
+    .listings { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 20px; }
+
+    .listing-card {
+      background: var(--ink-2);
+      border: 1px solid rgba(143,163,177,0.1);
+      border-radius: 4px; overflow: hidden; cursor: pointer;
+      transition: border-color 0.25s ease, transform 0.25s cubic-bezier(0.34,1.56,0.64,1),
+                  box-shadow 0.25s ease;
+      position: relative;
+    }
+    .listing-card:hover {
+      border-color: rgba(201,162,39,0.35);
+      transform: translateY(-3px);
+      box-shadow: 0 8px 40px rgba(0,0,0,0.4), 0 0 0 1px rgba(201,162,39,0.1);
+    }
+    .listing-card-img {
+      height: 140px; background: var(--ink-3);
+      display: flex; align-items: center; justify-content: center;
+      position: relative; overflow: hidden;
+    }
+    .listing-card-img-overlay {
+      position: absolute; inset: 0;
+      background: linear-gradient(to bottom, transparent 40%, rgba(13,17,23,0.8));
+    }
+    .listing-material-icon {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 52px; color: rgba(201,162,39,0.25);
+      user-select: none;
+    }
+    .listing-badge {
+      position: absolute; top: 10px; right: 10px;
+      padding: 3px 8px; border-radius: 100px; font-size: 9px;
+      font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase;
+      font-family: 'Inter', sans-serif;
+    }
+    .badge-ferrous { background: rgba(90,110,122,0.4); color: var(--silver-lt); border: 1px solid rgba(90,110,122,0.4); }
+    .badge-nonferrous { background: rgba(201,162,39,0.15); color: var(--gold-lt); border: 1px solid rgba(201,162,39,0.3); }
+
+    .listing-cert-icons {
+      position: absolute; bottom: 8px; left: 10px;
+      display: flex; gap: 4px;
+    }
+    .cert-dot {
+      width: 6px; height: 6px; border-radius: 50%;
+      background: rgba(72,199,142,0.7);
+    }
+    .cert-dot.missing { background: rgba(143,163,177,0.25); }
+
+    .listing-card-body { padding: 16px; }
+    .listing-card-name {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 19px; font-weight: 600; color: #E8EEF2;
+      margin: 0 0 2px; line-height: 1.2;
+    }
+    .listing-card-sub { font-size: 11px; color: var(--muted); margin-bottom: 10px; }
+    .listing-card-meta { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 12px; }
+    .listing-meta-tag {
+      font-size: 10px; color: var(--steel); background: rgba(90,110,122,0.12);
+      border: 1px solid rgba(90,110,122,0.2); border-radius: 100px;
+      padding: 2px 8px;
+    }
+    .listing-card-footer { display: flex; align-items: flex-end; justify-content: space-between; }
+    .listing-price { }
+    .listing-price-main { font-size: 20px; font-weight: 600; color: var(--gold-lt); line-height: 1; }
+    .listing-price-unit { font-size: 10px; color: var(--muted); margin-top: 2px; }
+    .listing-price-premium { font-size: 10px; color: #48c78e; margin-top: 2px; }
+    .listing-contact-btn {
+      padding: 7px 14px; border: 1px solid rgba(201,162,39,0.3);
+      background: transparent; color: var(--gold); border-radius: 2px;
+      font-size: 11px; font-weight: 600; letter-spacing: 0.06em; text-transform: uppercase;
+      cursor: pointer; font-family: 'Inter', sans-serif;
+      transition: background 0.2s ease, color 0.2s ease;
+    }
+    .listing-contact-btn:hover { background: rgba(201,162,39,0.12); color: var(--gold-lt); }
+
+    /* Empty state */
+    .empty-state {
+      grid-column: 1/-1; padding: 80px 24px; text-align: center;
+    }
+    .empty-state h3 { font-size: 24px; color: var(--steel); margin-bottom: 8px; }
+    .empty-state p { font-size: 13px; color: var(--muted); }
+
+    /* DIVIDER */
+    .filter-divider { height: 1px; background: rgba(143,163,177,0.08); margin: 20px 0; }
+
+    /* Kotacija toggle */
+    .kotacija-group { display: flex; flex-direction: column; gap: 6px; }
+    .kotacija-row { display: flex; align-items: center; gap: 10px; font-size: 12px; color: var(--silver-lt); }
+    .kotacija-chip {
+      padding: 4px 10px; border: 1px solid rgba(143,163,177,0.2); border-radius: 100px;
+      font-size: 11px; background: transparent; color: var(--muted); cursor: pointer;
+      font-family: 'Inter', sans-serif; font-weight: 500;
+      transition: border-color 0.2s, color 0.2s, background 0.2s;
+    }
+    .kotacija-chip.active { border-color: var(--gold); background: rgba(201,162,39,0.1); color: var(--gold-lt); }
+
+    /* Purity range pills */
+    .purity-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 5px; }
+    .purity-chip {
+      padding: 5px 8px; border: 1px solid rgba(143,163,177,0.2);
+      border-radius: 3px; font-size: 10px; font-weight: 500; text-align: center;
+      color: var(--muted); background: transparent; cursor: pointer;
+      font-family: 'Inter', sans-serif;
+      transition: border-color 0.2s, color 0.2s, background 0.2s;
+    }
+    .purity-chip:hover { border-color: rgba(201,162,39,0.3); color: var(--gold-lt); }
+    .purity-chip.active { border-color: var(--gold); background: rgba(201,162,39,0.1); color: var(--gold-lt); }
+
+    /* Weight range */
+    .weight-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 5px; }
+    .weight-chip {
+      padding: 5px 8px; border: 1px solid rgba(143,163,177,0.2);
+      border-radius: 3px; font-size: 10px; font-weight: 500; text-align: center;
+      color: var(--muted); background: transparent; cursor: pointer;
+      font-family: 'Inter', sans-serif;
+      transition: border-color 0.2s, color 0.2s, background 0.2s;
+    }
+    .weight-chip:hover { border-color: rgba(201,162,39,0.3); color: var(--gold-lt); }
+    .weight-chip.active { border-color: var(--gold); background: rgba(201,162,39,0.1); color: var(--gold-lt); }
+
+    @media (max-width: 900px) {
+      .market-layout { grid-template-columns: 1fr; }
+      .filter-panel { position: relative; height: auto; top: 0; border-right: none; border-bottom: 1px solid rgba(143,163,177,0.08); }
+      nav { padding: 0 20px; }
+      .page-header { padding: 40px 20px 28px; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- ── NAV ── -->
+<nav>
+  <a href="index.html" class="nav-logo">
+    <img src="brand_assets/LOGO.png" alt="Metals Trading" />
+  </a>
+  <a href="index.html" class="nav-back">
+    <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M13 8H3M7 4l-4 4 4 4"/>
+    </svg>
+    Nazaj na glavno stran
+  </a>
+</nav>
+
+<!-- ── PAGE HEADER ── -->
+<div class="page-header">
+  <div style="display:flex; align-items:flex-start; justify-content:space-between; flex-wrap:wrap; gap:20px;">
+    <div>
+      <div class="page-header-eyebrow">Trg kovin</div>
+      <h1>Explore Markets</h1>
+      <p>Pregledujte ponudbo železnih in neželeznih kovin. Filtrirajte po materialu, čistosti, obliki, certifikatih in ceni.</p>
+    </div>
+    <div style="display:flex; flex-direction:column; align-items:flex-end; gap:10px;">
+      <!-- Currency toggle -->
+      <div>
+        <div style="font-size:10px; letter-spacing:0.1em; text-transform:uppercase; color:var(--muted); margin-bottom:6px; text-align:right;">Valuta / enota</div>
+        <div class="currency-bar">
+          <button class="currency-btn active" id="cur-usd" onclick="setCurrency('usd')">USD / oz</button>
+          <button class="currency-btn" id="cur-eur" onclick="setCurrency('eur')">EUR / g</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ── MAIN LAYOUT ── -->
+<div class="market-layout">
+
+  <!-- ── FILTER PANEL ── -->
+  <aside class="filter-panel">
+    <div class="filter-panel-header">
+      <span class="filter-panel-title">Filtri</span>
+      <button class="filter-reset" onclick="resetAll()">Ponastavi vse</button>
+    </div>
+
+    <!-- MAIN TYPE TOGGLE -->
+    <div class="type-toggle">
+      <button class="type-btn active" id="btn-nonferrous" onclick="setType('nonferrous')">
+        Neželezne
+        <span class="type-sub">Non-ferrous</span>
+      </button>
+      <button class="type-btn" id="btn-ferrous" onclick="setType('ferrous')">
+        Železne
+        <span class="type-sub">Ferrous</span>
+      </button>
+    </div>
+
+    <!-- NON-FERROUS materials -->
+    <div id="group-nonferrous" class="filter-section">
+      <div class="filter-section-label">Material</div>
+      <div class="chip-group">
+        <button class="chip" data-filter="material" data-val="Au" onclick="toggleChip(this)">Zlato <span class="symbol">Au</span></button>
+        <button class="chip" data-filter="material" data-val="Ag" onclick="toggleChip(this)">Srebro <span class="symbol">Ag</span></button>
+        <button class="chip" data-filter="material" data-val="Pt" onclick="toggleChip(this)">Platina <span class="symbol">Pt</span></button>
+        <button class="chip" data-filter="material" data-val="Cu" onclick="toggleChip(this)">Baker <span class="symbol">Cu</span></button>
+        <button class="chip" data-filter="material" data-val="Al" onclick="toggleChip(this)">Aluminij <span class="symbol">Al</span></button>
+        <button class="chip" data-filter="material" data-val="Ni" onclick="toggleChip(this)">Nikelj <span class="symbol">Ni</span></button>
+        <button class="chip" data-filter="material" data-val="Zn" onclick="toggleChip(this)">Cink <span class="symbol">Zn</span></button>
+        <button class="chip" data-filter="material" data-val="Ti" onclick="toggleChip(this)">Titan <span class="symbol">Ti</span></button>
+      </div>
+    </div>
+
+    <!-- FERROUS materials -->
+    <div id="group-ferrous" class="filter-section" style="display:none;">
+      <div class="filter-section-label">Material</div>
+      <div class="chip-group">
+        <button class="chip" data-filter="material" data-val="Fe" onclick="toggleChip(this)">Železo <span class="symbol">Fe</span></button>
+        <button class="chip" data-filter="material" data-val="Steel" onclick="toggleChip(this)">Jeklo <span class="symbol">Fe+C &lt;2%</span></button>
+        <button class="chip" data-filter="material" data-val="CastIron" onclick="toggleChip(this)">Lito železo <span class="symbol">Fe+C &gt;2%</span></button>
+        <button class="chip" data-filter="material" data-val="Inox" onclick="toggleChip(this)">Nerjavno jeklo <span class="symbol">Fe+Cr+Ni</span></button>
+        <button class="chip" data-filter="material" data-val="ToolSteel" onclick="toggleChip(this)">Orodna jekla <span class="symbol">vis. leg.</span></button>
+      </div>
+    </div>
+
+    <div class="filter-divider"></div>
+
+    <!-- ČISTOST -->
+    <div class="filter-section">
+      <div class="filter-section-label">Čistost</div>
+      <div class="purity-grid">
+        <button class="purity-chip" data-filter="purity" data-val="0-10" onclick="toggleChip(this)">0 – 10%</button>
+        <button class="purity-chip" data-filter="purity" data-val="10-20" onclick="toggleChip(this)">10 – 20%</button>
+        <button class="purity-chip" data-filter="purity" data-val="20-30" onclick="toggleChip(this)">20 – 30%</button>
+        <button class="purity-chip" data-filter="purity" data-val="30-50" onclick="toggleChip(this)">30 – 50%</button>
+        <button class="purity-chip" data-filter="purity" data-val="50-75" onclick="toggleChip(this)">50 – 75%</button>
+        <button class="purity-chip" data-filter="purity" data-val="75-90" onclick="toggleChip(this)">75 – 90%</button>
+        <button class="purity-chip" data-filter="purity" data-val="90-99" onclick="toggleChip(this)">90 – 99%</button>
+        <button class="purity-chip" data-filter="purity" data-val="99+" onclick="toggleChip(this)">99%+</button>
+      </div>
+    </div>
+
+    <div class="filter-divider"></div>
+
+    <!-- OBLIKA / PRODUKT -->
+    <div class="filter-section">
+      <div class="filter-section-label">Oblika / produkt</div>
+      <div class="chip-group">
+        <button class="chip" data-filter="shape" data-val="bar" onclick="toggleChip(this)">Palica / Ingot</button>
+        <button class="chip" data-filter="shape" data-val="coin" onclick="toggleChip(this)">Kovanec</button>
+        <button class="chip" data-filter="shape" data-val="granule" onclick="toggleChip(this)">Granule</button>
+        <button class="chip" data-filter="shape" data-val="sheet" onclick="toggleChip(this)">List / Folija</button>
+        <button class="chip" data-filter="shape" data-val="jewelry" onclick="toggleChip(this)">Nakit</button>
+        <button class="chip" data-filter="shape" data-val="powder" onclick="toggleChip(this)">Zrno / Prah</button>
+      </div>
+    </div>
+
+    <div class="filter-divider"></div>
+
+    <!-- TEŽA -->
+    <div class="filter-section">
+      <div class="filter-section-label">Teža</div>
+      <div class="weight-grid">
+        <button class="weight-chip" data-filter="weight" data-val="<1g" onclick="toggleChip(this)">&lt; 1 g</button>
+        <button class="weight-chip" data-filter="weight" data-val="1-10g" onclick="toggleChip(this)">1 – 10 g</button>
+        <button class="weight-chip" data-filter="weight" data-val="10-100g" onclick="toggleChip(this)">10 – 100 g</button>
+        <button class="weight-chip" data-filter="weight" data-val="100g-1kg" onclick="toggleChip(this)">100 g – 1 kg</button>
+        <button class="weight-chip" data-filter="weight" data-val="1-10kg" onclick="toggleChip(this)">1 – 10 kg</button>
+        <button class="weight-chip" data-filter="weight" data-val=">10kg" onclick="toggleChip(this)">&gt; 10 kg</button>
+      </div>
+    </div>
+
+    <div class="filter-divider"></div>
+
+    <!-- CENA -->
+    <div class="filter-section">
+      <div class="filter-section-label">Cena (od – do)</div>
+      <div class="price-row">
+        <div class="price-input-wrap">
+          <span class="prefix" id="price-prefix-from">$</span>
+          <input class="price-input" type="number" id="price-from" placeholder="Min" min="0" oninput="updateFilters()" />
+        </div>
+        <div class="price-input-wrap">
+          <span class="prefix" id="price-prefix-to">$</span>
+          <input class="price-input" type="number" id="price-to" placeholder="Max" min="0" oninput="updateFilters()" />
+        </div>
+      </div>
+    </div>
+
+    <!-- KOTACIJA -->
+    <div class="filter-section">
+      <div class="filter-section-label">Kotacija</div>
+      <div class="kotacija-group">
+        <div class="kotacija-row">
+          <button class="kotacija-chip active" data-filter="quote" data-val="spot" onclick="toggleKotacija(this)">Spot cena</button>
+          <span style="font-size:11px; color:var(--muted);">Tržna referenčna cena</span>
+        </div>
+        <div class="kotacija-row">
+          <button class="kotacija-chip" data-filter="quote" data-val="premium" onclick="toggleKotacija(this)">+ Premija</button>
+          <span style="font-size:11px; color:var(--muted);">Nad spot (oblika, livarna…)</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="filter-divider"></div>
+
+    <!-- CERTIFIKAT IN SLEDLJIVOST -->
+    <div class="filter-section">
+      <div class="filter-section-label">Certifikat &amp; sledljivost</div>
+      <div class="toggle-group">
+        <div class="toggle-row">
+          <span>Certifikat pristnosti</span>
+          <div class="toggle-switch">
+            <button class="toggle-opt active-any" data-cert="auth" data-val="any" onclick="setCert(this,'auth')">Vsi</button>
+            <button class="toggle-opt" data-cert="auth" data-val="yes" onclick="setCert(this,'auth')">DA</button>
+            <button class="toggle-opt" data-cert="auth" data-val="no" onclick="setCert(this,'auth')">NE</button>
+          </div>
+        </div>
+        <div class="toggle-row">
+          <span>Serijska številka</span>
+          <div class="toggle-switch">
+            <button class="toggle-opt active-any" data-cert="serial" data-val="any" onclick="setCert(this,'serial')">Vsi</button>
+            <button class="toggle-opt" data-cert="serial" data-val="yes" onclick="setCert(this,'serial')">DA</button>
+            <button class="toggle-opt" data-cert="serial" data-val="no" onclick="setCert(this,'serial')">NE</button>
+          </div>
+        </div>
+        <div class="toggle-row">
+          <span>Žig livarne</span>
+          <div class="toggle-switch">
+            <button class="toggle-opt active-any" data-cert="mint" data-val="any" onclick="setCert(this,'mint')">Vsi</button>
+            <button class="toggle-opt" data-cert="mint" data-val="yes" onclick="setCert(this,'mint')">DA</button>
+            <button class="toggle-opt" data-cert="mint" data-val="no" onclick="setCert(this,'mint')">NE</button>
+          </div>
+        </div>
+        <div class="toggle-row">
+          <span>Assay certifikat</span>
+          <div class="toggle-switch">
+            <button class="toggle-opt active-any" data-cert="assay" data-val="any" onclick="setCert(this,'assay')">Vsi</button>
+            <button class="toggle-opt" data-cert="assay" data-val="yes" onclick="setCert(this,'assay')">DA</button>
+            <button class="toggle-opt" data-cert="assay" data-val="no" onclick="setCert(this,'assay')">NE</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="filter-divider"></div>
+
+    <!-- POREKLO -->
+    <div class="filter-section">
+      <div class="filter-section-label">Poreklo</div>
+      <select class="filter-select" id="filter-origin" onchange="updateFilters()">
+        <option value="">Vse države</option>
+        <option value="SI">Slovenija</option>
+        <option value="DE">Nemčija</option>
+        <option value="AT">Avstrija</option>
+        <option value="CH">Švica</option>
+        <option value="US">ZDA</option>
+        <option value="CA">Kanada</option>
+        <option value="AU">Avstralija</option>
+        <option value="ZA">Južna Afrika</option>
+        <option value="RU">Rusija</option>
+        <option value="CN">Kitajska</option>
+        <option value="JP">Japonska</option>
+        <option value="GB">Velika Britanija</option>
+        <option value="FR">Francija</option>
+        <option value="IT">Italija</option>
+        <option value="TR">Turčija</option>
+        <option value="MX">Mehika</option>
+        <option value="PE">Peru</option>
+        <option value="CL">Čile</option>
+      </select>
+    </div>
+
+  </aside>
+
+  <!-- ── RESULTS PANEL ── -->
+  <main class="results-panel">
+    <div class="results-bar">
+      <div>
+        <div class="results-count" id="results-count">Prikazano: <strong id="count-num">12</strong> oglasov</div>
+        <div class="active-tags" id="active-tags" style="margin-top:8px;"></div>
+      </div>
+      <div class="sort-bar">
+        <span>Razvrsti:</span>
+        <select onchange="updateFilters()">
+          <option>Cena ↑</option>
+          <option>Cena ↓</option>
+          <option>Najnovejši</option>
+          <option>Čistost ↑</option>
+        </select>
+      </div>
+    </div>
+
+    <div class="listings" id="listings-grid">
+      <!-- Cards rendered by JS -->
+    </div>
+  </main>
+</div>
+
+<script>
+// ── STATE ──
+const state = {
+  type: 'nonferrous',
+  currency: 'usd',
+  material: [],
+  purity: [],
+  shape: [],
+  weight: [],
+  priceFrom: null,
+  priceTo: null,
+  quote: ['spot'],
+  cert: { auth: 'any', serial: 'any', mint: 'any', assay: 'any' },
+  origin: ''
+};
+
+// ── SAMPLE DATA ──
+const allListings = [
+  // Non-ferrous
+  { id:1,  type:'nonferrous', material:'Au', name:'Zlato — 1 oz ingot', sub:'PAMP Suisse · Švica', shape:'bar',     weight:'1-10g',    purity:'99+',   priceUsd:1938, priceEur:1782, premiumPct:2.1,  origin:'CH', cert:{auth:true,serial:true,mint:true,assay:true}  },
+  { id:2,  type:'nonferrous', material:'Au', name:'Zlato — kovanec',    sub:'Maple Leaf · Kanada', shape:'coin',    weight:'1-10g',    purity:'99+',   priceUsd:1951, priceEur:1794, premiumPct:3.5,  origin:'CA', cert:{auth:true,serial:false,mint:true,assay:false} },
+  { id:3,  type:'nonferrous', material:'Ag', name:'Srebro — 100g bar',  sub:'Umicore · Belgija',   shape:'bar',     weight:'10-100g',  purity:'99+',   priceUsd:24,   priceEur:22,   premiumPct:4.2,  origin:'DE', cert:{auth:true,serial:true,mint:true,assay:true}  },
+  { id:4,  type:'nonferrous', material:'Ag', name:'Srebro — granule',   sub:'Refinery AG',         shape:'granule', weight:'10-100g',  purity:'90-99', priceUsd:21,   priceEur:19,   premiumPct:1.0,  origin:'AT', cert:{auth:false,serial:false,mint:false,assay:true}},
+  { id:5,  type:'nonferrous', material:'Pt', name:'Platina — 1 oz',     sub:'Valcambi · Švica',    shape:'bar',     weight:'1-10g',    purity:'99+',   priceUsd:982,  priceEur:903,  premiumPct:2.8,  origin:'CH', cert:{auth:true,serial:true,mint:true,assay:true}  },
+  { id:6,  type:'nonferrous', material:'Cu', name:'Baker — ingot 1kg',  sub:'Aurubis · Nemčija',   shape:'bar',     weight:'100g-1kg', purity:'99+',   priceUsd:8.4,  priceEur:7.7,  premiumPct:1.5,  origin:'DE', cert:{auth:true,serial:false,mint:true,assay:false} },
+  { id:7,  type:'nonferrous', material:'Al', name:'Aluminij — list',    sub:'Hydro · Norveška',    shape:'sheet',   weight:'100g-1kg', purity:'99+',   priceUsd:2.3,  priceEur:2.1,  premiumPct:0.8,  origin:'DE', cert:{auth:false,serial:false,mint:false,assay:false}},
+  { id:8,  type:'nonferrous', material:'Ni', name:'Nikelj — granule',   sub:'Norilsk · Rusija',    shape:'granule', weight:'1-10kg',   purity:'99+',   priceUsd:14.2, priceEur:13.1, premiumPct:1.2,  origin:'RU', cert:{auth:true,serial:false,mint:false,assay:true} },
+  { id:9,  type:'nonferrous', material:'Au', name:'Zlato — prah',       sub:'ABC Refinery',        shape:'powder',  weight:'<1g',      purity:'99+',   priceUsd:1920, priceEur:1765, premiumPct:0.5,  origin:'AU', cert:{auth:true,serial:false,mint:false,assay:true} },
+  { id:10, type:'nonferrous', material:'Ag', name:'Srebro — nakit',     sub:'Italian Silver',      shape:'jewelry', weight:'1-10g',    purity:'75-90', priceUsd:30,   priceEur:27,   premiumPct:20,   origin:'IT', cert:{auth:false,serial:false,mint:false,assay:false}},
+  { id:11, type:'nonferrous', material:'Zn', name:'Cink — ingot 25kg',  sub:'Glencore',            shape:'bar',     weight:'>10kg',    purity:'99+',   priceUsd:2.8,  priceEur:2.6,  premiumPct:1.0,  origin:'CH', cert:{auth:true,serial:true,mint:false,assay:false} },
+  { id:12, type:'nonferrous', material:'Ti', name:'Titan — palica',     sub:'VSMPO-AVISMA',        shape:'bar',     weight:'1-10kg',   purity:'99+',   priceUsd:11.4, priceEur:10.5, premiumPct:3.0,  origin:'RU', cert:{auth:true,serial:true,mint:false,assay:true} },
+  // Ferrous
+  { id:13, type:'ferrous', material:'Fe',       name:'Železo — ingot',        sub:'ArcelorMittal',   shape:'bar',     weight:'>10kg',    purity:'99+',   priceUsd:0.12, priceEur:0.11, premiumPct:0.5, origin:'DE', cert:{auth:false,serial:false,mint:false,assay:false}},
+  { id:14, type:'ferrous', material:'Steel',    name:'Jeklo — palica S235',   sub:'Salzgitter AG',   shape:'bar',     weight:'>10kg',    purity:'99+',   priceUsd:0.58, priceEur:0.53, premiumPct:2.0, origin:'DE', cert:{auth:true,serial:false,mint:false,assay:true} },
+  { id:15, type:'ferrous', material:'Steel',    name:'Jeklo — list 2mm',      sub:'ThyssenKrupp',    shape:'sheet',   weight:'>10kg',    purity:'99+',   priceUsd:0.72, priceEur:0.66, premiumPct:3.5, origin:'DE', cert:{auth:true,serial:true,mint:false,assay:true}  },
+  { id:16, type:'ferrous', material:'CastIron', name:'Lito železo — blok',    sub:'SCI Mfg',         shape:'bar',     weight:'>10kg',    purity:'90-99', priceUsd:0.22, priceEur:0.20, premiumPct:1.0, origin:'CN', cert:{auth:false,serial:false,mint:false,assay:false}},
+  { id:17, type:'ferrous', material:'Inox',     name:'Nerjavno jeklo 304',    sub:'Outokumpu',       shape:'sheet',   weight:'>10kg',    purity:'99+',   priceUsd:2.1,  priceEur:1.93, premiumPct:5.0, origin:'FI', cert:{auth:true,serial:true,mint:true,assay:true}  },
+  { id:18, type:'ferrous', material:'ToolSteel',name:'Orodna jekla — H13',    sub:'Böhler-Uddeholm', shape:'bar',     weight:'1-10kg',   purity:'99+',   priceUsd:4.8,  priceEur:4.41, premiumPct:8.0, origin:'AT', cert:{auth:true,serial:true,mint:true,assay:true}  },
+];
+
+const materialLabels = { Au:'Zlato', Ag:'Srebro', Pt:'Platina', Cu:'Baker', Al:'Aluminij', Ni:'Nikelj', Zn:'Cink', Ti:'Titan', Fe:'Železo', Steel:'Jeklo', CastIron:'Lito železo', Inox:'Nerjavno jeklo', ToolSteel:'Orodna jekla' };
+const materialSymbols = { Au:'Au', Ag:'Ag', Pt:'Pt', Cu:'Cu', Al:'Al', Ni:'Ni', Zn:'Zn', Ti:'Ti', Fe:'Fe', Steel:'Fe+C', CastIron:'Fe+C+', Inox:'Fe+Cr+Ni', ToolSteel:'vis. leg.' };
+const materialColors = { Au:'#C9A227', Ag:'#B8C9D4', Pt:'#8FA3B1', Cu:'#C17A50', Al:'#6B8090', Ni:'#5A6E7A', Zn:'#8FA3B1', Ti:'#8AAAB5', Fe:'#6B7280', Steel:'#7A8898', CastIron:'#5A6468', Inox:'#9AA8B2', ToolSteel:'#8090A0' };
+
+function setType(t) {
+  state.type = t;
+  state.material = [];
+  document.getElementById('btn-nonferrous').classList.toggle('active', t === 'nonferrous');
+  document.getElementById('btn-ferrous').classList.toggle('active', t === 'ferrous');
+  document.getElementById('group-nonferrous').style.display = t === 'nonferrous' ? '' : 'none';
+  document.getElementById('group-ferrous').style.display   = t === 'ferrous'    ? '' : 'none';
+  // clear material chips
+  document.querySelectorAll('[data-filter="material"]').forEach(c => c.classList.remove('active'));
+  updateFilters();
+}
+
+function toggleChip(btn) {
+  const filter = btn.dataset.filter;
+  const val    = btn.dataset.val;
+  const arr    = state[filter];
+  const idx    = arr.indexOf(val);
+  if (idx === -1) { arr.push(val); btn.classList.add('active'); }
+  else            { arr.splice(idx,1); btn.classList.remove('active'); }
+  updateFilters();
+}
+
+function toggleKotacija(btn) {
+  const val = btn.dataset.val;
+  const idx = state.quote.indexOf(val);
+  if (idx === -1) { state.quote.push(val); btn.classList.add('active'); }
+  else if (state.quote.length > 1) { state.quote.splice(idx,1); btn.classList.remove('active'); }
+  updateFilters();
+}
+
+function setCert(btn, type) {
+  const val = btn.dataset.val;
+  state.cert[type] = val;
+  btn.closest('.toggle-switch').querySelectorAll('.toggle-opt').forEach(b => {
+    b.classList.remove('active-any','active-yes','active-no');
+  });
+  if (val === 'any') btn.classList.add('active-any');
+  else if (val === 'yes') btn.classList.add('active-yes');
+  else btn.classList.add('active-no');
+  updateFilters();
+}
+
+function setCurrency(c) {
+  state.currency = c;
+  document.getElementById('cur-usd').classList.toggle('active', c === 'usd');
+  document.getElementById('cur-eur').classList.toggle('active', c === 'eur');
+  const pfx = c === 'usd' ? '$' : '€';
+  document.getElementById('price-prefix-from').textContent = pfx;
+  document.getElementById('price-prefix-to').textContent   = pfx;
+  renderListings(getFiltered());
+}
+
+function getFiltered() {
+  let list = allListings.filter(l => l.type === state.type);
+  if (state.material.length) list = list.filter(l => state.material.includes(l.material));
+  if (state.purity.length)   list = list.filter(l => state.purity.includes(l.purity));
+  if (state.shape.length)    list = list.filter(l => state.shape.includes(l.shape));
+  if (state.weight.length)   list = list.filter(l => state.weight.includes(l.weight));
+  if (state.origin)          list = list.filter(l => l.origin === state.origin);
+
+  // cert filters
+  ['auth','serial','mint','assay'].forEach(k => {
+    if (state.cert[k] === 'yes') list = list.filter(l => l.cert[k] === true);
+    if (state.cert[k] === 'no')  list = list.filter(l => l.cert[k] === false);
+  });
+
+  // price filter
+  const pFrom = parseFloat(document.getElementById('price-from').value);
+  const pTo   = parseFloat(document.getElementById('price-to').value);
+  if (!isNaN(pFrom)) list = list.filter(l => (state.currency==='usd'?l.priceUsd:l.priceEur) >= pFrom);
+  if (!isNaN(pTo))   list = list.filter(l => (state.currency==='usd'?l.priceUsd:l.priceEur) <= pTo);
+
+  return list;
+}
+
+function updateFilters() {
+  const list = getFiltered();
+  renderListings(list);
+  renderActiveTags();
+}
+
+function renderListings(list) {
+  const grid = document.getElementById('listings-grid');
+  document.getElementById('count-num').textContent = list.length;
+  if (!list.length) {
+    grid.innerHTML = `<div class="empty-state"><h3>Ni zadetkov</h3><p>Poskusite z drugačnimi filtri.</p></div>`;
+    return;
+  }
+  const cur = state.currency;
+  grid.innerHTML = list.map(l => {
+    const price = cur === 'usd' ? l.priceUsd : l.priceEur;
+    const sym   = cur === 'usd' ? '$' : '€';
+    const unit  = cur === 'usd' ? '/ oz' : '/ g';
+    const col   = materialColors[l.material] || '#C9A227';
+    const certArr = [
+      l.cert.auth   ? '✓ Cert.' : null,
+      l.cert.serial ? '✓ Ser. št.' : null,
+      l.cert.mint   ? '✓ Livarna' : null,
+      l.cert.assay  ? '✓ Assay' : null,
+    ].filter(Boolean);
+    const badgeClass = l.type === 'ferrous' ? 'badge-ferrous' : 'badge-nonferrous';
+    const badgeLabel = l.type === 'ferrous' ? 'Železno' : 'Neželezno';
+    return `
+    <div class="listing-card">
+      <div class="listing-card-img" style="background:linear-gradient(135deg, var(--ink-3) 0%, ${col}18 100%);">
+        <div class="listing-material-icon" style="color:${col}40;">${materialSymbols[l.material]}</div>
+        <div class="listing-card-img-overlay"></div>
+        <span class="listing-badge ${badgeClass}">${badgeLabel}</span>
+        <div class="listing-cert-icons">
+          ${[l.cert.auth,l.cert.serial,l.cert.mint,l.cert.assay].map(v=>`<div class="cert-dot${v?'':' missing'}" title="${v?'Prisotno':'Manjka'}"></div>`).join('')}
+        </div>
+      </div>
+      <div class="listing-card-body">
+        <div class="listing-card-name">${l.name}</div>
+        <div class="listing-card-sub">${l.sub} · ${l.origin}</div>
+        <div class="listing-card-meta">
+          <span class="listing-meta-tag">${l.shape === 'bar' ? 'Palica/Ingot' : l.shape === 'coin' ? 'Kovanec' : l.shape === 'granule' ? 'Granule' : l.shape === 'sheet' ? 'List/Folija' : l.shape === 'jewelry' ? 'Nakit' : 'Zrno/Prah'}</span>
+          <span class="listing-meta-tag">Čistost ${l.purity}%</span>
+          <span class="listing-meta-tag">${l.weight}</span>
+        </div>
+        <div class="listing-card-footer">
+          <div class="listing-price">
+            <div class="listing-price-main">${sym}${price.toLocaleString('sl-SI', {minimumFractionDigits: price < 10 ? 2 : 0})}</div>
+            <div class="listing-price-unit">Spot ${unit}</div>
+            <div class="listing-price-premium">+${l.premiumPct}% premija</div>
+          </div>
+          <button class="listing-contact-btn" onclick="event.stopPropagation(); openContact('${l.name}')">Povpraši</button>
+        </div>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+function renderActiveTags() {
+  const container = document.getElementById('active-tags');
+  const tags = [];
+  if (state.material.length) state.material.forEach(m => tags.push({ label: materialLabels[m]||m, clear: ()=>{ state.material=state.material.filter(x=>x!==m); document.querySelectorAll(`[data-filter="material"][data-val="${m}"]`).forEach(b=>b.classList.remove('active')); updateFilters(); }}));
+  if (state.purity.length)   state.purity.forEach(p   => tags.push({ label: 'Čistost '+p+'%', clear: ()=>{ state.purity=state.purity.filter(x=>x!==p);     document.querySelectorAll(`[data-filter="purity"][data-val="${p}"]`).forEach(b=>b.classList.remove('active')); updateFilters(); }}));
+  if (state.shape.length)    state.shape.forEach(s    => tags.push({ label: s,                 clear: ()=>{ state.shape=state.shape.filter(x=>x!==s);       document.querySelectorAll(`[data-filter="shape"][data-val="${s}"]`).forEach(b=>b.classList.remove('active')); updateFilters(); }}));
+  if (state.weight.length)   state.weight.forEach(w   => tags.push({ label: 'Teža '+w,         clear: ()=>{ state.weight=state.weight.filter(x=>x!==w);     document.querySelectorAll(`[data-filter="weight"][data-val="${w}"]`).forEach(b=>b.classList.remove('active')); updateFilters(); }}));
+  container.innerHTML = tags.map((t,i) => `
+    <span class="active-tag">${t.label}<button onclick="clearTag(${i})">×</button></span>
+  `).join('');
+  window._tagClearFns = tags.map(t => t.clear);
+}
+
+function clearTag(i) { window._tagClearFns[i](); }
+
+function resetAll() {
+  state.material=[]; state.purity=[]; state.shape=[]; state.weight=[]; state.origin=''; state.quote=['spot'];
+  state.cert = { auth:'any', serial:'any', mint:'any', assay:'any' };
+  document.querySelectorAll('.chip, .purity-chip, .weight-chip, .kotacija-chip').forEach(b => b.classList.remove('active'));
+  document.getElementById('price-from').value = '';
+  document.getElementById('price-to').value   = '';
+  document.getElementById('filter-origin').value = '';
+  // reset kotacija
+  document.querySelectorAll('.kotacija-chip').forEach(b => { b.classList.toggle('active', b.dataset.val === 'spot'); });
+  // reset cert toggles
+  document.querySelectorAll('.toggle-opt').forEach(b => {
+    b.classList.remove('active-any','active-yes','active-no');
+    if (b.dataset.val === 'any') b.classList.add('active-any');
+  });
+  updateFilters();
+}
+
+function openContact(name) {
+  alert('Vzpostavili bomo stik glede: ' + name + '\n\nFunkcija bo kmalu na voljo.');
+}
+
+// ── INIT ──
+updateFilters();
+</script>
+
+</body>
+</html>
