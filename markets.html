@@ -84,19 +84,19 @@
     /* ── PAGE HEADER ── */
     .page-header {
       position: relative; z-index: 1;
-      padding: 60px 48px 40px;
+      padding: 16px 48px;
       border-bottom: 1px solid rgba(143,163,177,0.08);
     }
     .page-header-eyebrow {
-      font-size: 11px; letter-spacing: 0.14em; text-transform: uppercase;
-      color: var(--gold); font-weight: 500; margin-bottom: 10px;
-      display: flex; align-items: center; gap: 10px;
+      font-size: 10px; letter-spacing: 0.14em; text-transform: uppercase;
+      color: var(--gold); font-weight: 500; margin-bottom: 4px;
+      display: flex; align-items: center; gap: 8px;
     }
     .page-header-eyebrow::before {
-      content: ''; display: block; width: 24px; height: 1px; background: var(--gold);
+      content: ''; display: block; width: 16px; height: 1px; background: var(--gold);
     }
-    .page-header h1 { font-size: clamp(32px, 4vw, 52px); margin: 0 0 10px; color: #E8EEF2; }
-    .page-header p { color: var(--muted); font-size: 14px; max-width: 520px; margin: 0; }
+    .page-header h1 { font-size: 22px; margin: 0 0 2px; color: #E8EEF2; }
+    .page-header p { color: var(--muted); font-size: 12px; max-width: 520px; margin: 0; }
 
     /* ── CURRENCY TOGGLE ── */
     .currency-bar {
@@ -429,11 +429,116 @@
     .weight-chip:hover { border-color: rgba(201,162,39,0.3); color: var(--gold-lt); }
     .weight-chip.active { border-color: var(--gold); background: rgba(201,162,39,0.1); color: var(--gold-lt); }
 
+    /* ── METAL TREE ── */
+    .tree-search-wrap { position: relative; margin-bottom: 8px; }
+    .tree-search-icon { position: absolute; left: 9px; top: 50%; transform: translateY(-50%); pointer-events: none; color: var(--muted); }
+    .tree-search {
+      width: 100%; padding: 7px 10px 7px 30px;
+      background: var(--ink-3); border: 1px solid rgba(143,163,177,0.15);
+      border-radius: 3px; color: #E8EEF2; font-family: 'Inter', sans-serif;
+      font-size: 12px; outline: none; transition: border-color 0.2s ease;
+    }
+    .tree-search:focus { border-color: rgba(201,162,39,0.5); }
+    .tree-search::placeholder { color: var(--muted); }
+    .metal-card { border: 1px solid rgba(143,163,177,0.1); border-radius: 3px; overflow: hidden; margin-bottom: 3px; transition: border-color 0.2s ease; }
+    .metal-card.expanded { border-color: rgba(201,162,39,0.2); }
+    .metal-card.selected { border-color: rgba(201,162,39,0.4); }
+    .metal-card-hdr {
+      display: flex; align-items: center; gap: 7px;
+      padding: 8px 10px; cursor: pointer; background: var(--ink-3);
+      transition: background 0.15s ease;
+    }
+    .metal-card-hdr:hover { background: rgba(255,255,255,0.03); }
+    .metal-card.selected .metal-card-hdr { background: rgba(201,162,39,0.07); }
+    .metal-chev { width: 13px; height: 13px; flex-shrink: 0; color: var(--muted); transition: transform 0.2s cubic-bezier(0.4,0,0.2,1); }
+    .metal-card.expanded .metal-chev { transform: rotate(90deg); }
+    .metal-lbl { flex: 1; font-size: 12px; font-weight: 600; color: #E8EEF2; }
+    .metal-cnt { font-size: 9px; color: var(--muted); background: rgba(143,163,177,0.08); padding: 1px 6px; border-radius: 100px; }
+    .metal-body { display: none; background: rgba(0,0,0,0.15); }
+    .metal-body.open { display: block; }
+    .cat-hdr {
+      display: flex; align-items: center; gap: 5px;
+      padding: 5px 10px 5px 24px; cursor: pointer;
+      font-size: 9px; font-weight: 600; letter-spacing: 0.1em; text-transform: uppercase;
+      color: var(--muted); border-top: 1px solid rgba(143,163,177,0.06);
+      transition: color 0.15s, background 0.15s;
+    }
+    .cat-hdr:hover { color: var(--silver-lt); background: rgba(255,255,255,0.02); }
+    .cat-item:first-child .cat-hdr { border-top: none; }
+    .cat-chev { width: 10px; height: 10px; flex-shrink: 0; transition: transform 0.2s ease; }
+    .cat-item.open .cat-chev { transform: rotate(90deg); }
+    .cat-lbl { flex: 1; }
+    .cat-count { font-size: 9px; color: rgba(107,128,144,0.45); }
+    .leaf-list { display: none; padding-bottom: 2px; }
+    .cat-item.open .leaf-list { display: block; }
+    .leaf-item {
+      padding: 4px 10px 4px 36px; font-size: 11px; color: var(--muted);
+      cursor: pointer; line-height: 1.45; position: relative;
+      transition: color 0.15s, background 0.15s;
+    }
+    .leaf-item::before { content: ''; position: absolute; left: 26px; top: 11px; width: 5px; height: 1px; background: rgba(107,128,144,0.22); }
+    .leaf-item:hover { color: var(--silver-lt); background: rgba(255,255,255,0.02); }
+    .leaf-item.selected { color: var(--gold-lt); background: rgba(201,162,39,0.07); }
+    .leaf-item.selected::before { background: var(--gold-dk); }
+    .tree-empty { padding: 14px; text-align: center; font-size: 11px; color: var(--muted); }
+    .metal-select-hint { font-size: 10px; color: var(--muted); font-style: italic; padding: 4px 10px 6px 24px; }
+    /* ── ACCORDION ── */
+    .metal-accordion { display: flex; flex-direction: column; }
+
+    .metal-acc-row {
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 9px 10px; cursor: pointer; border-radius: 2px;
+      font-size: 12px; font-weight: 600; color: var(--silver-lt);
+      border-left: 2px solid transparent;
+      transition: color 0.15s ease, background 0.15s ease, border-color 0.15s ease;
+      user-select: none;
+    }
+    .metal-acc-row:hover { color: #E8EEF2; background: rgba(255,255,255,0.03); }
+    .metal-acc-row.active { color: var(--gold-lt); border-left-color: var(--gold); background: rgba(201,162,39,0.06); }
+    .metal-acc-chev {
+      width: 12px; height: 12px; flex-shrink: 0; color: var(--muted);
+      transition: transform 0.2s cubic-bezier(0.4,0,0.2,1);
+    }
+    .metal-acc-row.active .metal-acc-chev { transform: rotate(90deg); }
+
+    .metal-acc-body { display: none; }
+    .metal-acc-body.open { display: block; }
+
+    .cat-acc-row {
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 6px 10px 6px 24px; cursor: pointer;
+      font-size: 11px; font-weight: 500; color: var(--muted);
+      border-left: 1px solid rgba(143,163,177,0.12); margin-left: 12px;
+      transition: color 0.15s ease, background 0.15s ease;
+      user-select: none;
+    }
+    .cat-acc-row:hover { color: var(--silver-lt); background: rgba(255,255,255,0.02); }
+    .cat-acc-row.active { color: var(--gold); }
+    .cat-acc-chev {
+      width: 10px; height: 10px; flex-shrink: 0; color: var(--muted);
+      transition: transform 0.2s ease;
+    }
+    .cat-acc-row.active .cat-acc-chev { transform: rotate(90deg); }
+
+    .cat-acc-body { display: none; }
+    .cat-acc-body.open { display: block; }
+
+    .leaf-row {
+      padding: 4px 10px 4px 40px; font-size: 11px; color: var(--muted);
+      cursor: pointer; position: relative; line-height: 1.5;
+      border-left: 1px solid rgba(143,163,177,0.12); margin-left: 12px;
+      transition: color 0.15s ease, background 0.15s ease;
+    }
+    .leaf-row::before { content: '·'; position: absolute; left: 28px; color: var(--steel); }
+    .leaf-row:hover { color: var(--silver-lt); background: rgba(255,255,255,0.02); }
+    .leaf-row.selected { color: var(--gold-lt); background: rgba(201,162,39,0.07); }
+    .leaf-row.selected::before { color: var(--gold-dk); }
+
     @media (max-width: 900px) {
       .market-layout { grid-template-columns: 1fr; }
       .filter-panel { position: relative; height: auto; top: 0; border-right: none; border-bottom: 1px solid rgba(143,163,177,0.08); }
       nav { padding: 0 20px; }
-      .page-header { padding: 40px 20px 28px; }
+      .page-header { padding: 12px 20px; }
     }
   </style>
 </head>
@@ -495,19 +600,10 @@
       </button>
     </div>
 
-    <!-- NON-FERROUS materials -->
+    <!-- NON-FERROUS materials ACCORDION -->
     <div id="group-nonferrous" class="filter-section">
       <div class="filter-section-label">Material</div>
-      <div class="chip-group">
-        <button class="chip" data-filter="material" data-val="Au" onclick="toggleChip(this)">Zlato <span class="symbol">Au</span></button>
-        <button class="chip" data-filter="material" data-val="Ag" onclick="toggleChip(this)">Srebro <span class="symbol">Ag</span></button>
-        <button class="chip" data-filter="material" data-val="Pt" onclick="toggleChip(this)">Platina <span class="symbol">Pt</span></button>
-        <button class="chip" data-filter="material" data-val="Cu" onclick="toggleChip(this)">Baker <span class="symbol">Cu</span></button>
-        <button class="chip" data-filter="material" data-val="Al" onclick="toggleChip(this)">Aluminij <span class="symbol">Al</span></button>
-        <button class="chip" data-filter="material" data-val="Ni" onclick="toggleChip(this)">Nikelj <span class="symbol">Ni</span></button>
-        <button class="chip" data-filter="material" data-val="Zn" onclick="toggleChip(this)">Cink <span class="symbol">Zn</span></button>
-        <button class="chip" data-filter="material" data-val="Ti" onclick="toggleChip(this)">Titan <span class="symbol">Ti</span></button>
-      </div>
+      <div id="metal-accordion"></div>
     </div>
 
     <!-- FERROUS materials -->
@@ -519,23 +615,6 @@
         <button class="chip" data-filter="material" data-val="CastIron" onclick="toggleChip(this)">Lito železo <span class="symbol">Fe+C &gt;2%</span></button>
         <button class="chip" data-filter="material" data-val="Inox" onclick="toggleChip(this)">Nerjavno jeklo <span class="symbol">Fe+Cr+Ni</span></button>
         <button class="chip" data-filter="material" data-val="ToolSteel" onclick="toggleChip(this)">Orodna jekla <span class="symbol">vis. leg.</span></button>
-      </div>
-    </div>
-
-    <div class="filter-divider"></div>
-
-    <!-- ČISTOST -->
-    <div class="filter-section">
-      <div class="filter-section-label">Čistost</div>
-      <div class="purity-grid">
-        <button class="purity-chip" data-filter="purity" data-val="0-10" onclick="toggleChip(this)">0 – 10%</button>
-        <button class="purity-chip" data-filter="purity" data-val="10-20" onclick="toggleChip(this)">10 – 20%</button>
-        <button class="purity-chip" data-filter="purity" data-val="20-30" onclick="toggleChip(this)">20 – 30%</button>
-        <button class="purity-chip" data-filter="purity" data-val="30-50" onclick="toggleChip(this)">30 – 50%</button>
-        <button class="purity-chip" data-filter="purity" data-val="50-75" onclick="toggleChip(this)">50 – 75%</button>
-        <button class="purity-chip" data-filter="purity" data-val="75-90" onclick="toggleChip(this)">75 – 90%</button>
-        <button class="purity-chip" data-filter="purity" data-val="90-99" onclick="toggleChip(this)">90 – 99%</button>
-        <button class="purity-chip" data-filter="purity" data-val="99+" onclick="toggleChip(this)">99%+</button>
       </div>
     </div>
 
@@ -697,11 +776,364 @@
 </div>
 
 <script>
+// ── TREE DATA ──
+const TREE_DATA = [
+  { id:'au', label:'Zlato (Au)', icon:'✦', color:'#C9A227', matKey:'Au', children:[
+    { id:'au-cisti', label:'Čisto zlato', children:[
+      {id:'au-c1',label:'Au ≥ 99,9 % (fine gold)'},{id:'au-c2',label:'Au ≥ 99,5 %'},
+    ]},
+    { id:'au-zlitine', label:'Zlitine', children:[
+      {id:'au-z1',label:'Au + Ag → belo zlato'},{id:'au-z2',label:'Au + Cu → rdeče zlato'},{id:'au-z3',label:'Au + Pd → paladijevo zlato'},
+    ]},
+  ]},
+  { id:'ag', label:'Srebro (Ag)', icon:'◈', color:'#B8C9D4', matKey:'Ag', children:[
+    { id:'ag-cisti', label:'Čisto srebro', children:[
+      {id:'ag-c1',label:'Ag ≥ 99,9 % (fine silver)'},{id:'ag-c2',label:'Ag ≥ 99 %'},
+    ]},
+    { id:'ag-zlitine', label:'Zlitine', children:[
+      {id:'ag-z1',label:'Sterling → Ag + Cu (92,5 %)'},{id:'ag-z2',label:'Ag + Zn'},{id:'ag-z3',label:'Ag + Cu'},
+    ]},
+  ]},
+  { id:'pt', label:'Platina (Pt)', icon:'⬡', color:'#8FA3B1', matKey:'Pt', children:[
+    { id:'pt-cisti', label:'Čista platina', children:[
+      {id:'pt-c1',label:'Pt ≥ 99,95 %'},{id:'pt-c2',label:'Pt ≥ 99 %'},
+    ]},
+    { id:'pt-zlitine', label:'Zlitine', children:[
+      {id:'pt-z1',label:'Pt + Ir → trdnost'},{id:'pt-z2',label:'Pt + Rh → kataliza'},{id:'pt-z3',label:'Pt + Pd'},
+    ]},
+  ]},
+  { id:'cu', label:'Baker (Cu)', icon:'🔶', color:'#B87333', matKey:'Cu', children:[
+    { id:'cu-klasa', label:'Klasa (odpad)', children:[
+      {id:'cu-k1',label:'1. klasa – Millberry (čisti, svetli baker)'},
+      {id:'cu-k2',label:'2. klasa – Čisti baker (rahlo oksidiran)'},
+      {id:'cu-k3',label:'3. klasa – Lakiran / ožgan baker / granulat'},
+      {id:'cu-k4',label:'4. klasa – Izolirani kabli in mešani baker'},
+      {id:'cu-k5',label:'5. klasa – Kompleksni odpadki (radiatorji, PCB)'},
+      {id:'cu-k6',label:'6. klasa – Baker z dodatki (zlitine)'},
+      {id:'cu-k7',label:'7. klasa – Baker ostružki'},
+      {id:'cu-k8',label:'8. klasa – Baker ostalo'},
+    ]},
+    { id:'cu-cisti', label:'Čisti baker', children:[{id:'cu-c1',label:'Cu ≥ 99 %, brez dodatkov'}]},
+    { id:'cu-glavne', label:'Glavne zlitine', children:[
+      {id:'cu-g1',label:'Bron → Cu + Sn'},{id:'cu-g2',label:'Medenina → Cu + Zn'},
+      {id:'cu-g3',label:'Alpaka (novo srebro) → Cu + Ni + Zn'},{id:'cu-g4',label:'Bakro-nikelj → Cu + Ni'},
+      {id:'cu-g5',label:'Rdeča medenina / gunmetal → Cu + Zn + Sn'},
+    ]},
+    { id:'cu-pogoste', label:'Pogoste zlitine', children:[
+      {id:'cu-p1',label:'Aluminijev bron → Cu + Al'},{id:'cu-p2',label:'Silicijev bron → Cu + Si'},
+      {id:'cu-p3',label:'Fosforjev bron → Cu + Sn + P'},{id:'cu-p4',label:'Svinceni bron / medenina → Cu + Sn/Zn + Pb'},
+      {id:'cu-p5',label:'Kromov baker → Cu + Cr'},{id:'cu-p6',label:'Volframov baker → Cu + W'},
+      {id:'cu-p7',label:'Berilijev baker → Cu + Be'},
+    ]},
+    { id:'cu-manj', label:'Manj pogoste zlitine', children:[
+      {id:'cu-m1',label:'Manganov bron → Cu + Zn + Mn (+ Fe)'},{id:'cu-m2',label:'Železov bron → Cu + Fe'},
+      {id:'cu-m3',label:'Kositrna medenina (naval brass) → Cu + Zn + Sn'},{id:'cu-m4',label:'Arzenov bron → Cu + As'},
+      {id:'cu-m5',label:'Tellurijev baker → Cu + Te'},{id:'cu-m6',label:'Zirkonijev baker → Cu + Zr'},
+    ]},
+    { id:'cu-redke', label:'Redke / specialne zlitine', children:[
+      {id:'cu-r1',label:'Srebrni baker → Cu + Ag'},{id:'cu-r2',label:'Kadmijev baker → Cu + Cd'},{id:'cu-r3',label:'Kobaltov baker → Cu + Co'},
+    ]},
+    { id:'cu-kompleksne', label:'Kompleksne (večkomponentne)', children:[
+      {id:'cu-x1',label:'Cu + Ni + Al'},{id:'cu-x2',label:'Cu + Cr + Zr'},{id:'cu-x3',label:'Cu + Fe + Ni'},
+    ]},
+  ]},
+  { id:'al', label:'Aluminij (Al)', icon:'🔷', color:'#A8A9AD', matKey:'Al', children:[
+    { id:'al-klasa', label:'Klasa (odpad)', children:[
+      {id:'al-k1',label:'1. klasa – Čisti aluminij (profili, pločevina)'},
+      {id:'al-k2',label:'2. klasa – Barvan aluminij (lakiran, eloksiran)'},
+      {id:'al-k3',label:'3. klasa – Umazan aluminij (z vijaki, plastiko)'},
+      {id:'al-k4',label:'4. klasa – Aluminij z železom ali drugimi kovinami'},
+      {id:'al-k5',label:'5. klasa – Lahki aluminij (folija, tanki materiali)'},
+      {id:'al-k6',label:'6. klasa – Aluminij z dodatki (zlitine)'},
+      {id:'al-k7',label:'7. klasa – Aluminij mix'},
+      {id:'al-k8',label:'8. klasa – Aluminij ostružki'},
+      {id:'al-k9',label:'9. klasa – Aluminij pločevinke'},
+      {id:'al-k10',label:'10. klasa – Aluminij ostalo'},
+    ]},
+    { id:'al-cisti', label:'Čisti aluminij', children:[{id:'al-c1',label:'Al ≥ 99 %, brez dodatkov'}]},
+    { id:'al-glavne', label:'Glavne zlitine', children:[
+      {id:'al-g1',label:'Al + Cu → aluminij-baker'},{id:'al-g2',label:'Al + Mg → aluminij-magnezij'},
+      {id:'al-g3',label:'Al + Si → aluminij-silicij'},{id:'al-g4',label:'Al + Mg + Si → kombinirane zlitine'},
+      {id:'al-g5',label:'Al + Zn → aluminij-cink'},
+    ]},
+    { id:'al-pogoste', label:'Pogoste zlitine', children:[
+      {id:'al-p1',label:'Al + Mg (serija 5xxx) → odporen proti koroziji'},
+      {id:'al-p2',label:'Al + Mg + Si (serija 6xxx) → konstrukcije, profili'},
+      {id:'al-p3',label:'Al + Si (livarske zlitine) → ulitki (motorji)'},
+      {id:'al-p4',label:'Al + Cu (serija 2xxx) → visoka trdnost'},
+    ]},
+    { id:'al-manj', label:'Manj pogoste zlitine', children:[
+      {id:'al-m1',label:'Al + Zn + Mg (serija 7xxx) → zelo trdne (letalstvo)'},
+      {id:'al-m2',label:'Al + Mn (serija 3xxx) → dobra odpornost'},
+      {id:'al-m3',label:'Al + Fe + Si → tehnični aluminij'},
+    ]},
+    { id:'al-redke', label:'Redke / specialne zlitine', children:[
+      {id:'al-r1',label:'Al + Li (litij) → zelo lahek (letalstvo)'},
+      {id:'al-r2',label:'Al + Ti (titan) → posebne uporabe'},
+      {id:'al-r3',label:'Al + Cr (krom) → izboljšana struktura'},
+    ]},
+    { id:'al-kompleksne', label:'Kompleksne (večkomponentne)', children:[
+      {id:'al-x1',label:'Al + Cu + Mg'},{id:'al-x2',label:'Al + Zn + Mg + Cu'},{id:'al-x3',label:'Al + Si + Mg'},
+    ]},
+  ]},
+  { id:'ms', label:'Medenina (CuZn)', icon:'🟡', color:'#C9B037', matKey:'Ms', children:[
+    { id:'ms-klasa', label:'Klasa (odpad)', children:[
+      {id:'ms-k1',label:'1. klasa – Kosi (npr. CuZn58, masivni deli)'},
+      {id:'ms-k2',label:'2. klasa – Štanc, žica, tanjši material'},
+      {id:'ms-k3',label:'3. klasa – Zbiralna (mešano, nečisto)'},
+      {id:'ms-k4',label:'4. klasa – Medenina z dodatki'},
+      {id:'ms-k5',label:'5. klasa – Medenina ostružki'},
+      {id:'ms-k6',label:'6. klasa – Medenina ostalo'},
+    ]},
+    { id:'ms-sestave', label:'Osnovne sestave (Cu–Zn)', children:[
+      {id:'ms-s1',label:'CuZn30 → 70 % Cu / 30 % Zn'},{id:'ms-s2',label:'CuZn33 → 67 % Cu / 33 % Zn'},
+      {id:'ms-s3',label:'CuZn36 → 64 % Cu / 36 % Zn'},{id:'ms-s4',label:'CuZn37 → 63 % Cu / 37 % Zn'},
+      {id:'ms-s5',label:'CuZn40 → 60 % Cu / 40 % Zn'},{id:'ms-s6',label:'CuZn45 → 55 % Cu / 45 % Zn'},
+      {id:'ms-s7',label:'CuZn58 → 58 % Cu / 42 % Zn'},
+    ]},
+    { id:'ms-vrste', label:'Vrste medenin', children:[
+      {id:'ms-v1',label:'Čista medenina → Cu + Zn'},{id:'ms-v2',label:'Svincena medenina → Cu + Zn + Pb'},
+      {id:'ms-v3',label:'Rdeča medenina → Cu + Zn + Sn'},{id:'ms-v4',label:'Kositrna (naval) → Cu + Zn + Sn'},
+    ]},
+    { id:'ms-posebne', label:'Posebne medenine (z dodatki)', children:[
+      {id:'ms-p1',label:'Aluminijeva medenina → Cu + Zn + Al'},{id:'ms-p2',label:'Niklova medenina → Cu + Zn + Ni'},
+      {id:'ms-p3',label:'Železova medenina → Cu + Zn + Fe'},{id:'ms-p4',label:'Silicijeva medenina (CuZn21Si3) → Cu + Zn + Si'},
+    ]},
+  ]},
+  { id:'pb', label:'Svinec (Pb)', icon:'⬛', color:'#585858', matKey:'Pb', children:[
+    { id:'pb-klasa', label:'Klasa (odpad)', children:[
+      {id:'pb-k1',label:'1. klasa – Čisti svinec (brez primesi)'},{id:'pb-k2',label:'2. klasa – Mehki svinec (rahlo oksidiran)'},
+      {id:'pb-k3',label:'3. klasa – Trdi svinec (z dodatki – npr. iz akumulatorjev)'},
+      {id:'pb-k4',label:'4. klasa – Umazan svinec (z drugimi materiali)'},
+      {id:'pb-k5',label:'5. klasa – Svinec iz kablov (plašči)'},{id:'pb-k6',label:'6. klasa – Svinec z dodatki (zlitine)'},
+      {id:'pb-k7',label:'7. klasa – Svinec ostružki'},{id:'pb-k8',label:'8. klasa – Svinec ostalo'},
+    ]},
+    { id:'pb-cisti', label:'Čisti svinec', children:[{id:'pb-c1',label:'Pb ≥ 99 %'}]},
+    { id:'pb-glavne', label:'Glavne zlitine', children:[
+      {id:'pb-g1',label:'Pb + Sb (antimon) → trši svinec'},{id:'pb-g2',label:'Pb + Sn (kositer) → spajke'},
+      {id:'pb-g3',label:'Pb + Ca (kalcij) → akumulatorji'},{id:'pb-g4',label:'Pb + Cu (baker) → izboljšana trdnost'},
+    ]},
+    { id:'pb-pogoste', label:'Pogoste zlitine', children:[
+      {id:'pb-p1',label:'Pb + Sb → akumulatorske plošče'},{id:'pb-p2',label:'Pb + Sn → lot (spajkanje)'},
+      {id:'pb-p3',label:'Pb + Ca → sodobni akumulatorji'},
+    ]},
+    { id:'pb-manj', label:'Manj pogoste zlitine', children:[
+      {id:'pb-m1',label:'Pb + As (arzen) → izboljša trdnost'},{id:'pb-m2',label:'Pb + Ag (srebro) → industrijske uporabe'},
+      {id:'pb-m3',label:'Pb + Bi (bizmut) → nižje tališče'},
+    ]},
+    { id:'pb-redke', label:'Redke / specialne zlitine', children:[
+      {id:'pb-r1',label:'Pb + In (indij) → elektronika'},{id:'pb-r2',label:'Pb + Te (telur) → posebne zlitine'},
+      {id:'pb-r3',label:'Pb + Se (selen) → izboljšane lastnosti'},
+    ]},
+    { id:'pb-kompleksne', label:'Kompleksne (večkomponentne)', children:[
+      {id:'pb-x1',label:'Pb + Sb + Sn'},{id:'pb-x2',label:'Pb + Ca + Sn'},{id:'pb-x3',label:'Pb + Sb + As'},
+    ]},
+  ]},
+  { id:'zn', label:'Cink (Zn)', icon:'🔹', color:'#7D8491', matKey:'Zn', children:[
+    { id:'zn-klasa', label:'Klasa (odpad)', children:[
+      {id:'zn-k1',label:'1. klasa – Čisti cink (pločevina, brez primesi)'},
+      {id:'zn-k2',label:'2. klasa – Cink z oksidacijo (mat, sivkast)'},
+      {id:'zn-k3',label:'3. klasa – Umazan cink (z vijaki, plastiko)'},
+      {id:'zn-k4',label:'4. klasa – Cink z drugimi kovinami (Fe, Al)'},
+      {id:'zn-k5',label:'5. klasa – Cinkovi ostanki (ulitki, odpadki)'},
+      {id:'zn-k6',label:'6. klasa – Cink z dodatki (zlitine)'},
+      {id:'zn-k7',label:'7. klasa – Cink ostružki'},{id:'zn-k8',label:'8. klasa – Cink ostalo'},
+    ]},
+    { id:'zn-cisti', label:'Čisti cink', children:[{id:'zn-c1',label:'Zn ≥ 99 %'}]},
+    { id:'zn-glavne', label:'Glavne zlitine', children:[
+      {id:'zn-g1',label:'Zn + Al → cink-aluminij'},{id:'zn-g2',label:'Zn + Cu → cink-baker'},
+      {id:'zn-g3',label:'Zn + Mg → cink-magnezij'},
+    ]},
+    { id:'zn-pogoste', label:'Pogoste zlitine', children:[
+      {id:'zn-p1',label:'Zn + Al (ZAMAK) → ulitki'},{id:'zn-p2',label:'Zn + Cu + Al → tlačne zlitine'},
+      {id:'zn-p3',label:'Zn + Al + Mg → boljša trdnost in odpornost'},
+    ]},
+    { id:'zn-manj', label:'Manj pogoste zlitine', children:[
+      {id:'zn-m1',label:'Zn + Pb (svinec) → izboljšana obdelava'},{id:'zn-m2',label:'Zn + Sn (kositer) → posebne uporabe'},
+      {id:'zn-m3',label:'Zn + Fe (železo) → tehnične zlitine'},
+    ]},
+    { id:'zn-redke', label:'Redke / specialne zlitine', children:[
+      {id:'zn-r1',label:'Zn + Ni (nikelj) → zaščitni premazi'},{id:'zn-r2',label:'Zn + Ti (titan) → gradbeni materiali'},
+      {id:'zn-r3',label:'Zn + Ag (srebro) → posebne aplikacije'},
+    ]},
+    { id:'zn-kompleksne', label:'Kompleksne (večkomponentne)', children:[
+      {id:'zn-x1',label:'Zn + Al + Cu (ZAMAK skupina)'},{id:'zn-x2',label:'Zn + Al + Mg + Cu'},{id:'zn-x3',label:'Zn + Al + Fe'},
+    ]},
+  ]},
+  { id:'sn', label:'Kositer (Sn)', icon:'⚪', color:'#D1D1D1', matKey:'Sn', children:[
+    { id:'sn-klasa', label:'Klasa (odpad)', children:[
+      {id:'sn-k1',label:'1. klasa – Čisti kositer (brez primesi)'},{id:'sn-k2',label:'2. klasa – Mehki kositer (rahlo oksidiran)'},
+      {id:'sn-k3',label:'3. klasa – Spajke (kositer z dodatki)'},{id:'sn-k4',label:'4. klasa – Kositer z drugimi kovinami'},
+      {id:'sn-k5',label:'5. klasa – Kositer iz pločevink (tanka prevleka)'},
+      {id:'sn-k6',label:'6. klasa – Kositer z dodatki (zlitine)'},{id:'sn-k7',label:'7. klasa – Kositer ostružki'},
+      {id:'sn-k8',label:'8. klasa – Kositer ostalo'},
+    ]},
+    { id:'sn-cisti', label:'Čisti kositer', children:[{id:'sn-c1',label:'Sn ≥ 99 %'}]},
+    { id:'sn-glavne', label:'Glavne zlitine', children:[
+      {id:'sn-g1',label:'Sn + Pb (svinec) → spajke (lot)'},{id:'sn-g2',label:'Sn + Cu (baker) → bron, spajke'},
+      {id:'sn-g3',label:'Sn + Sb (antimon) → trši kositer'},
+    ]},
+    { id:'sn-pogoste', label:'Pogoste zlitine', children:[
+      {id:'sn-p1',label:'Sn + Pb → klasične spajke'},{id:'sn-p2',label:'Sn + Cu → brezsvinčne spajke'},
+      {id:'sn-p3',label:'Sn + Ag + Cu (SAC) → moderna elektronika'},
+    ]},
+    { id:'sn-manj', label:'Manj pogoste zlitine', children:[
+      {id:'sn-m1',label:'Sn + Bi (bizmut) → nizko tališče'},{id:'sn-m2',label:'Sn + Zn (cink) → posebne spajke'},
+      {id:'sn-m3',label:'Sn + Ni (nikelj) → izboljšane lastnosti'},
+    ]},
+    { id:'sn-redke', label:'Redke / specialne zlitine', children:[
+      {id:'sn-r1',label:'Sn + In (indij) → precizna elektronika'},{id:'sn-r2',label:'Sn + Te (telur) → posebne aplikacije'},
+      {id:'sn-r3',label:'Sn + Se (selen) → redke uporabe'},
+    ]},
+    { id:'sn-kompleksne', label:'Kompleksne (večkomponentne)', children:[
+      {id:'sn-x1',label:'Sn + Ag + Cu (SAC)'},{id:'sn-x2',label:'Sn + Pb + Sb'},{id:'sn-x3',label:'Sn + Cu + Ni'},
+    ]},
+  ]},
+  { id:'ti', label:'Titan (Ti)', icon:'💠', color:'#878681', matKey:'Ti', children:[
+    { id:'ti-klasa', label:'Klasa (odpad)', children:[
+      {id:'ti-k1',label:'1. klasa – Čisti titan (pločevina, palice)'},{id:'ti-k2',label:'2. klasa – Titan z oksidacijo (obarvan sloj)'},
+      {id:'ti-k3',label:'3. klasa – Umazan titan (z vijaki, drugimi kovinami)'},
+      {id:'ti-k4',label:'4. klasa – Titan z zlitinami (industrijski deli)'},
+      {id:'ti-k5',label:'5. klasa – Titanovi ostružki (struženje)'},
+      {id:'ti-k6',label:'6. klasa – Titan z dodatki (zlitine)'},{id:'ti-k7',label:'7. klasa – Titan ostalo'},
+    ]},
+    { id:'ti-cisti', label:'Čisti titan', children:[{id:'ti-c1',label:'Ti ≥ 99 %'}]},
+    { id:'ti-glavne', label:'Glavne zlitine', children:[
+      {id:'ti-g1',label:'Ti + Al → titan-aluminij'},{id:'ti-g2',label:'Ti + V (vanadij) → titan-vanadij'},
+      {id:'ti-g3',label:'Ti-6Al-4V → najpogostejša zlitina'},
+    ]},
+    { id:'ti-pogoste', label:'Pogoste zlitine', children:[
+      {id:'ti-p1',label:'Ti-6Al-4V → 6 % Al, 4 % V'},{id:'ti-p2',label:'Ti + Al → visoka trdnost'},
+      {id:'ti-p3',label:'Ti + V → izboljšane mehanske lastnosti'},
+    ]},
+    { id:'ti-manj', label:'Manj pogoste zlitine', children:[
+      {id:'ti-m1',label:'Ti + Mo (molibden) → stabilnost pri temperaturi'},
+      {id:'ti-m2',label:'Ti + Cr (krom) → odpornost'},{id:'ti-m3',label:'Ti + Fe (železo) → cenejše zlitine'},
+    ]},
+    { id:'ti-redke', label:'Redke / specialne zlitine', children:[
+      {id:'ti-r1',label:'Ti + Ni (nikelj) → nitinol (spominske zlitine)'},
+      {id:'ti-r2',label:'Ti + Pd (paladij) → korozijska odpornost'},{id:'ti-r3',label:'Ti + Nb (niobij) → medicina'},
+    ]},
+    { id:'ti-kompleksne', label:'Kompleksne (večkomponentne)', children:[
+      {id:'ti-x1',label:'Ti + Al + V'},{id:'ti-x2',label:'Ti + Al + Mo + V'},{id:'ti-x3',label:'Ti + Nb + Zr'},
+    ]},
+  ]},
+  { id:'ni', label:'Nikelj (Ni)', icon:'🔘', color:'#727472', matKey:'Ni', children:[
+    { id:'ni-klasa', label:'Klasa (odpad)', children:[
+      {id:'ni-k1',label:'1. klasa – Čisti nikelj (plošče, palice)'},{id:'ni-k2',label:'2. klasa – Nikelj z oksidacijo (mat površina)'},
+      {id:'ni-k3',label:'3. klasa – Umazan nikelj (z drugimi kovinami)'},
+      {id:'ni-k4',label:'4. klasa – Nikelj v zlitinah (inox, superzlitine)'},
+      {id:'ni-k5',label:'5. klasa – Nikljevi opilki (struženje)'},
+      {id:'ni-k6',label:'6. klasa – Nikelj z dodatki (zlitine)'},{id:'ni-k7',label:'7. klasa – Nikelj ostružki'},
+      {id:'ni-k8',label:'8. klasa – Nikelj ostalo'},
+    ]},
+    { id:'ni-cisti', label:'Čisti nikelj', children:[{id:'ni-c1',label:'Ni ≥ 99 %'}]},
+    { id:'ni-glavne', label:'Glavne zlitine', children:[
+      {id:'ni-g1',label:'Ni + Cr (krom) → osnova inoxa'},{id:'ni-g2',label:'Ni + Cu (baker) → korozijska odpornost'},
+      {id:'ni-g3',label:'Ni + Fe (železo) → konstrukcije'},
+    ]},
+    { id:'ni-pogoste', label:'Pogoste zlitine', children:[
+      {id:'ni-p1',label:'Ni + Cu (Monel) → morska odpornost'},{id:'ni-p2',label:'Ni + Cr (Nichrome) → grelne žice'},
+    ]},
+    { id:'ni-manj', label:'Manj pogoste zlitine', children:[
+      {id:'ni-m1',label:'Ni + Mo (molibden) → visoka odpornost'},{id:'ni-m2',label:'Ni + Co (kobalt) → visoke temperature'},
+      {id:'ni-m3',label:'Ni + Al → trdnost'},
+    ]},
+    { id:'ni-redke', label:'Redke / specialne zlitine', children:[
+      {id:'ni-r1',label:'Ni + Ti (nitinol) → spominske zlitine'},{id:'ni-r2',label:'Ni + Nb (niobij) → superzlitine'},
+      {id:'ni-r3',label:'Ni + W (volfram) → visoke temperature'},
+    ]},
+    { id:'ni-kompleksne', label:'Kompleksne (večkomponentne)', children:[
+      {id:'ni-x1',label:'Ni + Cr + Fe'},{id:'ni-x2',label:'Ni + Cr + Mo'},{id:'ni-x3',label:'Ni + Fe + Co'},
+    ]},
+  ]},
+  { id:'w', label:'Volfram (W)', icon:'⚫', color:'#4A4A4A', matKey:'W', children:[
+    { id:'w-klasa', label:'Klasa (odpad)', children:[
+      {id:'w-k1',label:'1. klasa – Čisti volfram (palice, elektrode)'},{id:'w-k2',label:'2. klasa – Volfram z oksidacijo'},
+      {id:'w-k3',label:'3. klasa – Umazan volfram (z drugimi kovinami)'},
+      {id:'w-k4',label:'4. klasa – Volfram v zlitinah (karbidna orodja)'},
+      {id:'w-k5',label:'5. klasa – Volframovi prah / ostružki'},
+      {id:'w-k6',label:'6. klasa – Volfram z dodatki (zlitine)'},{id:'w-k7',label:'7. klasa – Volfram ostalo'},
+    ]},
+    { id:'w-cisti', label:'Čisti volfram', children:[{id:'w-c1',label:'W ≥ 99 %'}]},
+    { id:'w-glavne', label:'Glavne zlitine', children:[
+      {id:'w-g1',label:'W + C (karbid) → trdine (widia)'},{id:'w-g2',label:'W + Cu (baker) → elektrode'},
+      {id:'w-g3',label:'W + Ni + Fe → težke zlitine'},
+    ]},
+    { id:'w-pogoste', label:'Pogoste zlitine', children:[
+      {id:'w-p1',label:'WC (volframov karbid) → rezalna orodja'},{id:'w-p2',label:'W + Cu → električni kontakti'},
+      {id:'w-p3',label:'W + Ni + Fe → uteži, zaščita'},
+    ]},
+    { id:'w-manj', label:'Manj pogoste zlitine', children:[
+      {id:'w-m1',label:'W + Co (kobalt) → orodja (trdine)'},{id:'w-m2',label:'W + Ni + Cu → posebne zlitine'},
+      {id:'w-m3',label:'W + Mo (molibden) → visoke temperature'},
+    ]},
+    { id:'w-redke', label:'Redke / specialne zlitine', children:[
+      {id:'w-r1',label:'W + Re (renij) → zelo visoke temperature'},{id:'w-r2',label:'W + Ta (tantal) → specialne aplikacije'},
+      {id:'w-r3',label:'W + Cr (krom) → zaščitne zlitine'},
+    ]},
+    { id:'w-kompleksne', label:'Kompleksne (večkomponentne)', children:[
+      {id:'w-x1',label:'W + C + Co (karbidna orodja)'},{id:'w-x2',label:'W + Ni + Fe + Cu'},{id:'w-x3',label:'W + Ni + Co'},
+    ]},
+  ]},
+  { id:'v', label:'Vanadij (V)', icon:'🔸', color:'#8B8589', matKey:'V', children:[
+    { id:'v-klasa', label:'Klasa (odpad)', children:[
+      {id:'v-k1',label:'1. klasa – Čisti vanadij (zelo redko)'},{id:'v-k2',label:'2. klasa – Vanadij z oksidacijo'},
+      {id:'v-k3',label:'3. klasa – Umazan vanadij (z drugimi kovinami)'},
+      {id:'v-k4',label:'4. klasa – Vanadij v zlitinah (jekla)'},
+      {id:'v-k5',label:'5. klasa – Opilki / prah / ostružki'},
+      {id:'v-k6',label:'6. klasa – Vanadij z dodatki (zlitine)'},{id:'v-k7',label:'7. klasa – Vanadij ostalo'},
+    ]},
+    { id:'v-cisti', label:'Čisti vanadij', children:[{id:'v-c1',label:'V ≥ 99 %'}]},
+    { id:'v-glavne', label:'Glavne zlitine', children:[
+      {id:'v-g1',label:'V + Fe (železo) → ferovanadij'},{id:'v-g2',label:'V + Ti (titan) → titanove zlitine'},
+      {id:'v-g3',label:'V + Cr (krom) → specialna jekla'},
+    ]},
+    { id:'v-manj', label:'Manj pogoste zlitine', children:[
+      {id:'v-m1',label:'V + Ni (nikelj) → posebne zlitine'},{id:'v-m2',label:'V + Mo (molibden) → visoka temperatura'},
+      {id:'v-m3',label:'V + W (volfram) → trdnost'},
+    ]},
+    { id:'v-redke', label:'Redke / specialne zlitine', children:[
+      {id:'v-r1',label:'V + Al → lahke zlitine'},{id:'v-r2',label:'V + Nb (niobij) → visoko zmogljive zlitine'},
+      {id:'v-r3',label:'V + Ta (tantal) → posebne aplikacije'},
+    ]},
+    { id:'v-kompleksne', label:'Kompleksne (večkomponentne)', children:[
+      {id:'v-x1',label:'Fe + V + Cr'},{id:'v-x2',label:'Ti + Al + V'},{id:'v-x3',label:'Fe + V + Mo'},
+    ]},
+  ]},
+  { id:'mo', label:'Molibden (Mo)', icon:'🔩', color:'#6B6B6B', matKey:'Mo', children:[
+    { id:'mo-klasa', label:'Klasa (odpad)', children:[
+      {id:'mo-k1',label:'1. klasa – Čisti molibden (plošče, palice)'},{id:'mo-k2',label:'2. klasa – Molibden z oksidacijo'},
+      {id:'mo-k3',label:'3. klasa – Umazan molibden (z drugimi kovinami)'},
+      {id:'mo-k4',label:'4. klasa – Molibden v zlitinah (jekla, superzlitine)'},
+      {id:'mo-k5',label:'5. klasa – Opilki / prah'},
+      {id:'mo-k6',label:'6. klasa – Molibden z dodatki (zlitine)'},{id:'mo-k7',label:'7. klasa – Molibden ostalo'},
+    ]},
+    { id:'mo-cisti', label:'Čisti molibden', children:[{id:'mo-c1',label:'Mo ≥ 99 %'}]},
+    { id:'mo-glavne', label:'Glavne zlitine', children:[
+      {id:'mo-g1',label:'Mo + Fe (železo) → feromolibden'},{id:'mo-g2',label:'Mo + Ni (nikelj) → superzlitine'},
+      {id:'mo-g3',label:'Mo + Cr (krom) → odporne zlitine'},
+    ]},
+    { id:'mo-manj', label:'Manj pogoste zlitine', children:[
+      {id:'mo-m1',label:'Mo + W (volfram) → visoke temperature'},{id:'mo-m2',label:'Mo + Co (kobalt) → trdnost'},
+      {id:'mo-m3',label:'Mo + Ti (titan) → posebne zlitine'},
+    ]},
+    { id:'mo-redke', label:'Redke / specialne zlitine', children:[
+      {id:'mo-r1',label:'Mo + Nb (niobij) → visoke temperature'},{id:'mo-r2',label:'Mo + Ta (tantal) → ekstremni pogoji'},
+      {id:'mo-r3',label:'Mo + Re (renij) → zelo visoke temperature'},
+    ]},
+    { id:'mo-kompleksne', label:'Kompleksne (večkomponentne)', children:[
+      {id:'mo-x1',label:'Fe + Mo + Cr'},{id:'mo-x2',label:'Ni + Cr + Mo'},{id:'mo-x3',label:'Mo + W + Co'},
+    ]},
+  ]},
+];
+
 // ── STATE ──
 const state = {
   type: 'nonferrous',
   currency: 'usd',
   material: [],
+  treeSelection: null, // { metalId, matKey, metalLabel, leafLabel }
   purity: [],
   shape: [],
   weight: [],
@@ -740,15 +1172,112 @@ const materialLabels = { Au:'Zlato', Ag:'Srebro', Pt:'Platina', Cu:'Baker', Al:'
 const materialSymbols = { Au:'Au', Ag:'Ag', Pt:'Pt', Cu:'Cu', Al:'Al', Ni:'Ni', Zn:'Zn', Ti:'Ti', Fe:'Fe', Steel:'Fe+C', CastIron:'Fe+C+', Inox:'Fe+Cr+Ni', ToolSteel:'vis. leg.' };
 const materialColors = { Au:'#C9A227', Ag:'#B8C9D4', Pt:'#8FA3B1', Cu:'#C17A50', Al:'#6B8090', Ni:'#5A6E7A', Zn:'#8FA3B1', Ti:'#8AAAB5', Fe:'#6B7280', Steel:'#7A8898', CastIron:'#5A6468', Inox:'#9AA8B2', ToolSteel:'#8090A0' };
 
+// ── METAL ACCORDION (NON-FERROUS) ──
+function initMetalAccordion() {
+  const container = document.getElementById('metal-accordion');
+  if (!container) return;
+
+  const chevSvg = `<svg class="metal-acc-chev" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M4 2l4 4-4 4"/></svg>`;
+  const catChevSvg = `<svg class="cat-acc-chev" viewBox="0 0 10 10" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M3.5 2l3 3-3 3"/></svg>`;
+
+  container.innerHTML = TREE_DATA.map(m => {
+    const cats = m.children.map(cat => {
+      const leaves = cat.children.map(leaf =>
+        `<div class="leaf-row" id="lr-${leaf.id}" onclick="selectLeafAcc('${leaf.id}')">${leaf.label}</div>`
+      ).join('');
+      return `
+        <div class="cat-acc-item">
+          <div class="cat-acc-row" id="cr-${cat.id}" onclick="toggleCatAcc('${m.id}','${cat.id}')">
+            <span>${cat.label}</span>${catChevSvg}
+          </div>
+          <div class="cat-acc-body" id="cb-${cat.id}">${leaves}</div>
+        </div>`;
+    }).join('');
+    return `
+      <div class="metal-acc-item">
+        <div class="metal-acc-row" id="mr-${m.id}" onclick="toggleMetalAcc('${m.id}')">
+          <span>${m.label}</span>${chevSvg}
+        </div>
+        <div class="metal-acc-body" id="mb-${m.id}">${cats}</div>
+      </div>`;
+  }).join('');
+}
+
+function toggleMetalAcc(metalId) {
+  const metal = TREE_DATA.find(m => m.id === metalId);
+  if (!metal) return;
+  const isSel = state.treeSelection && state.treeSelection.metalId === metalId;
+
+  document.querySelectorAll('.metal-acc-row').forEach(r => r.classList.remove('active'));
+  document.querySelectorAll('.metal-acc-body').forEach(b => b.classList.remove('open'));
+  document.querySelectorAll('.cat-acc-row').forEach(r => r.classList.remove('active'));
+  document.querySelectorAll('.cat-acc-body').forEach(b => b.classList.remove('open'));
+  document.querySelectorAll('.leaf-row').forEach(r => r.classList.remove('selected'));
+  state.treeSelection = null;
+  state.material = [];
+
+  if (!isSel) {
+    state.treeSelection = { metalId, matKey: metal.matKey, metalLabel: metal.label, catId: null, catLabel: null, leafId: null, leafLabel: null };
+    state.material = [metal.matKey];
+    document.getElementById('mr-' + metalId).classList.add('active');
+    document.getElementById('mb-' + metalId).classList.add('open');
+  }
+  updateFilters();
+}
+
+function toggleCatAcc(metalId, catId) {
+  if (!state.treeSelection || state.treeSelection.metalId !== metalId) return;
+  const metal = TREE_DATA.find(m => m.id === metalId);
+  const cat = metal && metal.children.find(c => c.id === catId);
+  if (!cat) return;
+  const isSel = state.treeSelection.catId === catId;
+
+  const body = document.getElementById('mb-' + metalId);
+  body.querySelectorAll('.cat-acc-row').forEach(r => r.classList.remove('active'));
+  body.querySelectorAll('.cat-acc-body').forEach(b => b.classList.remove('open'));
+  document.querySelectorAll('.leaf-row').forEach(r => r.classList.remove('selected'));
+  state.treeSelection.catId = null; state.treeSelection.catLabel = null;
+  state.treeSelection.leafId = null; state.treeSelection.leafLabel = null;
+
+  if (!isSel) {
+    state.treeSelection.catId = catId;
+    state.treeSelection.catLabel = cat.label;
+    document.getElementById('cr-' + catId).classList.add('active');
+    document.getElementById('cb-' + catId).classList.add('open');
+  }
+  updateFilters();
+}
+
+function selectLeafAcc(leafId) {
+  if (!state.treeSelection || !state.treeSelection.catId) return;
+  const metal = TREE_DATA.find(m => m.id === state.treeSelection.metalId);
+  const cat = metal && metal.children.find(c => c.id === state.treeSelection.catId);
+  const leaf = cat && cat.children.find(l => l.id === leafId);
+  if (!leaf) return;
+  const isSel = state.treeSelection.leafId === leafId;
+  document.querySelectorAll('.leaf-row').forEach(r => r.classList.remove('selected'));
+  if (isSel) {
+    state.treeSelection.leafId = null; state.treeSelection.leafLabel = null;
+  } else {
+    state.treeSelection.leafId = leafId; state.treeSelection.leafLabel = leaf.label;
+    const el = document.getElementById('lr-' + leafId);
+    if (el) el.classList.add('selected');
+  }
+  updateFilters();
+}
+
+function filterMetalTree() {} // compatibility stub
+
 function setType(t) {
   state.type = t;
   state.material = [];
+  state.treeSelection = null;
   document.getElementById('btn-nonferrous').classList.toggle('active', t === 'nonferrous');
   document.getElementById('btn-ferrous').classList.toggle('active', t === 'ferrous');
   document.getElementById('group-nonferrous').style.display = t === 'nonferrous' ? '' : 'none';
   document.getElementById('group-ferrous').style.display   = t === 'ferrous'    ? '' : 'none';
-  // clear material chips
   document.querySelectorAll('[data-filter="material"]').forEach(c => c.classList.remove('active'));
+  if (t === 'nonferrous') initMetalAccordion();
   updateFilters();
 }
 
@@ -794,7 +1323,11 @@ function setCurrency(c) {
 
 function getFiltered() {
   let list = allListings.filter(l => l.type === state.type);
-  if (state.material.length) list = list.filter(l => state.material.includes(l.material));
+  if (state.treeSelection && state.treeSelection.matKey) {
+    list = list.filter(l => l.material === state.treeSelection.matKey);
+  } else if (state.material.length) {
+    list = list.filter(l => state.material.includes(l.material));
+  }
   if (state.purity.length)   list = list.filter(l => state.purity.includes(l.purity));
   if (state.shape.length)    list = list.filter(l => state.shape.includes(l.shape));
   if (state.weight.length)   list = list.filter(l => state.weight.includes(l.weight));
@@ -876,7 +1409,18 @@ function renderListings(list) {
 function renderActiveTags() {
   const container = document.getElementById('active-tags');
   const tags = [];
-  if (state.material.length) state.material.forEach(m => tags.push({ label: materialLabels[m]||m, clear: ()=>{ state.material=state.material.filter(x=>x!==m); document.querySelectorAll(`[data-filter="material"][data-val="${m}"]`).forEach(b=>b.classList.remove('active')); updateFilters(); }}));
+  if (state.treeSelection && state.treeSelection.metalId) {
+    const lbl = state.treeSelection.leafLabel
+      ? state.treeSelection.metalLabel + ' › ' + state.treeSelection.leafLabel
+      : state.treeSelection.metalLabel;
+    tags.push({ label: lbl, clear: () => {
+      state.treeSelection = null; state.material = [];
+      renderMetalTree(document.getElementById('tree-search') ? document.getElementById('tree-search').value : '');
+      updateFilters();
+    }});
+  } else if (state.material.length) {
+    state.material.forEach(m => tags.push({ label: materialLabels[m]||m, clear: ()=>{ state.material=state.material.filter(x=>x!==m); document.querySelectorAll(`[data-filter="material"][data-val="${m}"]`).forEach(b=>b.classList.remove('active')); updateFilters(); }}));
+  }
   if (state.purity.length)   state.purity.forEach(p   => tags.push({ label: 'Čistost '+p+'%', clear: ()=>{ state.purity=state.purity.filter(x=>x!==p);     document.querySelectorAll(`[data-filter="purity"][data-val="${p}"]`).forEach(b=>b.classList.remove('active')); updateFilters(); }}));
   if (state.shape.length)    state.shape.forEach(s    => tags.push({ label: s,                 clear: ()=>{ state.shape=state.shape.filter(x=>x!==s);       document.querySelectorAll(`[data-filter="shape"][data-val="${s}"]`).forEach(b=>b.classList.remove('active')); updateFilters(); }}));
   if (state.weight.length)   state.weight.forEach(w   => tags.push({ label: 'Teža '+w,         clear: ()=>{ state.weight=state.weight.filter(x=>x!==w);     document.querySelectorAll(`[data-filter="weight"][data-val="${w}"]`).forEach(b=>b.classList.remove('active')); updateFilters(); }}));
@@ -889,8 +1433,9 @@ function renderActiveTags() {
 function clearTag(i) { window._tagClearFns[i](); }
 
 function resetAll() {
-  state.material=[]; state.purity=[]; state.shape=[]; state.weight=[]; state.origin=''; state.quote=['spot'];
+  state.material=[]; state.treeSelection=null; state.purity=[]; state.shape=[]; state.weight=[]; state.origin=''; state.quote=['spot'];
   state.cert = { auth:'any', serial:'any', mint:'any', assay:'any' };
+  initMetalAccordion();
   document.querySelectorAll('.chip, .purity-chip, .weight-chip, .kotacija-chip').forEach(b => b.classList.remove('active'));
   document.getElementById('price-from').value = '';
   document.getElementById('price-to').value   = '';
@@ -910,6 +1455,7 @@ function openContact(name) {
 }
 
 // ── INIT ──
+initMetalAccordion();
 updateFilters();
 </script>
 
