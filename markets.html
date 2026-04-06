@@ -1324,6 +1324,65 @@ const FERROUS_TREE_DATA = [
       { id:'jeklo-posebno',  label:'Posebno jeklo' },
     ]},
   ]},
+  { id:'inox', label:'Inox (Nerjavno jeklo)', matKey:'Inox', children:[
+    { id:'inox-klasa', label:'Klasa (Odpad)', children:[
+      { id:'inox-kl-1', label:'1. klasa – čisti inox (znana kvaliteta)' },
+      { id:'inox-kl-2', label:'2. klasa – mešani inox' },
+      { id:'inox-kl-3', label:'3. klasa – umazan inox' },
+      { id:'inox-kl-4', label:'4. klasa – inox z drugimi kovinami' },
+      { id:'inox-kl-5', label:'5. klasa – opilki / odrezki' },
+      { id:'inox-kl-6', label:'6. klasa – posebne zlitine' },
+      { id:'inox-kl-7', label:'7. klasa – inox ostalo' },
+    ]},
+    { id:'inox-osnova', label:'Osnova', children:[
+      { id:'inox-osn-1', label:'Osnoven inox – Fe + Cr ≥ 10,5 %' },
+      { id:'inox-osn-2', label:'Dodatki – Ni, Mo, C, Mn, Si, Ti, Nb' },
+    ]},
+    { id:'inox-vrste', label:'Glavne vrste', children:[
+      { id:'inox-aust', label:'Austenitni inox (nemagnetni)', children:[
+        { id:'inox-aust-1', label:'Sestava – Fe + Cr + Ni' },
+        { id:'inox-aust-2', label:'304 – ~18 % Cr / 8 % Ni' },
+        { id:'inox-aust-3', label:'316 – ~16–18 % Cr / 10–14 % Ni / 2–3 % Mo' },
+        { id:'inox-aust-4', label:'308 – ~19–21 % Cr / 9–11 % Ni' },
+        { id:'inox-aust-5', label:'310 – ~24–26 % Cr / 19–22 % Ni' },
+      ]},
+      { id:'inox-ferit', label:'Feritni inox', children:[
+        { id:'inox-ferit-1', label:'Sestava – Fe + Cr' },
+        { id:'inox-ferit-2', label:'430 – ~16–18 % Cr' },
+      ]},
+      { id:'inox-mart', label:'Martenzitni inox', children:[
+        { id:'inox-mart-1', label:'Sestava – Fe + Cr + C' },
+        { id:'inox-mart-2', label:'410 – ~11,5–13,5 % Cr' },
+        { id:'inox-mart-3', label:'420 – ~12–14 % Cr / več C' },
+      ]},
+      { id:'inox-duplex', label:'Duplex inox', children:[
+        { id:'inox-duplex-1', label:'Sestava – Fe + Cr + Ni + Mo' },
+        { id:'inox-duplex-2', label:'2205 – ~22 % Cr / 5–6 % Ni / ~3 % Mo' },
+      ]},
+    ]},
+    { id:'inox-pogoste', label:'Pogoste oznake', children:[
+      { id:'inox-pog-1', label:'304 – 18 % Cr / 8 % Ni' },
+      { id:'inox-pog-2', label:'316 – Cr + Ni + 2–3 % Mo' },
+      { id:'inox-pog-3', label:'308 – Cr + Ni (varilna žica)' },
+      { id:'inox-pog-4', label:'310 – visoko Cr + Ni (toplotno odporen)' },
+      { id:'inox-pog-5', label:'430 – samo Cr (brez Ni)' },
+      { id:'inox-pog-6', label:'410 / 420 – Cr + C' },
+    ]},
+    { id:'inox-manj', label:'Manj pogosti', children:[
+      { id:'inox-manj-1', label:'321 – Cr + Ni + Ti' },
+      { id:'inox-manj-2', label:'347 – Cr + Ni + Nb' },
+    ]},
+    { id:'inox-spec', label:'Specialne zlitine', children:[
+      { id:'inox-spec-1', label:'Super duplex – Cr + Ni + Mo (visoke vrednosti)' },
+      { id:'inox-spec-2', label:'Inconel – Ni (50–70 %) + Cr + Mo' },
+      { id:'inox-spec-3', label:'Hastelloy – Ni (~60 %+) + Mo' },
+    ]},
+    { id:'inox-komplex', label:'Kompleksne zlitine', children:[
+      { id:'inox-komp-1', label:'Fe + Cr + Ni + Mo' },
+      { id:'inox-komp-2', label:'Fe + Cr + Ni + Ti' },
+      { id:'inox-komp-3', label:'Ni + Cr + Mo' },
+    ]},
+  ]},
 ];
 
 // ── METAL ACCORDION (NON-FERROUS) ──
