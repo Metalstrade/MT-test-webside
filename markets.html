@@ -523,6 +523,24 @@
     .cat-acc-body { display: none; }
     .cat-acc-body.open { display: block; }
 
+    .subcat-acc-row {
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 5px 10px 5px 36px; cursor: pointer;
+      font-size: 11px; font-weight: 500; color: var(--muted);
+      border-left: 1px solid rgba(143,163,177,0.12); margin-left: 12px;
+      transition: color 0.15s ease, background 0.15s ease;
+      user-select: none;
+    }
+    .subcat-acc-row:hover { color: var(--silver-lt); background: rgba(255,255,255,0.02); }
+    .subcat-acc-row.active { color: var(--gold); }
+    .subcat-acc-chev {
+      width: 9px; height: 9px; flex-shrink: 0; color: var(--muted);
+      transition: transform 0.2s ease;
+    }
+    .subcat-acc-row.active .subcat-acc-chev { transform: rotate(90deg); }
+    .subcat-acc-body { display: none; }
+    .subcat-acc-body.open { display: block; }
+
     .leaf-row {
       padding: 4px 10px 4px 40px; font-size: 11px; color: var(--muted);
       cursor: pointer; position: relative; line-height: 1.5;
@@ -533,6 +551,8 @@
     .leaf-row:hover { color: var(--silver-lt); background: rgba(255,255,255,0.02); }
     .leaf-row.selected { color: var(--gold-lt); background: rgba(201,162,39,0.07); }
     .leaf-row.selected::before { color: var(--gold-dk); }
+    .leaf-deep { padding-left: 52px; }
+    .leaf-deep::before { left: 40px; }
 
     @media (max-width: 900px) {
       .market-layout { grid-template-columns: 1fr; }
@@ -1168,58 +1188,140 @@ const materialColors = { Au:'#C9A227', Ag:'#B8C9D4', Pt:'#8FA3B1', Cu:'#C17A50',
 
 // ── FERROUS TREE DATA ──
 const FERROUS_TREE_DATA = [
-  { id:'fe', label:'Železo', icon:'⬡', color:'#6B7280', matKey:'Fe', children:[
-    { id:'fe-kakovost', label:'Kakovostni razredi', children:[
-      { id:'fe-e3',   label:'E3' },
-      { id:'fe-e1',   label:'E1' },
-      { id:'fe-e2',   label:'E2' },
-      { id:'fe-e8',   label:'E8 razsuto' },
-      { id:'fe-e6',   label:'E6 balirano' },
-      { id:'fe-e40',  label:'E40 šreder' },
-      { id:'fe-e5h',  label:'E5H čisti ostružki' },
-      { id:'fe-e5m',  label:'E5M mešani ostružki' },
-      { id:'fe-ehrb', label:'EHRB armatura' },
-      { id:'fe-ehrm', label:'EHRM mehanski deli' },
-      { id:'fe-e46',  label:'E46 sežigalnice' },
+  { id:'fe', label:'Železo', matKey:'Fe', children:[
+    { id:'fe-stari', label:'Stari odpad (Old Scrap)', children:[
+      { id:'fe-e3', label:'E3 – težko železo', children:[
+        { id:'fe-e3-1', label:'debelina > 6 mm' },
+        { id:'fe-e3-2', label:'rezano do 1500 mm' },
+        { id:'fe-e3-3', label:'rezano nad 1500 mm' },
+        { id:'fe-e3-4', label:'livarski vložek (rezano do 30 mm)' },
+        { id:'fe-e3-5', label:'gostota > 0,6 t/m³' },
+      ]},
+      { id:'fe-e1', label:'E1 – lahko železo', children:[
+        { id:'fe-e1-1', label:'debelina < 6 mm' },
+        { id:'fe-e1-2', label:'rezano do 1500 mm' },
+        { id:'fe-e1-3', label:'rezano nad 1500 mm' },
+        { id:'fe-e1-4', label:'livarski vložek (rezano do 30 mm)' },
+        { id:'fe-e1-5', label:'gostota > 0,5 t/m³' },
+      ]},
     ]},
-    { id:'fe-hms', label:'HMS', children:[
-      { id:'fe-hms12',    label:'HMS 1/2' },
-      { id:'fe-hmsmix',   label:'HMS mix 50/50' },
-      { id:'fe-hms2',     label:'HMS 2' },
+    { id:'fe-novo', label:'Novo železo (New Scrap)', children:[
+      { id:'fe-e2', label:'E2 – debelo novo', children:[
+        { id:'fe-e2-1', label:'industrijski ostanki' },
+        { id:'fe-e2-2', label:'rezano do 1500 mm' },
+        { id:'fe-e2-3', label:'rezano nad 1500 mm' },
+        { id:'fe-e2-4', label:'livarski vložek (rezano do 30 mm)' },
+      ]},
+      { id:'fe-e8', label:'E8 – razsuto', children:[
+        { id:'fe-e8-1', label:'tanki izseki' },
+        { id:'fe-e8-2', label:'pločevina' },
+        { id:'fe-e8-3', label:'rezano do 1500 mm' },
+        { id:'fe-e8-4', label:'rezano nad 1500 mm' },
+        { id:'fe-e8-5', label:'livarski vložek (rezano do 30 mm)' },
+      ]},
+      { id:'fe-e6', label:'E6 – balirano', children:[
+        { id:'fe-e6-1', label:'stisnjeni tanki deli' },
+        { id:'fe-e6-2', label:'rezano do 1500 mm' },
+        { id:'fe-e6-3', label:'rezano nad 1500 mm' },
+        { id:'fe-e6-4', label:'livarski vložek (rezano do 30 mm)' },
+        { id:'fe-e6-5', label:'gostota > 1,0 t/m³' },
+      ]},
     ]},
-    { id:'fe-posebno', label:'Posebno', children:[
-      { id:'fe-cisto',    label:'Čisto železo' },
-      { id:'fe-zdodat',   label:'Železo z dodatki' },
-      { id:'fe-posebna',  label:'Posebna stanja' },
+    { id:'fe-shred', label:'Shredded (mletje)', children:[
+      { id:'fe-e40', label:'E40 – šreder', children:[
+        { id:'fe-e40-1', label:'zmleto železo' },
+        { id:'fe-e40-2', label:'kosi do ~200 mm' },
+        { id:'fe-e40-3', label:'gostota > 0,9 t/m³' },
+      ]},
+    ]},
+    { id:'fe-stru', label:'Struženje', children:[
+      { id:'fe-e5h', label:'E5H – čisti ostružki', children:[
+        { id:'fe-e5h-1', label:'enoten material' },
+      ]},
+      { id:'fe-e5m', label:'E5M – mešani ostružki', children:[
+        { id:'fe-e5m-1', label:'različni materiali' },
+      ]},
+    ]},
+    { id:'fe-visoki', label:'Visoki ostanki (High Residual)', children:[
+      { id:'fe-ehrb', label:'EHRB – armatura', children:[
+        { id:'fe-ehrb-1', label:'rezano do 1500 mm' },
+        { id:'fe-ehrb-2', label:'rezano nad 1500 mm' },
+        { id:'fe-ehrb-3', label:'livarski vložek (rezano do 30 mm)' },
+      ]},
+      { id:'fe-ehrm', label:'EHRM – mehanski deli', children:[
+        { id:'fe-ehrm-1', label:'menjalniki' },
+        { id:'fe-ehrm-2', label:'motorji' },
+        { id:'fe-ehrm-3', label:'stroji' },
+        { id:'fe-ehrm-4', label:'rezano do 1500 mm' },
+        { id:'fe-ehrm-5', label:'rezano nad 1500 mm' },
+        { id:'fe-ehrm-6', label:'livarski vložek (rezano do 30 mm)' },
+      ]},
+      { id:'fe-e46', label:'E46 – iz sežigalnic', children:[
+        { id:'fe-e46-1', label:'ostanki iz odpadkov' },
+      ]},
+    ]},
+    { id:'fe-cisto', label:'Čisto železo', children:[
+      { id:'fe-cisto-99', label:'99% ingot' },
+    ]},
+    { id:'fe-hms', label:'HMS kategorije', children:[
+      { id:'fe-hms12', label:'HMS 1/2 (80:20)', children:[
+        { id:'fe-hms12-1', label:'80 % HMS 1' },
+        { id:'fe-hms12-2', label:'20 % HMS 2' },
+        { id:'fe-hms12-3', label:'rezano do 1500 mm' },
+      ]},
+      { id:'fe-hmsmix', label:'HMS mix 50/50', children:[
+        { id:'fe-hmsmix-1', label:'50 % HMS 1' },
+        { id:'fe-hmsmix-2', label:'50 % HMS 2' },
+        { id:'fe-hmsmix-3', label:'rezano do 1500 mm' },
+      ]},
+      { id:'fe-hms2', label:'HMS 2', children:[
+        { id:'fe-hms2-1', label:'20 % HMS 1' },
+        { id:'fe-hms2-2', label:'80 % HMS 2' },
+        { id:'fe-hms2-3', label:'rezano do 1500 mm' },
+      ]},
+    ]},
+    { id:'fe-zdodat', label:'Železo z dodatki (Residuali)', children:[
+      { id:'fe-zdod-1', label:'železo z bakrom' },
+      { id:'fe-zdod-2', label:'železo z aluminijem' },
+      { id:'fe-zdod-3', label:'železo s kositrom (pločevinke)' },
+      { id:'fe-zdod-4', label:'železo s svincem (uteži)' },
+      { id:'fe-zdod-5', label:'železo z manganom' },
+      { id:'fe-zdod-6', label:'železo s silicijem' },
+      { id:'fe-zdod-7', label:'legirano železo (Cr, Ni, Mo)' },
+    ]},
+    { id:'fe-posebna', label:'Posebna stanja', children:[
+      { id:'fe-posebna-1', label:'pocinkano / prevlečeno (Zn)' },
+      { id:'fe-posebna-2', label:'onesnaženo (olje, plastika, guma)' },
     ]},
   ]},
-  { id:'gus', label:'Siva litina (GUS)', icon:'◈', color:'#5A6468', matKey:'CastIron', children:[
-    { id:'gus-osnov', label:'Osnove', children:[
-      { id:'gus-osnov1', label:'Osnovne kategorije' },
+  { id:'gus', label:'Siva litina (GUS)', matKey:'CastIron', children:[
+    { id:'gus-osnov', label:'Osnovne kategorije', children:[
+      { id:'gus-osnov-1', label:'težka siva litina' },
+      { id:'gus-osnov-2', label:'strojna litina' },
+      { id:'gus-osnov-3', label:'gradbena litina' },
+      { id:'gus-osnov-4', label:'peči / ogrevanje' },
     ]},
     { id:'gus-sestava', label:'Po sestavi in obliki', children:[
-      { id:'gus-sest1', label:'Lamelarna siva litina' },
-      { id:'gus-sest2', label:'Nodularna litina' },
-      { id:'gus-sest3', label:'Bela litina' },
-      { id:'gus-sest4', label:'Malleable litina' },
+      { id:'gus-sest-1', label:'mešana litina' },
+      { id:'gus-sest-2', label:'duktilna litina (nodularna)' },
+      { id:'gus-sest-3', label:'visokolegirana litina' },
     ]},
     { id:'gus-izvor', label:'Po izvoru', children:[
-      { id:'gus-izv1', label:'Avtomobilski ostanki' },
-      { id:'gus-izv2', label:'Industrijski ostanki' },
-      { id:'gus-izv3', label:'Gospodinjski ostanki' },
+      { id:'gus-izv-1', label:'žgana / zažgana litina' },
+      { id:'gus-izv-2', label:'litina z vložki' },
+      { id:'gus-izv-3', label:'oljna / onesnažena litina' },
+      { id:'gus-izv-4', label:'litoželezni odlitki (foundry scrap)' },
     ]},
     { id:'gus-lastnost', label:'Po lastnostih', children:[
-      { id:'gus-last1', label:'Visokoogljična' },
-      { id:'gus-last2', label:'Nizkolegirana' },
-      { id:'gus-last3', label:'Posebne lastnosti' },
+      { id:'gus-last-1', label:'fina / krhka litina' },
     ]},
   ]},
-  { id:'jeklo', label:'Jeklo', icon:'◇', color:'#7A8898', matKey:'Steel', children:[
+  { id:'jeklo', label:'Jeklo', matKey:'Steel', children:[
     { id:'jeklo-razred', label:'Razredi', children:[
-      { id:'jeklo-konstrukc', label:'Konstrukcijsko jeklo' },
-      { id:'jeklo-nerjavno',  label:'Nerjavno jeklo (Inox)' },
-      { id:'jeklo-orodna',    label:'Orodna jekla' },
-      { id:'jeklo-posebno',   label:'Posebno jeklo' },
+      { id:'jeklo-konstr',   label:'Konstrukcijsko jeklo' },
+      { id:'jeklo-nerjavno', label:'Nerjavno jeklo (Inox)' },
+      { id:'jeklo-orodna',   label:'Orodna jekla' },
+      { id:'jeklo-posebno',  label:'Posebno jeklo' },
     ]},
   ]},
 ];
@@ -1324,20 +1426,35 @@ function filterMetalTree() {} // compatibility stub
 function initFerrousAccordion() {
   const container = document.getElementById('ferrous-accordion');
   if (!container) return;
-  const chevSvg = `<svg class="metal-acc-chev" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M4 2l4 4-4 4"/></svg>`;
+  const chevSvg    = `<svg class="metal-acc-chev" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M4 2l4 4-4 4"/></svg>`;
   const catChevSvg = `<svg class="cat-acc-chev" viewBox="0 0 10 10" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M3.5 2l3 3-3 3"/></svg>`;
+  const subChevSvg = `<svg class="subcat-acc-chev" viewBox="0 0 10 10" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M3.5 2l3 3-3 3"/></svg>`;
 
   container.innerHTML = FERROUS_TREE_DATA.map(m => {
     const cats = m.children.map(cat => {
-      const leaves = cat.children.map(leaf =>
-        `<div class="leaf-row" id="flr-${leaf.id}" onclick="selectLeafAccF('${leaf.id}')">${leaf.label}</div>`
-      ).join('');
+      // Each cat child may be a subcategory (has children) or a direct leaf
+      const catContent = cat.children.map(item => {
+        if (item.children && item.children.length > 0) {
+          const leaves = item.children.map(leaf =>
+            `<div class="leaf-row leaf-deep" id="flr-${leaf.id}" onclick="selectLeafAccF('${leaf.id}')">${leaf.label}</div>`
+          ).join('');
+          return `
+            <div class="subcat-acc-item">
+              <div class="subcat-acc-row" id="fsr-${item.id}" onclick="toggleSubCatAccF('${m.id}','${cat.id}','${item.id}')">
+                <span>${item.label}</span>${subChevSvg}
+              </div>
+              <div class="subcat-acc-body" id="fsb-${item.id}">${leaves}</div>
+            </div>`;
+        } else {
+          return `<div class="leaf-row" id="flr-${item.id}" onclick="selectLeafAccF('${item.id}')">${item.label}</div>`;
+        }
+      }).join('');
       return `
         <div class="cat-acc-item">
           <div class="cat-acc-row" id="fcr-${cat.id}" onclick="toggleCatAccF('${m.id}','${cat.id}')">
             <span>${cat.label}</span>${catChevSvg}
           </div>
-          <div class="cat-acc-body" id="fcb-${cat.id}">${leaves}</div>
+          <div class="cat-acc-body" id="fcb-${cat.id}">${catContent}</div>
         </div>`;
     }).join('');
     return `
@@ -1359,12 +1476,14 @@ function toggleMetalAccF(metalId) {
   document.querySelectorAll('#ferrous-accordion .metal-acc-body').forEach(b => b.classList.remove('open'));
   document.querySelectorAll('#ferrous-accordion .cat-acc-row').forEach(r => r.classList.remove('active'));
   document.querySelectorAll('#ferrous-accordion .cat-acc-body').forEach(b => b.classList.remove('open'));
+  document.querySelectorAll('#ferrous-accordion .subcat-acc-row').forEach(r => r.classList.remove('active'));
+  document.querySelectorAll('#ferrous-accordion .subcat-acc-body').forEach(b => b.classList.remove('open'));
   document.querySelectorAll('#ferrous-accordion .leaf-row').forEach(r => r.classList.remove('selected'));
   state.treeSelection = null;
   state.material = [];
 
   if (!isSel) {
-    state.treeSelection = { metalId, matKey: metal.matKey, metalLabel: metal.label, catId: null, catLabel: null, leafId: null, leafLabel: null };
+    state.treeSelection = { metalId, matKey: metal.matKey, metalLabel: metal.label, catId: null, catLabel: null, subcatId: null, subcatLabel: null, leafId: null, leafLabel: null };
     state.material = [metal.matKey];
     document.getElementById('fmr-'+metalId).classList.add('active');
     document.getElementById('fmb-'+metalId).classList.add('open');
@@ -1382,8 +1501,10 @@ function toggleCatAccF(metalId, catId) {
   const body = document.getElementById('fmb-'+metalId);
   body.querySelectorAll('.cat-acc-row').forEach(r => r.classList.remove('active'));
   body.querySelectorAll('.cat-acc-body').forEach(b => b.classList.remove('open'));
+  body.querySelectorAll('.subcat-acc-row').forEach(r => r.classList.remove('active'));
+  body.querySelectorAll('.subcat-acc-body').forEach(b => b.classList.remove('open'));
   body.querySelectorAll('.leaf-row').forEach(r => r.classList.remove('selected'));
-  state.treeSelection = { ...state.treeSelection, catId: null, catLabel: null, leafId: null, leafLabel: null };
+  state.treeSelection = { ...state.treeSelection, catId: null, catLabel: null, subcatId: null, subcatLabel: null, leafId: null, leafLabel: null };
 
   if (!isSel) {
     state.treeSelection = { ...state.treeSelection, catId, catLabel: cat.label };
@@ -1393,17 +1514,50 @@ function toggleCatAccF(metalId, catId) {
   updateFilters();
 }
 
+function toggleSubCatAccF(metalId, catId, subcatId) {
+  if (!state.treeSelection || state.treeSelection.catId !== catId) return;
+  const metal = FERROUS_TREE_DATA.find(m => m.id === metalId);
+  const cat = metal && metal.children.find(c => c.id === catId);
+  const subcat = cat && cat.children.find(s => s.id === subcatId);
+  if (!subcat) return;
+  const isSel = state.treeSelection.subcatId === subcatId;
+
+  const catBody = document.getElementById('fcb-'+catId);
+  catBody.querySelectorAll('.subcat-acc-row').forEach(r => r.classList.remove('active'));
+  catBody.querySelectorAll('.subcat-acc-body').forEach(b => b.classList.remove('open'));
+  catBody.querySelectorAll('.leaf-row').forEach(r => r.classList.remove('selected'));
+  state.treeSelection = { ...state.treeSelection, subcatId: null, subcatLabel: null, leafId: null, leafLabel: null };
+
+  if (!isSel) {
+    state.treeSelection = { ...state.treeSelection, subcatId, subcatLabel: subcat.label };
+    document.getElementById('fsr-'+subcatId).classList.add('active');
+    document.getElementById('fsb-'+subcatId).classList.add('open');
+  }
+  updateFilters();
+}
+
 function selectLeafAccF(leafId) {
-  if (!state.treeSelection || !state.treeSelection.catId) return;
-  const metal = FERROUS_TREE_DATA.find(m => m.id === state.treeSelection.metalId);
-  const cat = metal && metal.children.find(c => c.id === state.treeSelection.catId);
-  const leaf = cat && cat.children.find(l => l.id === leafId);
-  if (!leaf) return;
+  if (!state.treeSelection) return;
+  // Find the leaf anywhere in the ferrous tree
+  let foundLeaf = null;
+  outer: for (const m of FERROUS_TREE_DATA) {
+    for (const cat of m.children) {
+      for (const item of cat.children) {
+        if (item.children) {
+          const leaf = item.children.find(l => l.id === leafId);
+          if (leaf) { foundLeaf = leaf; break outer; }
+        } else if (item.id === leafId) {
+          foundLeaf = item; break outer;
+        }
+      }
+    }
+  }
+  if (!foundLeaf) return;
   document.querySelectorAll('#ferrous-accordion .leaf-row').forEach(r => r.classList.remove('selected'));
   if (state.treeSelection.leafId === leafId) {
     state.treeSelection = { ...state.treeSelection, leafId: null, leafLabel: null };
   } else {
-    state.treeSelection = { ...state.treeSelection, leafId, leafLabel: leaf.label };
+    state.treeSelection = { ...state.treeSelection, leafId, leafLabel: foundLeaf.label };
     document.getElementById('flr-'+leafId).classList.add('selected');
   }
   updateFilters();
