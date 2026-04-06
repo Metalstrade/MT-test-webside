@@ -1316,12 +1316,31 @@ const FERROUS_TREE_DATA = [
       { id:'gus-last-1', label:'fina / krhka litina' },
     ]},
   ]},
-  { id:'jeklo', label:'Jeklo', matKey:'Steel', children:[
-    { id:'jeklo-razred', label:'Razredi', children:[
-      { id:'jeklo-konstr',   label:'Konstrukcijsko jeklo' },
-      { id:'jeklo-nerjavno', label:'Nerjavno jeklo (Inox)' },
-      { id:'jeklo-orodna',   label:'Orodna jekla' },
-      { id:'jeklo-posebno',  label:'Posebno jeklo' },
+  { id:'jeklo', label:'Jekla', matKey:'Steel', children:[
+    { id:'jeklo-konstr', label:'Konstrukcijska jekla', children:[
+      { id:'jeklo-konstr-1', label:'Splošna konstrukcijska' },
+      { id:'jeklo-konstr-2', label:'Za strojne dele' },
+      { id:'jeklo-konstr-3', label:'Variva jekla' },
+    ]},
+    { id:'jeklo-orodna', label:'Orodna jekla', children:[
+      { id:'jeklo-orod-1', label:'Hladnoobdelovalna' },
+      { id:'jeklo-orod-2', label:'Toploobdelovalna' },
+      { id:'jeklo-orod-3', label:'Hitrorezna (HSS)' },
+    ]},
+    { id:'jeklo-legir', label:'Legirana jekla', children:[
+      { id:'jeklo-leg-1', label:'Nizkolegirana' },
+      { id:'jeklo-leg-2', label:'Visokolegirana' },
+    ]},
+    { id:'jeklo-ogljik', label:'Ogljikova (nelegirana) jekla', children:[
+      { id:'jeklo-ogl-1', label:'Nizkoogljična' },
+      { id:'jeklo-ogl-2', label:'Srednjeogljična' },
+      { id:'jeklo-ogl-3', label:'Visokoogljična' },
+    ]},
+    { id:'jeklo-spec', label:'Specialna jekla', children:[
+      { id:'jeklo-spec-1', label:'Vzmetna jekla' },
+      { id:'jeklo-spec-2', label:'Ležajna jekla' },
+      { id:'jeklo-spec-3', label:'Toplotno odporna jekla' },
+      { id:'jeklo-spec-4', label:'Elektrotehnična jekla' },
     ]},
   ]},
   { id:'inox', label:'Inox (Nerjavno jeklo)', matKey:'Inox', children:[
