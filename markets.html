@@ -606,16 +606,10 @@
       <div id="metal-accordion"></div>
     </div>
 
-    <!-- FERROUS materials -->
+    <!-- FERROUS materials ACCORDION -->
     <div id="group-ferrous" class="filter-section" style="display:none;">
       <div class="filter-section-label">Material</div>
-      <div class="chip-group">
-        <button class="chip" data-filter="material" data-val="Fe" onclick="toggleChip(this)">Železo <span class="symbol">Fe</span></button>
-        <button class="chip" data-filter="material" data-val="Steel" onclick="toggleChip(this)">Jeklo <span class="symbol">Fe+C &lt;2%</span></button>
-        <button class="chip" data-filter="material" data-val="CastIron" onclick="toggleChip(this)">Lito železo <span class="symbol">Fe+C &gt;2%</span></button>
-        <button class="chip" data-filter="material" data-val="Inox" onclick="toggleChip(this)">Nerjavno jeklo <span class="symbol">Fe+Cr+Ni</span></button>
-        <button class="chip" data-filter="material" data-val="ToolSteel" onclick="toggleChip(this)">Orodna jekla <span class="symbol">vis. leg.</span></button>
-      </div>
+      <div id="ferrous-accordion"></div>
     </div>
 
     <div class="filter-divider"></div>
@@ -1172,6 +1166,64 @@ const materialLabels = { Au:'Zlato', Ag:'Srebro', Pt:'Platina', Cu:'Baker', Al:'
 const materialSymbols = { Au:'Au', Ag:'Ag', Pt:'Pt', Cu:'Cu', Al:'Al', Ni:'Ni', Zn:'Zn', Ti:'Ti', Fe:'Fe', Steel:'Fe+C', CastIron:'Fe+C+', Inox:'Fe+Cr+Ni', ToolSteel:'vis. leg.' };
 const materialColors = { Au:'#C9A227', Ag:'#B8C9D4', Pt:'#8FA3B1', Cu:'#C17A50', Al:'#6B8090', Ni:'#5A6E7A', Zn:'#8FA3B1', Ti:'#8AAAB5', Fe:'#6B7280', Steel:'#7A8898', CastIron:'#5A6468', Inox:'#9AA8B2', ToolSteel:'#8090A0' };
 
+// ── FERROUS TREE DATA ──
+const FERROUS_TREE_DATA = [
+  { id:'fe', label:'Železo', icon:'⬡', color:'#6B7280', matKey:'Fe', children:[
+    { id:'fe-kakovost', label:'Kakovostni razredi', children:[
+      { id:'fe-e3',   label:'E3' },
+      { id:'fe-e1',   label:'E1' },
+      { id:'fe-e2',   label:'E2' },
+      { id:'fe-e8',   label:'E8 razsuto' },
+      { id:'fe-e6',   label:'E6 balirano' },
+      { id:'fe-e40',  label:'E40 šreder' },
+      { id:'fe-e5h',  label:'E5H čisti ostružki' },
+      { id:'fe-e5m',  label:'E5M mešani ostružki' },
+      { id:'fe-ehrb', label:'EHRB armatura' },
+      { id:'fe-ehrm', label:'EHRM mehanski deli' },
+      { id:'fe-e46',  label:'E46 sežigalnice' },
+    ]},
+    { id:'fe-hms', label:'HMS', children:[
+      { id:'fe-hms12',    label:'HMS 1/2' },
+      { id:'fe-hmsmix',   label:'HMS mix 50/50' },
+      { id:'fe-hms2',     label:'HMS 2' },
+    ]},
+    { id:'fe-posebno', label:'Posebno', children:[
+      { id:'fe-cisto',    label:'Čisto železo' },
+      { id:'fe-zdodat',   label:'Železo z dodatki' },
+      { id:'fe-posebna',  label:'Posebna stanja' },
+    ]},
+  ]},
+  { id:'gus', label:'Siva litina (GUS)', icon:'◈', color:'#5A6468', matKey:'CastIron', children:[
+    { id:'gus-osnov', label:'Osnove', children:[
+      { id:'gus-osnov1', label:'Osnovne kategorije' },
+    ]},
+    { id:'gus-sestava', label:'Po sestavi in obliki', children:[
+      { id:'gus-sest1', label:'Lamelarna siva litina' },
+      { id:'gus-sest2', label:'Nodularna litina' },
+      { id:'gus-sest3', label:'Bela litina' },
+      { id:'gus-sest4', label:'Malleable litina' },
+    ]},
+    { id:'gus-izvor', label:'Po izvoru', children:[
+      { id:'gus-izv1', label:'Avtomobilski ostanki' },
+      { id:'gus-izv2', label:'Industrijski ostanki' },
+      { id:'gus-izv3', label:'Gospodinjski ostanki' },
+    ]},
+    { id:'gus-lastnost', label:'Po lastnostih', children:[
+      { id:'gus-last1', label:'Visokoogljična' },
+      { id:'gus-last2', label:'Nizkolegirana' },
+      { id:'gus-last3', label:'Posebne lastnosti' },
+    ]},
+  ]},
+  { id:'jeklo', label:'Jeklo', icon:'◇', color:'#7A8898', matKey:'Steel', children:[
+    { id:'jeklo-razred', label:'Razredi', children:[
+      { id:'jeklo-konstrukc', label:'Konstrukcijsko jeklo' },
+      { id:'jeklo-nerjavno',  label:'Nerjavno jeklo (Inox)' },
+      { id:'jeklo-orodna',    label:'Orodna jekla' },
+      { id:'jeklo-posebno',   label:'Posebno jeklo' },
+    ]},
+  ]},
+];
+
 // ── METAL ACCORDION (NON-FERROUS) ──
 function initMetalAccordion() {
   const container = document.getElementById('metal-accordion');
@@ -1268,6 +1320,95 @@ function selectLeafAcc(leafId) {
 
 function filterMetalTree() {} // compatibility stub
 
+// ── METAL ACCORDION (FERROUS) ──
+function initFerrousAccordion() {
+  const container = document.getElementById('ferrous-accordion');
+  if (!container) return;
+  const chevSvg = `<svg class="metal-acc-chev" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M4 2l4 4-4 4"/></svg>`;
+  const catChevSvg = `<svg class="cat-acc-chev" viewBox="0 0 10 10" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M3.5 2l3 3-3 3"/></svg>`;
+
+  container.innerHTML = FERROUS_TREE_DATA.map(m => {
+    const cats = m.children.map(cat => {
+      const leaves = cat.children.map(leaf =>
+        `<div class="leaf-row" id="flr-${leaf.id}" onclick="selectLeafAccF('${leaf.id}')">${leaf.label}</div>`
+      ).join('');
+      return `
+        <div class="cat-acc-item">
+          <div class="cat-acc-row" id="fcr-${cat.id}" onclick="toggleCatAccF('${m.id}','${cat.id}')">
+            <span>${cat.label}</span>${catChevSvg}
+          </div>
+          <div class="cat-acc-body" id="fcb-${cat.id}">${leaves}</div>
+        </div>`;
+    }).join('');
+    return `
+      <div class="metal-acc-item">
+        <div class="metal-acc-row" id="fmr-${m.id}" onclick="toggleMetalAccF('${m.id}')">
+          <span>${m.label}</span>${chevSvg}
+        </div>
+        <div class="metal-acc-body" id="fmb-${m.id}">${cats}</div>
+      </div>`;
+  }).join('');
+}
+
+function toggleMetalAccF(metalId) {
+  const metal = FERROUS_TREE_DATA.find(m => m.id === metalId);
+  if (!metal) return;
+  const isSel = state.treeSelection && state.treeSelection.metalId === metalId;
+
+  document.querySelectorAll('#ferrous-accordion .metal-acc-row').forEach(r => r.classList.remove('active'));
+  document.querySelectorAll('#ferrous-accordion .metal-acc-body').forEach(b => b.classList.remove('open'));
+  document.querySelectorAll('#ferrous-accordion .cat-acc-row').forEach(r => r.classList.remove('active'));
+  document.querySelectorAll('#ferrous-accordion .cat-acc-body').forEach(b => b.classList.remove('open'));
+  document.querySelectorAll('#ferrous-accordion .leaf-row').forEach(r => r.classList.remove('selected'));
+  state.treeSelection = null;
+  state.material = [];
+
+  if (!isSel) {
+    state.treeSelection = { metalId, matKey: metal.matKey, metalLabel: metal.label, catId: null, catLabel: null, leafId: null, leafLabel: null };
+    state.material = [metal.matKey];
+    document.getElementById('fmr-'+metalId).classList.add('active');
+    document.getElementById('fmb-'+metalId).classList.add('open');
+  }
+  updateFilters();
+}
+
+function toggleCatAccF(metalId, catId) {
+  if (!state.treeSelection || state.treeSelection.metalId !== metalId) return;
+  const metal = FERROUS_TREE_DATA.find(m => m.id === metalId);
+  const cat = metal && metal.children.find(c => c.id === catId);
+  if (!cat) return;
+  const isSel = state.treeSelection.catId === catId;
+
+  const body = document.getElementById('fmb-'+metalId);
+  body.querySelectorAll('.cat-acc-row').forEach(r => r.classList.remove('active'));
+  body.querySelectorAll('.cat-acc-body').forEach(b => b.classList.remove('open'));
+  body.querySelectorAll('.leaf-row').forEach(r => r.classList.remove('selected'));
+  state.treeSelection = { ...state.treeSelection, catId: null, catLabel: null, leafId: null, leafLabel: null };
+
+  if (!isSel) {
+    state.treeSelection = { ...state.treeSelection, catId, catLabel: cat.label };
+    document.getElementById('fcr-'+catId).classList.add('active');
+    document.getElementById('fcb-'+catId).classList.add('open');
+  }
+  updateFilters();
+}
+
+function selectLeafAccF(leafId) {
+  if (!state.treeSelection || !state.treeSelection.catId) return;
+  const metal = FERROUS_TREE_DATA.find(m => m.id === state.treeSelection.metalId);
+  const cat = metal && metal.children.find(c => c.id === state.treeSelection.catId);
+  const leaf = cat && cat.children.find(l => l.id === leafId);
+  if (!leaf) return;
+  document.querySelectorAll('#ferrous-accordion .leaf-row').forEach(r => r.classList.remove('selected'));
+  if (state.treeSelection.leafId === leafId) {
+    state.treeSelection = { ...state.treeSelection, leafId: null, leafLabel: null };
+  } else {
+    state.treeSelection = { ...state.treeSelection, leafId, leafLabel: leaf.label };
+    document.getElementById('flr-'+leafId).classList.add('selected');
+  }
+  updateFilters();
+}
+
 function setType(t) {
   state.type = t;
   state.material = [];
@@ -1278,6 +1419,7 @@ function setType(t) {
   document.getElementById('group-ferrous').style.display   = t === 'ferrous'    ? '' : 'none';
   document.querySelectorAll('[data-filter="material"]').forEach(c => c.classList.remove('active'));
   if (t === 'nonferrous') initMetalAccordion();
+  if (t === 'ferrous') initFerrousAccordion();
   updateFilters();
 }
 
@@ -1435,7 +1577,8 @@ function clearTag(i) { window._tagClearFns[i](); }
 function resetAll() {
   state.material=[]; state.treeSelection=null; state.purity=[]; state.shape=[]; state.weight=[]; state.origin=''; state.quote=['spot'];
   state.cert = { auth:'any', serial:'any', mint:'any', assay:'any' };
-  initMetalAccordion();
+  if (state.type === 'nonferrous') initMetalAccordion();
+  if (state.type === 'ferrous') initFerrousAccordion();
   document.querySelectorAll('.chip, .purity-chip, .weight-chip, .kotacija-chip').forEach(b => b.classList.remove('active'));
   document.getElementById('price-from').value = '';
   document.getElementById('price-to').value   = '';
