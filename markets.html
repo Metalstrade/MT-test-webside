@@ -813,7 +813,8 @@
 
 <script>
 // ── TREE DATA ──
-const TREE_DATA = [
+// ── PRECIOUS METALS TREE DATA ──
+const PRECIOUS_TREE_DATA = [
   { id:'au', label:'Zlato (Au)', icon:'✦', color:'#C9A227', matKey:'Au', children:[
     { id:'au-cisti', label:'Čisto zlato', children:[
       {id:'au-c1',label:'Au ≥ 99,9 % (fine gold)'},{id:'au-c2',label:'Au ≥ 99,5 %'},
@@ -838,6 +839,41 @@ const TREE_DATA = [
       {id:'pt-z1',label:'Pt + Ir → trdnost'},{id:'pt-z2',label:'Pt + Rh → kataliza'},{id:'pt-z3',label:'Pt + Pd'},
     ]},
   ]},
+  { id:'pd', label:'Paladij (Pd)', icon:'◇', color:'#A8B8C4', matKey:'Pd', children:[
+    { id:'pd-cisti', label:'Čisti paladij', children:[
+      {id:'pd-c1',label:'Pd ≥ 99,95 %'},{id:'pd-c2',label:'Pd ≥ 99,9 %'},
+    ]},
+    { id:'pd-zlitine', label:'Zlitine', children:[
+      {id:'pd-z1',label:'Pd + Ag → električni kontakti'},{id:'pd-z2',label:'Pd + Cu → dentalne zlitine'},{id:'pd-z3',label:'Pd + Pt → kataliza'},
+    ]},
+  ]},
+  { id:'rh', label:'Rodij (Rh)', icon:'◆', color:'#C0CDD6', matKey:'Rh', children:[
+    { id:'rh-cisti', label:'Čisti rodij', children:[
+      {id:'rh-c1',label:'Rh ≥ 99,9 %'},{id:'rh-c2',label:'Rh ≥ 99,5 %'},
+    ]},
+    { id:'rh-zlitine', label:'Zlitine', children:[
+      {id:'rh-z1',label:'Rh + Pt → katalitični pretvorniki'},{id:'rh-z2',label:'Rh + Ir → visokotemperat. aplikacije'},
+    ]},
+  ]},
+  { id:'ru', label:'Rutenij (Ru)', icon:'▷', color:'#9AABB5', matKey:'Ru', children:[
+    { id:'ru-cisti', label:'Čisti rutenij', children:[
+      {id:'ru-c1',label:'Ru ≥ 99,9 %'},{id:'ru-c2',label:'Ru ≥ 99,5 %'},
+    ]},
+    { id:'ru-zlitine', label:'Zlitine', children:[
+      {id:'ru-z1',label:'Ru + Pt → elektrokemija'},{id:'ru-z2',label:'Ru + Ti → elektrokemija'},{id:'ru-z3',label:'Ru + Os → gravure'},
+    ]},
+  ]},
+  { id:'os', label:'Osmij (Os)', icon:'▣', color:'#8898A4', matKey:'Os', children:[
+    { id:'os-cisti', label:'Čisti osmij', children:[
+      {id:'os-c1',label:'Os ≥ 99,9 %'},{id:'os-c2',label:'Os ≥ 99,5 %'},
+    ]},
+    { id:'os-zlitine', label:'Zlitine', children:[
+      {id:'os-z1',label:'Os + Ir → nalivna peresa (trdost)'},{id:'os-z2',label:'Os + Ru → industrijska orodja'},
+    ]},
+  ]},
+];
+
+const TREE_DATA = [
   { id:'cu', label:'Baker (Cu)', icon:'🔶', color:'#B87333', matKey:'Cu', children:[
     { id:'cu-klasa', label:'Klasa (odpad)', children:[
       {id:'cu-k1',label:'1. klasa – Millberry (čisti, svetli baker)'},
@@ -2012,6 +2048,90 @@ function selectLeafAccF(leafId) {
   updateFilters();
 }
 
+// ── PRECIOUS METALS ACCORDION ──
+function initPreciousAccordion() {
+  const container = document.getElementById('precious-accordion');
+  if (!container) return;
+  const chevSvg    = `<svg class="metal-acc-chev" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M4 2l4 4-4 4"/></svg>`;
+  const catChevSvg = `<svg class="cat-acc-chev" viewBox="0 0 10 10" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M3.5 2l3 3-3 3"/></svg>`;
+  container.innerHTML = PRECIOUS_TREE_DATA.map(m => {
+    const cats = m.children.map(cat => {
+      const leaves = cat.children.map(leaf =>
+        `<div class="leaf-row" id="plr-${leaf.id}" onclick="selectLeafAccPM('${leaf.id}')">${leaf.label}</div>`
+      ).join('');
+      return `<div class="cat-acc-item">
+        <div class="cat-acc-row" id="pcr-${cat.id}" onclick="toggleCatAccPM('${m.id}','${cat.id}')">
+          <span>${cat.label}</span>${catChevSvg}
+        </div>
+        <div class="cat-acc-body" id="pcb-${cat.id}">${leaves}</div>
+      </div>`;
+    }).join('');
+    return `<div class="metal-acc-item">
+      <div class="metal-acc-row" id="pmr-${m.id}" onclick="toggleMetalAccPM('${m.id}')">
+        <span>${m.label}</span>${chevSvg}
+      </div>
+      <div class="metal-acc-body" id="pmb-${m.id}">${cats}</div>
+    </div>`;
+  }).join('');
+}
+
+function toggleMetalAccPM(metalId) {
+  const metal = PRECIOUS_TREE_DATA.find(m => m.id === metalId);
+  if (!metal) return;
+  const isSel = state.treeSelection && state.treeSelection.metalId === metalId;
+  document.querySelectorAll('#precious-accordion .metal-acc-row').forEach(r => r.classList.remove('active'));
+  document.querySelectorAll('#precious-accordion .metal-acc-body').forEach(b => b.classList.remove('open'));
+  document.querySelectorAll('#precious-accordion .cat-acc-row').forEach(r => r.classList.remove('active'));
+  document.querySelectorAll('#precious-accordion .cat-acc-body').forEach(b => b.classList.remove('open'));
+  document.querySelectorAll('#precious-accordion .leaf-row').forEach(r => r.classList.remove('selected'));
+  state.treeSelection = null;
+  if (!isSel) {
+    state.treeSelection = { metalId, metalLabel: metal.label, catId: null, catLabel: null, leafId: null, leafLabel: null, matKey: metal.matKey };
+    document.getElementById('pmr-'+metalId).classList.add('active');
+    document.getElementById('pmb-'+metalId).classList.add('open');
+  }
+  updateFilters();
+}
+
+function toggleCatAccPM(metalId, catId) {
+  if (!state.treeSelection || state.treeSelection.metalId !== metalId) return;
+  const metal = PRECIOUS_TREE_DATA.find(m => m.id === metalId);
+  const cat = metal && metal.children.find(c => c.id === catId);
+  if (!cat) return;
+  const isSel = state.treeSelection.catId === catId;
+  const metalBody = document.getElementById('pmb-'+metalId);
+  metalBody.querySelectorAll('.cat-acc-row').forEach(r => r.classList.remove('active'));
+  metalBody.querySelectorAll('.cat-acc-body').forEach(b => b.classList.remove('open'));
+  metalBody.querySelectorAll('.leaf-row').forEach(r => r.classList.remove('selected'));
+  state.treeSelection = { ...state.treeSelection, catId: null, catLabel: null, leafId: null, leafLabel: null };
+  if (!isSel) {
+    state.treeSelection = { ...state.treeSelection, catId, catLabel: cat.label };
+    document.getElementById('pcr-'+catId).classList.add('active');
+    document.getElementById('pcb-'+catId).classList.add('open');
+  }
+  updateFilters();
+}
+
+function selectLeafAccPM(leafId) {
+  if (!state.treeSelection) return;
+  let foundLeaf = null;
+  outer: for (const m of PRECIOUS_TREE_DATA) {
+    for (const cat of m.children) {
+      const leaf = cat.children.find(l => l.id === leafId);
+      if (leaf) { foundLeaf = leaf; break outer; }
+    }
+  }
+  if (!foundLeaf) return;
+  document.querySelectorAll('#precious-accordion .leaf-row').forEach(r => r.classList.remove('selected'));
+  if (state.treeSelection.leafId === leafId) {
+    state.treeSelection = { ...state.treeSelection, leafId: null, leafLabel: null };
+  } else {
+    state.treeSelection = { ...state.treeSelection, leafId, leafLabel: foundLeaf.label };
+    document.getElementById('plr-'+leafId).classList.add('selected');
+  }
+  updateFilters();
+}
+
 // ── NONMETALS ACCORDION ──
 function initNonMetalsAccordion() {
   const container = document.getElementById('nonmetals-accordion');
@@ -2148,6 +2268,7 @@ function setType(t) {
   document.querySelectorAll('[data-filter="material"]').forEach(c => c.classList.remove('active'));
   if (t === 'nonferrous') initMetalAccordion();
   if (t === 'ferrous')    initFerrousAccordion();
+  if (t === 'precious')   initPreciousAccordion();
   if (t === 'nonmetals')  initNonMetalsAccordion();
   updateFilters();
 }
@@ -2308,6 +2429,7 @@ function resetAll() {
   state.cert = { auth:'any', serial:'any', mint:'any', assay:'any' };
   if (state.type === 'nonferrous') initMetalAccordion();
   if (state.type === 'ferrous')    initFerrousAccordion();
+  if (state.type === 'precious')   initPreciousAccordion();
   if (state.type === 'nonmetals')  initNonMetalsAccordion();
   document.querySelectorAll('.chip, .purity-chip, .weight-chip, .kotacija-chip').forEach(b => b.classList.remove('active'));
   document.getElementById('price-from').value = '';
