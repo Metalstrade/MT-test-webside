@@ -1426,6 +1426,355 @@ const FERROUS_TREE_DATA = [
   ]},
 ];
 
+// ── NONMETALS TREE DATA ──
+const NONMETALS_TREE_DATA = [
+  { id:'papir', label:'Papir', matKey:'Papir', children:[
+    { id:'papir-klasa', label:'Klasa (Odpad)', children:[
+      { id:'papir-kl1', label:'1. klasa', children:[
+        { id:'papir-kl1-1', label:'bel papir' },
+        { id:'papir-kl1-2', label:'pisarniški papir' },
+        { id:'papir-kl1-3', label:'nepopisan, brez barv' },
+        { id:'papir-kl1-4', label:'brez sponk, plastike' },
+      ]},
+      { id:'papir-kl2', label:'2. klasa', children:[
+        { id:'papir-kl2-1', label:'mešani beli papir' },
+        { id:'papir-kl2-2', label:'delno potiskan papir' },
+        { id:'papir-kl2-3', label:'kuverte brez plastike' },
+        { id:'papir-kl2-4', label:'rahlo obarvan' },
+      ]},
+      { id:'papir-kl3', label:'3. klasa', children:[
+        { id:'papir-kl3-1', label:'časopis & revije' },
+        { id:'papir-kl3-2', label:'časopisni papir' },
+        { id:'papir-kl3-3', label:'revije' },
+        { id:'papir-kl3-4', label:'reklamni letaki' },
+      ]},
+      { id:'papir-kl4', label:'4. klasa', children:[
+        { id:'papir-kl4-1', label:'karton (valoviti)' },
+        { id:'papir-kl4-2', label:'škatle (embalaža)' },
+        { id:'papir-kl4-3', label:'valoviti karton' },
+        { id:'papir-kl4-4', label:'brez večjih nečistoč' },
+      ]},
+      { id:'papir-kl5', label:'5. klasa', children:[
+        { id:'papir-kl5-1', label:'mešani papir' },
+        { id:'papir-kl5-2', label:'kombinacija papirja in kartona' },
+        { id:'papir-kl5-3', label:'razni odpadki iz gospodinjstev' },
+      ]},
+      { id:'papir-kl6', label:'6. klasa', children:[
+        { id:'papir-kl6-1', label:'laminiran / premazan papir' },
+        { id:'papir-kl6-2', label:'plastificiran papir' },
+        { id:'papir-kl6-3', label:'tetrapak (papir + plastika + aluminij)' },
+        { id:'papir-kl6-4', label:'foto papir' },
+      ]},
+      { id:'papir-kl7', label:'7. klasa', children:[
+        { id:'papir-kl7-1', label:'papir z nečistočami' },
+        { id:'papir-kl7-2', label:'masten papir' },
+        { id:'papir-kl7-3', label:'papir z ostanki lepila, barve' },
+      ]},
+      { id:'papir-kl8', label:'8. klasa', children:[
+        { id:'papir-kl8-1', label:'kompleksni odpadki' },
+        { id:'papir-kl8-2', label:'papir + kovina + plastika' },
+        { id:'papir-kl8-3', label:'arhivski materiali z dodatki' },
+      ]},
+    ]},
+    { id:'papir-cisti', label:'Čisti papir', children:[
+      { id:'papir-cis-1', label:'celuloza ≥ 95 %' },
+    ]},
+    { id:'papir-vrste', label:'Glavne vrste papirja', children:[
+      { id:'papir-vrs-1', label:'grafični papir' },
+      { id:'papir-vrs-2', label:'embalažni papir' },
+      { id:'papir-vrs-3', label:'higienski papir' },
+      { id:'papir-vrs-4', label:'tehnični industrijski papir' },
+      { id:'papir-vrs-5', label:'ostalo' },
+    ]},
+    { id:'papir-pogoste', label:'Pogoste oblike papirja', children:[
+      { id:'papir-pog-1', label:'časopisni papir' },
+      { id:'papir-pog-2', label:'karton' },
+      { id:'papir-pog-3', label:'mešani papir' },
+      { id:'papir-pog-4', label:'pisarniški papir' },
+    ]},
+    { id:'papir-manj', label:'Manj pogoste vrste papirja', children:[
+      { id:'papir-man-1', label:'voščen papir' },
+      { id:'papir-man-2', label:'termalni papir' },
+      { id:'papir-man-3', label:'samokopirni papir' },
+      { id:'papir-man-4', label:'foto papir' },
+    ]},
+    { id:'papir-probl', label:'Problematični papir', children:[
+      { id:'papir-pro-1', label:'plastificiran papir' },
+      { id:'papir-pro-2', label:'tetrapak embalaža' },
+      { id:'papir-pro-3', label:'masten papir' },
+      { id:'papir-pro-4', label:'papir z barvami/kemikalijami' },
+    ]},
+    { id:'papir-komplex', label:'Kompleksni papir', children:[
+      { id:'papir-kom-1', label:'papir + plastika' },
+      { id:'papir-kom-2', label:'papir + aluminij' },
+      { id:'papir-kom-3', label:'papir + tekstil' },
+      { id:'papir-kom-4', label:'ostalo' },
+    ]},
+  ]},
+  { id:'karton', label:'Karton', matKey:'Karton', children:[
+    { id:'karton-klasa', label:'Klasa (Odpad)', children:[
+      { id:'karton-kl1', label:'1. klasa', children:[
+        { id:'karton-kl1-1', label:'čisti valoviti karton (OCC premium)' },
+        { id:'karton-kl1-2', label:'transportne škatle' },
+        { id:'karton-kl1-3', label:'brez trakov, folije, stiropora' },
+      ]},
+      { id:'karton-kl2', label:'2. klasa', children:[
+        { id:'karton-kl2-1', label:'standardni valoviti karton (OCC)' },
+        { id:'karton-kl2-2', label:'rabljene škatle' },
+        { id:'karton-kl2-3', label:'manjše nečistoče' },
+        { id:'karton-kl2-4', label:'rahlo potiskan' },
+      ]},
+      { id:'karton-kl3', label:'3. klasa', children:[
+        { id:'karton-kl3-1', label:'mešani karton' },
+      ]},
+      { id:'karton-kl4', label:'4. klasa', children:[
+        { id:'karton-kl4-1', label:'zložen / stisnjen karton' },
+        { id:'karton-kl4-2', label:'baliran karton' },
+        { id:'karton-kl4-3', label:'industrijski odpad' },
+      ]},
+      { id:'karton-kl5', label:'5. klasa', children:[
+        { id:'karton-kl5-1', label:'tanek karton (lepenka)' },
+        { id:'karton-kl5-2', label:'brez plastike' },
+      ]},
+      { id:'karton-kl6', label:'6. klasa', children:[
+        { id:'karton-kl6-1', label:'premazan / laminiran karton' },
+        { id:'karton-kl6-2', label:'karton s plastiko ali voskom' },
+      ]},
+      { id:'karton-kl7', label:'7. klasa', children:[
+        { id:'karton-kl7-1', label:'karton z nečistočami' },
+        { id:'karton-kl7-2', label:'masten' },
+      ]},
+      { id:'karton-kl8', label:'8. klasa', children:[
+        { id:'karton-kl8-1', label:'kompleksni karton' },
+        { id:'karton-kl8-2', label:'tetrapak' },
+        { id:'karton-kl8-3', label:'večslojna embalaža' },
+      ]},
+    ]},
+    { id:'karton-cisti', label:'Čisti karton', children:[
+      { id:'karton-cis-1', label:'celuloza ≥ 90–95 %' },
+      { id:'karton-cis-2', label:'suh' },
+    ]},
+    { id:'karton-vrste', label:'Glavne vrste kartona', children:[
+      { id:'karton-vrs-1', label:'valoviti karton' },
+      { id:'karton-vrs-2', label:'lepenka' },
+      { id:'karton-vrs-3', label:'kraft karton' },
+      { id:'karton-vrs-4', label:'recikliran karton' },
+    ]},
+    { id:'karton-pogoste', label:'Pogoste oblike', children:[
+      { id:'karton-pog-1', label:'transportne škatle' },
+      { id:'karton-pog-2', label:'embalažni karton' },
+      { id:'karton-pog-3', label:'industrijski karton' },
+      { id:'karton-pog-4', label:'arhivske škatle' },
+    ]},
+    { id:'karton-manj', label:'Manj pogoste vrste', children:[
+      { id:'karton-man-1', label:'voščen karton' },
+      { id:'karton-man-2', label:'bitumenski karton' },
+      { id:'karton-man-3', label:'ognjeodporen karton' },
+      { id:'karton-man-4', label:'večslojni karton' },
+    ]},
+    { id:'karton-probl', label:'Problematični karton', children:[
+      { id:'karton-pro-1', label:'masten' },
+      { id:'karton-pro-2', label:'moker' },
+      { id:'karton-pro-3', label:'plastificiran' },
+      { id:'karton-pro-4', label:'kemikalije' },
+    ]},
+    { id:'karton-komplex', label:'Kompleksni karton', children:[
+      { id:'karton-kom-1', label:'karton + plastika' },
+      { id:'karton-kom-2', label:'karton + aluminij' },
+      { id:'karton-kom-3', label:'karton + tekstil' },
+      { id:'karton-kom-4', label:'ostalo' },
+    ]},
+  ]},
+  { id:'tekstil', label:'Tekstil', matKey:'Tekstil', children:[
+    { id:'tekst-klasa', label:'Klasa (Odpad)', children:[
+      { id:'tekst-kl1', label:'1. klasa', children:[
+        { id:'tekst-kl1-1', label:'čisti, ponovno uporabni tekstil' },
+        { id:'tekst-kl1-2', label:'ohranjena oblačila' },
+        { id:'tekst-kl1-3', label:'brez poškodb' },
+      ]},
+      { id:'tekst-kl2', label:'2. klasa', children:[
+        { id:'tekst-kl2-1', label:'kakovosten tekstil za reciklažo' },
+        { id:'tekst-kl2-2', label:'manjše poškodbe' },
+      ]},
+      { id:'tekst-kl3', label:'3. klasa', children:[
+        { id:'tekst-kl3-1', label:'mešani tekstil' },
+        { id:'tekst-kl3-2', label:'različni materiali' },
+        { id:'tekst-kl3-3', label:'oblačila, posteljnina, brisače' },
+      ]},
+      { id:'tekst-kl4', label:'4. klasa', children:[
+        { id:'tekst-kl4-1', label:'bombažni tekstil' },
+        { id:'tekst-kl4-2', label:'100 % bombaž' },
+        { id:'tekst-kl4-3', label:'majice, rjuhe' },
+      ]},
+      { id:'tekst-kl5', label:'5. klasa', children:[
+        { id:'tekst-kl5-1', label:'sintetični tekstil' },
+        { id:'tekst-kl5-2', label:'poliester, najlon, akril' },
+        { id:'tekst-kl5-3', label:'športna oblačila' },
+      ]},
+      { id:'tekst-kl6', label:'6. klasa', children:[
+        { id:'tekst-kl6-1', label:'mešanice' },
+        { id:'tekst-kl6-2', label:'bombaž + poliester' },
+      ]},
+      { id:'tekst-kl7', label:'7. klasa', children:[
+        { id:'tekst-kl7-1', label:'tekstil z nečistočami' },
+        { id:'tekst-kl7-2', label:'masten, umazan' },
+        { id:'tekst-kl7-3', label:'kemikalije' },
+      ]},
+      { id:'tekst-kl8', label:'8. klasa', children:[
+        { id:'tekst-kl8-1', label:'kompleksni tekstil' },
+        { id:'tekst-kl8-2', label:'tekstil + plastika/pena/kovina' },
+        { id:'tekst-kl8-3', label:'obutev, torbe' },
+      ]},
+    ]},
+    { id:'tekst-cisti', label:'Čisti tekstil', children:[
+      { id:'tekst-cis-1', label:'enoten material' },
+      { id:'tekst-cis-2', label:'brez kontaminacije' },
+    ]},
+    { id:'tekst-vrste', label:'Glavne vrste tekstila', children:[
+      { id:'tekst-vrs-1', label:'naravni' },
+      { id:'tekst-vrs-2', label:'sintetični' },
+      { id:'tekst-vrs-3', label:'polsintetični' },
+      { id:'tekst-vrs-4', label:'tehnični' },
+    ]},
+    { id:'tekst-sort', label:'Sortiran tekstil', children:[
+      { id:'tekst-srt-1', label:'CO' },
+      { id:'tekst-srt-2', label:'PES / PL' },
+      { id:'tekst-srt-3', label:'PA' },
+      { id:'tekst-srt-4', label:'WO' },
+      { id:'tekst-srt-5', label:'VI' },
+      { id:'tekst-srt-6', label:'EL' },
+    ]},
+    { id:'tekst-pogoste', label:'Pogoste oblike', children:[
+      { id:'tekst-pog-1', label:'oblačila' },
+      { id:'tekst-pog-2', label:'posteljnina' },
+      { id:'tekst-pog-3', label:'brisače' },
+      { id:'tekst-pog-4', label:'zavese' },
+    ]},
+    { id:'tekst-manj', label:'Manj pogoste vrste', children:[
+      { id:'tekst-man-1', label:'ognjeodporni' },
+      { id:'tekst-man-2', label:'vodoodbojni' },
+      { id:'tekst-man-3', label:'medicinski' },
+      { id:'tekst-man-4', label:'filtrirni' },
+    ]},
+    { id:'tekst-probl', label:'Problematični tekstil', children:[
+      { id:'tekst-pro-1', label:'masten' },
+      { id:'tekst-pro-2', label:'plesniv' },
+      { id:'tekst-pro-3', label:'kemikalije' },
+    ]},
+    { id:'tekst-komplex', label:'Kompleksni tekstil', children:[
+      { id:'tekst-kom-1', label:'tekstil + plastika' },
+      { id:'tekst-kom-2', label:'tekstil + kovina' },
+      { id:'tekst-kom-3', label:'tekstil + pena' },
+      { id:'tekst-kom-4', label:'ostalo' },
+    ]},
+  ]},
+  { id:'plastika', label:'Plastika', matKey:'Plastika', children:[
+    { id:'plast-klasa', label:'Klasa (Odpad)', children:[
+      { id:'plast-kl1', label:'čista plastika' },
+      { id:'plast-kl2', label:'embalažna plastika' },
+      { id:'plast-kl3', label:'mešana plastika' },
+      { id:'plast-kl4', label:'trda plastika' },
+      { id:'plast-kl5', label:'folije' },
+      { id:'plast-kl6', label:'plastika z dodatki' },
+      { id:'plast-kl7', label:'plastika z nečistočami' },
+      { id:'plast-kl8', label:'kompleksna plastika' },
+    ]},
+    { id:'plast-cista', label:'Čista plastika', children:[
+      { id:'plast-cis-1', label:'≥ 99 % polimer' },
+    ]},
+    { id:'plast-vrste', label:'Vrste (kode)', children:[
+      { id:'plast-vrs-1', label:'PET' },
+      { id:'plast-vrs-2', label:'HDPE' },
+      { id:'plast-vrs-3', label:'PVC' },
+      { id:'plast-vrs-4', label:'LDPE' },
+      { id:'plast-vrs-5', label:'PP' },
+      { id:'plast-vrs-6', label:'PS' },
+      { id:'plast-vrs-7', label:'ABS' },
+      { id:'plast-vrs-8', label:'ostalo' },
+    ]},
+    { id:'plast-stiropor', label:'Stiropor', children:[
+      { id:'plast-sti-1', label:'čisti' },
+      { id:'plast-sti-2', label:'barvan' },
+      { id:'plast-sti-3', label:'mešan' },
+      { id:'plast-sti-4', label:'masten' },
+      { id:'plast-sti-5', label:'ostalo' },
+    ]},
+    { id:'plast-pogoste', label:'Pogoste oblike', children:[
+      { id:'plast-pog-1', label:'plastenke' },
+      { id:'plast-pog-2', label:'embalaža' },
+      { id:'plast-pog-3', label:'folije' },
+      { id:'plast-pog-4', label:'industrijski deli' },
+    ]},
+    { id:'plast-manj', label:'Manj pogoste vrste', children:[
+      { id:'plast-man-1', label:'ABS' },
+      { id:'plast-man-2', label:'PC' },
+      { id:'plast-man-3', label:'PA' },
+      { id:'plast-man-4', label:'PLA' },
+    ]},
+    { id:'plast-probl', label:'Problematična plastika', children:[
+      { id:'plast-pro-1', label:'večslojna' },
+      { id:'plast-pro-2', label:'črna' },
+      { id:'plast-pro-3', label:'PVC' },
+      { id:'plast-pro-4', label:'mastna' },
+    ]},
+    { id:'plast-komplex', label:'Kompleksna plastika', children:[
+      { id:'plast-kom-1', label:'plastika + aluminij' },
+      { id:'plast-kom-2', label:'plastika + papir' },
+      { id:'plast-kom-3', label:'plastika + tekstil' },
+      { id:'plast-kom-4', label:'ostalo' },
+    ]},
+  ]},
+  { id:'guma', label:'Guma', matKey:'Guma', children:[
+    { id:'guma-klasa', label:'Klasa (Odpad)', children:[
+      { id:'guma-kl1', label:'čista guma' },
+      { id:'guma-kl2', label:'pnevmatike' },
+      { id:'guma-kl3', label:'rezane pnevmatike' },
+      { id:'guma-kl4', label:'tehnična guma' },
+      { id:'guma-kl5', label:'mešana guma' },
+      { id:'guma-kl6', label:'guma z dodatki' },
+      { id:'guma-kl7', label:'guma z nečistočami' },
+      { id:'guma-kl8', label:'kompleksna guma' },
+    ]},
+    { id:'guma-cista', label:'Čista guma', children:[
+      { id:'guma-cis-1', label:'≥ 95 % elastomer' },
+    ]},
+    { id:'guma-vrste', label:'Vrste gume', children:[
+      { id:'guma-vrs-1', label:'NR' },
+      { id:'guma-vrs-2', label:'SBR' },
+      { id:'guma-vrs-3', label:'BR' },
+      { id:'guma-vrs-4', label:'NBR' },
+      { id:'guma-vrs-5', label:'EPDM' },
+      { id:'guma-vrs-6', label:'CR' },
+      { id:'guma-vrs-7', label:'IIR' },
+      { id:'guma-vrs-8', label:'PU' },
+    ]},
+    { id:'guma-pnev', label:'Pnevmatike', children:[
+      { id:'guma-pnev-1', label:'cele' },
+      { id:'guma-pnev-2', label:'rezane' },
+      { id:'guma-pnev-3', label:'granulat' },
+      { id:'guma-pnev-4', label:'tekstil' },
+      { id:'guma-pnev-5', label:'jeklo' },
+    ]},
+    { id:'guma-pogoste', label:'Pogoste oblike', children:[
+      { id:'guma-pog-1', label:'pnevmatike' },
+      { id:'guma-pog-2', label:'tesnila' },
+      { id:'guma-pog-3', label:'cevi' },
+      { id:'guma-pog-4', label:'trakovi' },
+    ]},
+    { id:'guma-probl', label:'Problematična guma', children:[
+      { id:'guma-pro-1', label:'olja' },
+      { id:'guma-pro-2', label:'kemikalije' },
+      { id:'guma-pro-3', label:'degradirana' },
+    ]},
+    { id:'guma-komplex', label:'Kompleksna guma', children:[
+      { id:'guma-kom-1', label:'guma + kovina' },
+      { id:'guma-kom-2', label:'guma + tekstil' },
+      { id:'guma-kom-3', label:'guma + plastika' },
+      { id:'guma-kom-4', label:'ostalo' },
+    ]},
+  ]},
+];
+
 // ── METAL ACCORDION (NON-FERROUS) ──
 function initMetalAccordion() {
   const container = document.getElementById('metal-accordion');
@@ -1663,6 +2012,131 @@ function selectLeafAccF(leafId) {
   updateFilters();
 }
 
+// ── NONMETALS ACCORDION ──
+function initNonMetalsAccordion() {
+  const container = document.getElementById('nonmetals-accordion');
+  if (!container) return;
+  const chevSvg    = `<svg class="metal-acc-chev" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M4 2l4 4-4 4"/></svg>`;
+  const catChevSvg = `<svg class="cat-acc-chev" viewBox="0 0 10 10" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M3.5 2l3 3-3 3"/></svg>`;
+  const subChevSvg = `<svg class="subcat-acc-chev" viewBox="0 0 10 10" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M3.5 2l3 3-3 3"/></svg>`;
+  container.innerHTML = NONMETALS_TREE_DATA.map(m => {
+    const cats = m.children.map(cat => {
+      const catContent = cat.children.map(item => {
+        if (item.children && item.children.length > 0) {
+          const leaves = item.children.map(leaf =>
+            `<div class="leaf-row leaf-deep" id="nlr-${leaf.id}" onclick="selectLeafAccNM('${leaf.id}')">${leaf.label}</div>`
+          ).join('');
+          return `<div class="subcat-acc-item">
+            <div class="subcat-acc-row" id="nsr-${item.id}" onclick="toggleSubCatAccNM('${m.id}','${cat.id}','${item.id}')">
+              <span>${item.label}</span>${subChevSvg}
+            </div>
+            <div class="subcat-acc-body" id="nsb-${item.id}">${leaves}</div>
+          </div>`;
+        } else {
+          return `<div class="leaf-row" id="nlr-${item.id}" onclick="selectLeafAccNM('${item.id}')">${item.label}</div>`;
+        }
+      }).join('');
+      return `<div class="cat-acc-item">
+        <div class="cat-acc-row" id="ncr-${cat.id}" onclick="toggleCatAccNM('${m.id}','${cat.id}')">
+          <span>${cat.label}</span>${catChevSvg}
+        </div>
+        <div class="cat-acc-body" id="ncb-${cat.id}">${catContent}</div>
+      </div>`;
+    }).join('');
+    return `<div class="metal-acc-item">
+      <div class="metal-acc-row" id="nmr-${m.id}" onclick="toggleMetalAccNM('${m.id}')">
+        <span>${m.label}</span>${chevSvg}
+      </div>
+      <div class="metal-acc-body" id="nmb-${m.id}">${cats}</div>
+    </div>`;
+  }).join('');
+}
+
+function toggleMetalAccNM(metalId) {
+  const metal = NONMETALS_TREE_DATA.find(m => m.id === metalId);
+  if (!metal) return;
+  const isSel = state.treeSelection && state.treeSelection.metalId === metalId;
+  document.querySelectorAll('#nonmetals-accordion .metal-acc-row').forEach(r => r.classList.remove('active'));
+  document.querySelectorAll('#nonmetals-accordion .metal-acc-body').forEach(b => b.classList.remove('open'));
+  document.querySelectorAll('#nonmetals-accordion .cat-acc-row').forEach(r => r.classList.remove('active'));
+  document.querySelectorAll('#nonmetals-accordion .cat-acc-body').forEach(b => b.classList.remove('open'));
+  document.querySelectorAll('#nonmetals-accordion .leaf-row').forEach(r => r.classList.remove('selected'));
+  state.treeSelection = null;
+  if (!isSel) {
+    state.treeSelection = { metalId, metalLabel: metal.label, catId: null, catLabel: null, subcatId: null, subcatLabel: null, leafId: null, leafLabel: null, matKey: metal.matKey };
+    document.getElementById('nmr-'+metalId).classList.add('active');
+    document.getElementById('nmb-'+metalId).classList.add('open');
+  }
+  updateFilters();
+}
+
+function toggleCatAccNM(metalId, catId) {
+  if (!state.treeSelection || state.treeSelection.metalId !== metalId) return;
+  const metal = NONMETALS_TREE_DATA.find(m => m.id === metalId);
+  const cat = metal && metal.children.find(c => c.id === catId);
+  if (!cat) return;
+  const isSel = state.treeSelection.catId === catId;
+  const metalBody = document.getElementById('nmb-'+metalId);
+  metalBody.querySelectorAll('.cat-acc-row').forEach(r => r.classList.remove('active'));
+  metalBody.querySelectorAll('.cat-acc-body').forEach(b => b.classList.remove('open'));
+  metalBody.querySelectorAll('.subcat-acc-row').forEach(r => r.classList.remove('active'));
+  metalBody.querySelectorAll('.subcat-acc-body').forEach(b => b.classList.remove('open'));
+  metalBody.querySelectorAll('.leaf-row').forEach(r => r.classList.remove('selected'));
+  state.treeSelection = { ...state.treeSelection, catId: null, catLabel: null, subcatId: null, subcatLabel: null, leafId: null, leafLabel: null };
+  if (!isSel) {
+    state.treeSelection = { ...state.treeSelection, catId, catLabel: cat.label };
+    document.getElementById('ncr-'+catId).classList.add('active');
+    document.getElementById('ncb-'+catId).classList.add('open');
+  }
+  updateFilters();
+}
+
+function toggleSubCatAccNM(metalId, catId, subcatId) {
+  if (!state.treeSelection || state.treeSelection.catId !== catId) return;
+  const metal = NONMETALS_TREE_DATA.find(m => m.id === metalId);
+  const cat = metal && metal.children.find(c => c.id === catId);
+  const subcat = cat && cat.children.find(s => s.id === subcatId);
+  if (!subcat) return;
+  const isSel = state.treeSelection.subcatId === subcatId;
+  const catBody = document.getElementById('ncb-'+catId);
+  catBody.querySelectorAll('.subcat-acc-row').forEach(r => r.classList.remove('active'));
+  catBody.querySelectorAll('.subcat-acc-body').forEach(b => b.classList.remove('open'));
+  catBody.querySelectorAll('.leaf-row').forEach(r => r.classList.remove('selected'));
+  state.treeSelection = { ...state.treeSelection, subcatId: null, subcatLabel: null, leafId: null, leafLabel: null };
+  if (!isSel) {
+    state.treeSelection = { ...state.treeSelection, subcatId, subcatLabel: subcat.label };
+    document.getElementById('nsr-'+subcatId).classList.add('active');
+    document.getElementById('nsb-'+subcatId).classList.add('open');
+  }
+  updateFilters();
+}
+
+function selectLeafAccNM(leafId) {
+  if (!state.treeSelection) return;
+  let foundLeaf = null;
+  outer: for (const m of NONMETALS_TREE_DATA) {
+    for (const cat of m.children) {
+      for (const item of cat.children) {
+        if (item.children) {
+          const leaf = item.children.find(l => l.id === leafId);
+          if (leaf) { foundLeaf = leaf; break outer; }
+        } else if (item.id === leafId) {
+          foundLeaf = item; break outer;
+        }
+      }
+    }
+  }
+  if (!foundLeaf) return;
+  document.querySelectorAll('#nonmetals-accordion .leaf-row').forEach(r => r.classList.remove('selected'));
+  if (state.treeSelection.leafId === leafId) {
+    state.treeSelection = { ...state.treeSelection, leafId: null, leafLabel: null };
+  } else {
+    state.treeSelection = { ...state.treeSelection, leafId, leafLabel: foundLeaf.label };
+    document.getElementById('nlr-'+leafId).classList.add('selected');
+  }
+  updateFilters();
+}
+
 function setType(t) {
   state.type = t;
   state.material = [];
@@ -1674,6 +2148,7 @@ function setType(t) {
   document.querySelectorAll('[data-filter="material"]').forEach(c => c.classList.remove('active'));
   if (t === 'nonferrous') initMetalAccordion();
   if (t === 'ferrous')    initFerrousAccordion();
+  if (t === 'nonmetals')  initNonMetalsAccordion();
   updateFilters();
 }
 
@@ -1833,6 +2308,7 @@ function resetAll() {
   state.cert = { auth:'any', serial:'any', mint:'any', assay:'any' };
   if (state.type === 'nonferrous') initMetalAccordion();
   if (state.type === 'ferrous')    initFerrousAccordion();
+  if (state.type === 'nonmetals')  initNonMetalsAccordion();
   document.querySelectorAll('.chip, .purity-chip, .weight-chip, .kotacija-chip').forEach(b => b.classList.remove('active'));
   document.getElementById('price-from').value = '';
   document.getElementById('price-to').value   = '';
