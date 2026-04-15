@@ -654,10 +654,10 @@
       <div id="nonmetals-accordion"></div>
     </div>
 
-    <div class="filter-divider"></div>
+    <div class="filter-divider" id="divider-shape" style="display:none;"></div>
 
     <!-- OBLIKA / PRODUKT -->
-    <div class="filter-section">
+    <div class="filter-section" id="section-shape" style="display:none;">
       <div class="filter-section-label">Oblika / produkt</div>
       <div class="chip-group">
         <button class="chip" data-filter="shape" data-val="bar" onclick="toggleChip(this)">Palica / Ingot</button>
@@ -2270,6 +2270,9 @@ function setType(t) {
   if (t === 'ferrous')    initFerrousAccordion();
   if (t === 'precious')   initPreciousAccordion();
   if (t === 'nonmetals')  initNonMetalsAccordion();
+  const showShape = t === 'precious';
+  document.getElementById('section-shape').style.display = showShape ? '' : 'none';
+  document.getElementById('divider-shape').style.display = showShape ? '' : 'none';
   updateFilters();
 }
 
