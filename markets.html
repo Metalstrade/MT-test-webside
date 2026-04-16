@@ -66,6 +66,12 @@
     .nav-back:hover { color: var(--gold-lt); }
     .nav-back svg { transition: transform 0.2s ease; }
     .nav-back:hover svg { transform: translateX(-3px); }
+    .lang-switcher { display:flex; align-items:center; gap:2px; }
+    .lang-btn { display:flex; align-items:center; gap:5px; background:none; border:1px solid transparent; padding:5px 9px; border-radius:3px; font-family:'Inter',sans-serif; font-size:11px; font-weight:600; letter-spacing:0.06em; color:var(--muted); cursor:pointer; transition:color 0.2s ease,border-color 0.2s ease,background 0.2s ease; }
+    .lang-btn:hover { color:var(--silver-lt); border-color:rgba(143,163,177,0.2); }
+    .lang-btn.active { color:var(--gold-lt); border-color:rgba(201,162,39,0.3); background:rgba(201,162,39,0.05); }
+    .lang-flag { font-size:15px; line-height:1; }
+    .lang-divider { width:1px; height:14px; background:rgba(143,163,177,0.2); margin:0 2px; }
 
     /* ── BUTTONS ── */
     .btn-primary {
@@ -603,22 +609,31 @@
     <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
       <path d="M13 8H3M7 4l-4 4 4 4"/>
     </svg>
-    Nazaj na glavno stran
+    <span data-i18n="nav_back">Nazaj na glavno stran</span>
   </a>
+  <div class="lang-switcher">
+    <button class="lang-btn active" data-lang="en" onclick="setLang('en')">
+      <span class="lang-flag">🇬🇧</span> EN
+    </button>
+    <div class="lang-divider"></div>
+    <button class="lang-btn" data-lang="sl" onclick="setLang('sl')">
+      <span class="lang-flag">🇸🇮</span> SLO
+    </button>
+  </div>
 </nav>
 
 <!-- ── PAGE HEADER ── -->
 <div class="page-header">
   <div style="display:flex; align-items:flex-start; justify-content:space-between; flex-wrap:wrap; gap:20px;">
     <div>
-      <div class="page-header-eyebrow">Trg kovin</div>
-      <h1>Explore Markets</h1>
-      <p>Pregledujte ponudbo železnih in neželeznih kovin. Filtrirajte po materialu, čistosti, obliki, certifikatih in ceni.</p>
+      <div class="page-header-eyebrow" data-i18n="page_eyebrow">Trg kovin</div>
+      <h1 data-i18n="page_h1">Explore Markets</h1>
+      <p data-i18n="page_sub">Pregledujte ponudbo železnih in neželeznih kovin. Filtrirajte po materialu, čistosti, obliki, certifikatih in ceni.</p>
     </div>
     <div style="display:flex; flex-direction:column; align-items:flex-end; gap:10px;">
       <!-- Currency toggle -->
       <div>
-        <div style="font-size:10px; letter-spacing:0.1em; text-transform:uppercase; color:var(--muted); margin-bottom:6px; text-align:right;">Valuta / enota</div>
+        <div style="font-size:10px; letter-spacing:0.1em; text-transform:uppercase; color:var(--muted); margin-bottom:6px; text-align:right;" data-i18n="currency_label">Valuta / enota</div>
         <div class="currency-bar">
           <button class="currency-btn active" id="cur-usd" onclick="setCurrency('usd')">USD / oz</button>
           <button class="currency-btn" id="cur-eur" onclick="setCurrency('eur')">EUR / g</button>
@@ -634,27 +649,23 @@
   <!-- ── FILTER PANEL ── -->
   <aside class="filter-panel">
     <div class="filter-panel-header">
-      <span class="filter-panel-title">Filtri</span>
-      <button class="filter-reset" onclick="resetAll()">Ponastavi vse</button>
+      <span class="filter-panel-title" data-i18n="filter_title">Filtri</span>
+      <button class="filter-reset" onclick="resetAll()" data-i18n="filter_reset">Ponastavi vse</button>
     </div>
 
     <!-- MAIN TYPE TOGGLE -->
     <div class="type-toggle">
-      <button class="type-btn active" id="btn-nonferrous" onclick="setType('nonferrous')">
-        Neželezne
-        <span class="type-sub">Non-ferrous</span>
+      <button class="type-btn active" id="btn-nonferrous" onclick="setType('nonferrous')" data-i18n-html="type_nonferrous">
+        Neželezne<span class="type-sub">Non-ferrous</span>
       </button>
-      <button class="type-btn" id="btn-ferrous" onclick="setType('ferrous')">
-        Železne
-        <span class="type-sub">Ferrous</span>
+      <button class="type-btn" id="btn-ferrous" onclick="setType('ferrous')" data-i18n-html="type_ferrous">
+        Železne<span class="type-sub">Ferrous</span>
       </button>
-      <button class="type-btn" id="btn-precious" onclick="setType('precious')">
-        Plemenite kovine
-        <span class="type-sub">Precious metals</span>
+      <button class="type-btn" id="btn-precious" onclick="setType('precious')" data-i18n-html="type_precious">
+        Plemenite kovine<span class="type-sub">Precious metals</span>
       </button>
-      <button class="type-btn" id="btn-nonmetals" onclick="setType('nonmetals')">
-        Nekovine
-        <span class="type-sub">Non-metals</span>
+      <button class="type-btn" id="btn-nonmetals" onclick="setType('nonmetals')" data-i18n-html="type_nonmetals">
+        Nekovine<span class="type-sub">Non-metals</span>
       </button>
     </div>
 
@@ -686,7 +697,7 @@
 
     <!-- OBLIKA / PRODUKT -->
     <div class="filter-section" id="section-shape" style="display:none;">
-      <div class="filter-section-label">Oblika / produkt</div>
+      <div class="filter-section-label" data-i18n="filter_shape">Oblika / produkt</div>
       <div class="chip-group">
         <button class="chip" data-filter="shape" data-val="bar" onclick="toggleChip(this)">Palica / Ingot</button>
         <button class="chip" data-filter="shape" data-val="coin" onclick="toggleChip(this)">Kovanec</button>
@@ -703,7 +714,7 @@
 
     <!-- TEŽA -->
     <div class="filter-section">
-      <div class="filter-section-label">Teža</div>
+      <div class="filter-section-label" data-i18n="filter_weight">Teža</div>
       <div class="weight-grid">
         <button class="weight-chip" data-filter="weight" data-val="<1g" onclick="toggleChip(this)">&lt; 1 g</button>
         <button class="weight-chip" data-filter="weight" data-val="1-10g" onclick="toggleChip(this)">1 – 10 g</button>
@@ -718,7 +729,7 @@
 
     <!-- CENA -->
     <div class="filter-section">
-      <div class="filter-section-label">Cena (od – do)</div>
+      <div class="filter-section-label" data-i18n="filter_price">Cena (od – do)</div>
       <div class="price-row">
         <div class="price-input-wrap">
           <span class="prefix" id="price-prefix-from">$</span>
@@ -733,15 +744,15 @@
 
     <!-- KOTACIJA -->
     <div class="filter-section">
-      <div class="filter-section-label">Kotacija</div>
+      <div class="filter-section-label" data-i18n="filter_quote">Kotacija</div>
       <div class="kotacija-group">
         <div class="kotacija-row">
-          <button class="kotacija-chip active" data-filter="quote" data-val="spot" onclick="toggleKotacija(this)">Spot cena</button>
-          <span style="font-size:11px; color:var(--muted);">Tržna referenčna cena</span>
+          <button class="kotacija-chip active" data-filter="quote" data-val="spot" onclick="toggleKotacija(this)" data-i18n="quote_spot">Spot cena</button>
+          <span style="font-size:11px; color:var(--muted);" data-i18n="quote_spot_sub">Tržna referenčna cena</span>
         </div>
         <div class="kotacija-row">
-          <button class="kotacija-chip" data-filter="quote" data-val="premium" onclick="toggleKotacija(this)">+ Premija</button>
-          <span style="font-size:11px; color:var(--muted);">Nad spot (oblika, livarna…)</span>
+          <button class="kotacija-chip" data-filter="quote" data-val="premium" onclick="toggleKotacija(this)" data-i18n="quote_premium">+ Premija</button>
+          <span style="font-size:11px; color:var(--muted);" data-i18n="quote_premium_sub">Nad spot (oblika, livarna…)</span>
         </div>
       </div>
     </div>
@@ -750,38 +761,38 @@
 
     <!-- CERTIFIKAT IN SLEDLJIVOST -->
     <div class="filter-section">
-      <div class="filter-section-label">Certifikat &amp; sledljivost</div>
+      <div class="filter-section-label" data-i18n="filter_cert">Certifikat &amp; sledljivost</div>
       <div class="toggle-group">
         <div class="toggle-row">
-          <span>Certifikat pristnosti</span>
+          <span data-i18n="cert_auth">Certifikat pristnosti</span>
           <div class="toggle-switch">
-            <button class="toggle-opt active-any" data-cert="auth" data-val="any" onclick="setCert(this,'auth')">Vsi</button>
-            <button class="toggle-opt" data-cert="auth" data-val="yes" onclick="setCert(this,'auth')">DA</button>
-            <button class="toggle-opt" data-cert="auth" data-val="no" onclick="setCert(this,'auth')">NE</button>
+            <button class="toggle-opt active-any" data-cert="auth" data-val="any" onclick="setCert(this,'auth')" data-i18n="cert_any">Vsi</button>
+            <button class="toggle-opt" data-cert="auth" data-val="yes" onclick="setCert(this,'auth')" data-i18n="cert_yes">DA</button>
+            <button class="toggle-opt" data-cert="auth" data-val="no" onclick="setCert(this,'auth')" data-i18n="cert_no">NE</button>
           </div>
         </div>
         <div class="toggle-row">
-          <span>Serijska številka</span>
+          <span data-i18n="cert_serial">Serijska številka</span>
           <div class="toggle-switch">
-            <button class="toggle-opt active-any" data-cert="serial" data-val="any" onclick="setCert(this,'serial')">Vsi</button>
-            <button class="toggle-opt" data-cert="serial" data-val="yes" onclick="setCert(this,'serial')">DA</button>
-            <button class="toggle-opt" data-cert="serial" data-val="no" onclick="setCert(this,'serial')">NE</button>
+            <button class="toggle-opt active-any" data-cert="serial" data-val="any" onclick="setCert(this,'serial')" data-i18n="cert_any">Vsi</button>
+            <button class="toggle-opt" data-cert="serial" data-val="yes" onclick="setCert(this,'serial')" data-i18n="cert_yes">DA</button>
+            <button class="toggle-opt" data-cert="serial" data-val="no" onclick="setCert(this,'serial')" data-i18n="cert_no">NE</button>
           </div>
         </div>
         <div class="toggle-row">
-          <span>Žig livarne</span>
+          <span data-i18n="cert_mint">Žig livarne</span>
           <div class="toggle-switch">
-            <button class="toggle-opt active-any" data-cert="mint" data-val="any" onclick="setCert(this,'mint')">Vsi</button>
-            <button class="toggle-opt" data-cert="mint" data-val="yes" onclick="setCert(this,'mint')">DA</button>
-            <button class="toggle-opt" data-cert="mint" data-val="no" onclick="setCert(this,'mint')">NE</button>
+            <button class="toggle-opt active-any" data-cert="mint" data-val="any" onclick="setCert(this,'mint')" data-i18n="cert_any">Vsi</button>
+            <button class="toggle-opt" data-cert="mint" data-val="yes" onclick="setCert(this,'mint')" data-i18n="cert_yes">DA</button>
+            <button class="toggle-opt" data-cert="mint" data-val="no" onclick="setCert(this,'mint')" data-i18n="cert_no">NE</button>
           </div>
         </div>
         <div class="toggle-row">
-          <span>Assay certifikat</span>
+          <span data-i18n="cert_assay">Assay certifikat</span>
           <div class="toggle-switch">
-            <button class="toggle-opt active-any" data-cert="assay" data-val="any" onclick="setCert(this,'assay')">Vsi</button>
-            <button class="toggle-opt" data-cert="assay" data-val="yes" onclick="setCert(this,'assay')">DA</button>
-            <button class="toggle-opt" data-cert="assay" data-val="no" onclick="setCert(this,'assay')">NE</button>
+            <button class="toggle-opt active-any" data-cert="assay" data-val="any" onclick="setCert(this,'assay')" data-i18n="cert_any">Vsi</button>
+            <button class="toggle-opt" data-cert="assay" data-val="yes" onclick="setCert(this,'assay')" data-i18n="cert_yes">DA</button>
+            <button class="toggle-opt" data-cert="assay" data-val="no" onclick="setCert(this,'assay')" data-i18n="cert_no">NE</button>
           </div>
         </div>
       </div>
@@ -791,9 +802,9 @@
 
     <!-- POREKLO -->
     <div class="filter-section">
-      <div class="filter-section-label">Poreklo</div>
+      <div class="filter-section-label" data-i18n="filter_origin">Poreklo</div>
       <select class="filter-select" id="filter-origin" onchange="updateFilters()">
-        <option value="">Vse države</option>
+        <option value="" data-i18n="origin_all">Vse države</option>
         <option value="SI">Slovenija</option>
         <option value="DE">Nemčija</option>
         <option value="AT">Avstrija</option>
@@ -825,22 +836,22 @@
       <svg class="search-icon" viewBox="0 0 18 18" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
         <circle cx="7.5" cy="7.5" r="5.5"/><path d="M13.5 13.5l3 3"/>
       </svg>
-      <input class="search-input" id="search-input" type="text" placeholder="Iščite po nazivu, materialu, opisu, specifikacijah …" oninput="onSearchInput()" autocomplete="off" />
+      <input class="search-input" id="search-input" type="text" placeholder="Iščite po nazivu, materialu, opisu, specifikacijah …" oninput="onSearchInput()" autocomplete="off" data-i18n-placeholder="search_ph" />
       <button class="search-clear" id="search-clear" onclick="clearSearch()" style="display:none;">×</button>
     </div>
 
     <div class="results-bar">
       <div>
-        <div class="results-count" id="results-count">Prikazano: <strong id="count-num">12</strong> oglasov</div>
+        <div class="results-count" id="results-count"><span data-i18n="results_shown">Prikazano:</span> <strong id="count-num">12</strong> <span data-i18n="results_listings">oglasov</span></div>
         <div class="active-tags" id="active-tags" style="margin-top:8px;"></div>
       </div>
       <div class="sort-bar">
-        <span>Razvrsti:</span>
+        <span data-i18n="sort_label">Razvrsti:</span>
         <select onchange="updateFilters()">
-          <option>Cena ↑</option>
-          <option>Cena ↓</option>
-          <option>Najnovejši</option>
-          <option>Čistost ↑</option>
+          <option data-i18n="sort_price_asc">Cena ↑</option>
+          <option data-i18n="sort_price_desc">Cena ↓</option>
+          <option data-i18n="sort_newest">Najnovejši</option>
+          <option data-i18n="sort_purity">Čistost ↑</option>
         </select>
       </div>
     </div>
@@ -2525,6 +2536,82 @@ function openContact(name) {
 // ── INIT ──
 initMetalAccordion();
 updateFilters();
+</script>
+
+<script>
+// ── i18n TRANSLATIONS (markets.html) ──
+const i18nM = {
+  en: {
+    nav_back: 'Back to Home',
+    page_eyebrow: 'Metals Market', page_h1: 'Explore Markets',
+    page_sub: 'Browse ferrous and non-ferrous metals. Filter by material, purity, shape, certificates and price.',
+    currency_label: 'Currency / unit',
+    filter_title: 'Filters', filter_reset: 'Reset all',
+    type_nonferrous: 'Non-ferrous',
+    type_ferrous: 'Ferrous',
+    type_precious: 'Precious Metals',
+    type_nonmetals: 'Non-metals',
+    filter_shape: 'Shape / product', filter_weight: 'Weight',
+    filter_price: 'Price (from – to)', filter_quote: 'Quotation',
+    quote_spot: 'Spot price', quote_spot_sub: 'Market reference price',
+    quote_premium: '+ Premium', quote_premium_sub: 'Above spot (shape, mint…)',
+    filter_cert: 'Certificate & traceability',
+    cert_auth: 'Authenticity certificate', cert_serial: 'Serial number',
+    cert_mint: 'Mint stamp', cert_assay: 'Assay certificate',
+    cert_any: 'All', cert_yes: 'YES', cert_no: 'NO',
+    filter_origin: 'Origin', origin_all: 'All countries',
+    search_ph: 'Search by name, material, description, specifications…',
+    results_shown: 'Showing:', results_listings: 'listings',
+    sort_label: 'Sort:', sort_price_asc: 'Price ↑', sort_price_desc: 'Price ↓',
+    sort_newest: 'Newest', sort_purity: 'Purity ↑',
+  },
+  sl: {
+    nav_back: 'Nazaj na glavno stran',
+    page_eyebrow: 'Trg kovin', page_h1: 'Raziščite trge',
+    page_sub: 'Pregledujte ponudbo železnih in neželeznih kovin. Filtrirajte po materialu, čistosti, obliki, certifikatih in ceni.',
+    currency_label: 'Valuta / enota',
+    filter_title: 'Filtri', filter_reset: 'Ponastavi vse',
+    type_nonferrous: 'Neželezne<span class="type-sub">Non-ferrous</span>',
+    type_ferrous: 'Železne<span class="type-sub">Ferrous</span>',
+    type_precious: 'Plemenite kovine<span class="type-sub">Precious metals</span>',
+    type_nonmetals: 'Nekovine<span class="type-sub">Non-metals</span>',
+    filter_shape: 'Oblika / produkt', filter_weight: 'Teža',
+    filter_price: 'Cena (od – do)', filter_quote: 'Kotacija',
+    quote_spot: 'Spot cena', quote_spot_sub: 'Tržna referenčna cena',
+    quote_premium: '+ Premija', quote_premium_sub: 'Nad spot (oblika, livarna…)',
+    filter_cert: 'Certifikat & sledljivost',
+    cert_auth: 'Certifikat pristnosti', cert_serial: 'Serijska številka',
+    cert_mint: 'Žig livarne', cert_assay: 'Assay certifikat',
+    cert_any: 'Vsi', cert_yes: 'DA', cert_no: 'NE',
+    filter_origin: 'Poreklo', origin_all: 'Vse države',
+    search_ph: 'Iščite po nazivu, materialu, opisu, specifikacijah …',
+    results_shown: 'Prikazano:', results_listings: 'oglasov',
+    sort_label: 'Razvrsti:', sort_price_asc: 'Cena ↑', sort_price_desc: 'Cena ↓',
+    sort_newest: 'Najnovejši', sort_purity: 'Čistost ↑',
+  }
+};
+
+function setLang(lang) {
+  localStorage.setItem('lang', lang);
+  document.documentElement.lang = lang === 'sl' ? 'sl' : 'en';
+  document.querySelectorAll('.lang-btn').forEach(b => b.classList.toggle('active', b.dataset.lang === lang));
+  const t = i18nM[lang];
+  document.querySelectorAll('[data-i18n]').forEach(el => {
+    const v = t[el.dataset.i18n]; if (v !== undefined) el.textContent = v;
+  });
+  document.querySelectorAll('[data-i18n-html]').forEach(el => {
+    const v = t[el.dataset.i18nHtml]; if (v !== undefined) el.innerHTML = v;
+  });
+  document.querySelectorAll('[data-i18n-placeholder]').forEach(el => {
+    const v = t[el.dataset.i18nPlaceholder]; if (v !== undefined) el.placeholder = v;
+  });
+}
+
+// Load language from localStorage (set by index.html)
+(function() {
+  const lang = localStorage.getItem('lang') || 'sl';
+  setLang(lang);
+})();
 </script>
 
 </body>
