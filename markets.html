@@ -1251,6 +1251,9 @@ const TREE_DATA = [
   ]},
 ];
 
+// ── LANGUAGE ──
+let currentLang = localStorage.getItem('lang') || 'sl';
+
 // ── STATE ──
 const state = {
   type: 'nonferrous',
@@ -1863,6 +1866,72 @@ const NONMETALS_TREE_DATA = [
   ]},
 ];
 
+// ── LABEL TRANSLATION MAP ──
+const LABEL_EN = {
+  // Non-ferrous metals
+  'Baker (Cu)':'Copper (Cu)', 'Aluminij (Al)':'Aluminium (Al)', 'Svinec (Pb)':'Lead (Pb)',
+  'Cink (Zn)':'Zinc (Zn)', 'Kositer (Sn)':'Tin (Sn)', 'Titan (Ti)':'Titanium (Ti)',
+  'Nikelj (Ni)':'Nickel (Ni)', 'Volfram (W)':'Tungsten (W)', 'Vanadij (V)':'Vanadium (V)',
+  'Molibden (Mo)':'Molybdenum (Mo)',
+  // Precious metals
+  'Zlato (Au)':'Gold (Au)', 'Srebro (Ag)':'Silver (Ag)', 'Platina (Pt)':'Platinum (Pt)',
+  'Paladij (Pd)':'Palladium (Pd)', 'Rodij (Rh)':'Rhodium (Rh)', 'Rutenij (Ru)':'Ruthenium (Ru)', 'Osmij (Os)':'Osmium (Os)',
+  // Ferrous metals
+  'Železo':'Iron', 'Siva litina (GUS)':'Grey cast iron (GUS)', 'Jekla':'Steels',
+  'Inox (Nerjavno jeklo)':'Inox (Stainless steel)',
+  // Non-metals
+  'Papir':'Paper', 'Karton':'Cardboard', 'Tekstil':'Textile', 'Plastika':'Plastic', 'Guma':'Rubber',
+  // Common categories
+  'Klasa (odpad)':'Grade (scrap)', 'Klasa (Odpad)':'Grade (scrap)',
+  'Čisti baker':'Pure copper', 'Čisto srebro':'Pure silver', 'Čista platina':'Pure platinum',
+  'Čisti paladij':'Pure palladium', 'Čisti rodij':'Pure rhodium', 'Čisti rutenij':'Pure ruthenium', 'Čisti osmij':'Pure osmium',
+  'Zlitine':'Alloys', 'Glavne zlitine':'Main alloys', 'Pogoste zlitine':'Common alloys',
+  'Manj pogoste zlitine':'Less common alloys', 'Redke zlitine':'Rare alloys', 'Kompleksne zlitine':'Complex alloys',
+  // Ferrous categories
+  'Stari odpad (Old Scrap)':'Old Scrap', 'Novo železo (New Scrap)':'New Scrap',
+  'Shredded (mletje)':'Shredded', 'Struženje':'Turnings',
+  'Visoki ostanki (High Residual)':'High Residual', 'Čisto železo':'Pure iron',
+  'HMS kategorije':'HMS categories', 'Železo z dodatki':'Iron with residuals', 'Posebna stanja':'Special conditions',
+  'E3 – težko železo':'E3 – heavy scrap', 'E1 – lahko železo':'E1 – light scrap',
+  'E2 – debelo novo':'E2 – thick new', 'E8 – razsuto':'E8 – loose', 'E6 – balirano':'E6 – baled',
+  'E5H – čisti ostružki':'E5H – clean turnings', 'E5M – mešani ostružki':'E5M – mixed turnings',
+  'EHRB – armatura':'EHRB – rebar', 'EHRM – mehanski deli':'EHRM – mechanical parts',
+  'E46 – iz sežigalnic':'E46 – incinerator scrap',
+  'Austenitni inox (nemagnetni)':'Austenitic stainless (non-magnetic)',
+  'Feritni inox':'Ferritic stainless', 'Martenzitni inox':'Martensitic stainless', 'Duplex inox':'Duplex stainless',
+  'Osnova':'Base composition', 'Glavne vrste':'Main types', 'Pogoste oznake':'Common grades',
+  'Manj pogosti':'Less common', 'Specialne zlitine':'Special alloys',
+  'Osnovne kategorije':'Basic categories', 'Po sestavi in obliki':'By composition and form',
+  'Po izvoru':'By origin', 'Po lastnostih':'By properties',
+  'Konstrukcijska jekla':'Structural steels', 'Orodna jekla':'Tool steels',
+  'Legirana jekla':'Alloy steels', 'Ogljikova (nelegirana) jekla':'Carbon (unalloyed) steels',
+  'Specialna jekla':'Special steels',
+  'Splošna konstrukcijska':'General structural', 'Za strojne dele':'For machine parts',
+  'Variva jekla':'Weldable steels', 'Hladnoobdelovalna':'Cold work', 'Toploobdelovalna':'Hot work',
+  'Hitrorezna (HSS)':'High speed (HSS)', 'Nizkolegirana':'Low alloy', 'Visokolegirana':'High alloy',
+  'Nizkoogljična':'Low carbon', 'Srednjeogljična':'Medium carbon', 'Visokoogljična':'High carbon',
+  'Vzmetna jekla':'Spring steels', 'Ležajna jekla':'Bearing steels',
+  'Toplotno odporna jekla':'Heat resistant steels', 'Elektrotehnična jekla':'Electrical steels',
+  // Non-metals categories
+  'Čisti papir':'Clean paper', 'Glavne vrste papirja':'Main paper types',
+  'Pogoste oblike papirja':'Common paper forms', 'Manj pogoste vrste papirja':'Less common paper types',
+  'Problematični papir':'Problematic paper', 'Kompleksni papir':'Complex paper',
+  'Čisti karton':'Clean cardboard', 'Glavne vrste kartona':'Main cardboard types',
+  'Pogoste oblike':'Common forms', 'Manj pogoste vrste':'Less common types',
+  'Problematični karton':'Problematic cardboard', 'Kompleksni karton':'Complex cardboard',
+  'Čisti tekstil':'Clean textile', 'Glavne vrste tekstila':'Main textile types',
+  'Sortiran tekstil':'Sorted textile', 'Problematični tekstil':'Problematic textile',
+  'Kompleksni tekstil':'Complex textile', 'Čista plastika':'Clean plastic',
+  'Vrste (kode)':'Types (codes)', 'Stiropor':'Polystyrene (EPS)',
+  'Problematična plastika':'Problematic plastic', 'Kompleksna plastika':'Complex plastic',
+  'Čista guma':'Clean rubber', 'Vrste gume':'Rubber types', 'Pnevmatike':'Tyres',
+  'Problematična guma':'Problematic rubber', 'Kompleksna guma':'Complex rubber',
+  '1. klasa':'Grade 1', '2. klasa':'Grade 2', '3. klasa':'Grade 3', '4. klasa':'Grade 4',
+  '5. klasa':'Grade 5', '6. klasa':'Grade 6', '7. klasa':'Grade 7', '8. klasa':'Grade 8',
+  'ostalo':'other',
+};
+function tLabel(lbl) { return currentLang === 'en' && LABEL_EN[lbl] ? LABEL_EN[lbl] : lbl; }
+
 // ── METAL ACCORDION (NON-FERROUS) ──
 function initMetalAccordion() {
   const container = document.getElementById('metal-accordion');
@@ -1874,12 +1943,12 @@ function initMetalAccordion() {
   container.innerHTML = TREE_DATA.map(m => {
     const cats = m.children.map(cat => {
       const leaves = cat.children.map(leaf =>
-        `<div class="leaf-row" id="lr-${leaf.id}" onclick="selectLeafAcc('${leaf.id}')">${leaf.label}</div>`
+        `<div class="leaf-row" id="lr-${leaf.id}" onclick="selectLeafAcc('${leaf.id}')">${tLabel(leaf.label)}</div>`
       ).join('');
       return `
         <div class="cat-acc-item">
           <div class="cat-acc-row" id="cr-${cat.id}" onclick="toggleCatAcc('${m.id}','${cat.id}')">
-            <span>${cat.label}</span>${catChevSvg}
+            <span>${tLabel(cat.label)}</span>${catChevSvg}
           </div>
           <div class="cat-acc-body" id="cb-${cat.id}">${leaves}</div>
         </div>`;
@@ -1887,7 +1956,7 @@ function initMetalAccordion() {
     return `
       <div class="metal-acc-item">
         <div class="metal-acc-row" id="mr-${m.id}" onclick="toggleMetalAcc('${m.id}')">
-          <span>${m.label}</span>${chevSvg}
+          <span>${tLabel(m.label)}</span>${chevSvg}
         </div>
         <div class="metal-acc-body" id="mb-${m.id}">${cats}</div>
       </div>`;
@@ -1973,23 +2042,23 @@ function initFerrousAccordion() {
       const catContent = cat.children.map(item => {
         if (item.children && item.children.length > 0) {
           const leaves = item.children.map(leaf =>
-            `<div class="leaf-row leaf-deep" id="flr-${leaf.id}" onclick="selectLeafAccF('${leaf.id}')">${leaf.label}</div>`
+            `<div class="leaf-row leaf-deep" id="flr-${leaf.id}" onclick="selectLeafAccF('${leaf.id}')">${tLabel(leaf.label)}</div>`
           ).join('');
           return `
             <div class="subcat-acc-item">
               <div class="subcat-acc-row" id="fsr-${item.id}" onclick="toggleSubCatAccF('${m.id}','${cat.id}','${item.id}')">
-                <span>${item.label}</span>${subChevSvg}
+                <span>${tLabel(item.label)}</span>${subChevSvg}
               </div>
               <div class="subcat-acc-body" id="fsb-${item.id}">${leaves}</div>
             </div>`;
         } else {
-          return `<div class="leaf-row" id="flr-${item.id}" onclick="selectLeafAccF('${item.id}')">${item.label}</div>`;
+          return `<div class="leaf-row" id="flr-${item.id}" onclick="selectLeafAccF('${item.id}')">${tLabel(item.label)}</div>`;
         }
       }).join('');
       return `
         <div class="cat-acc-item">
           <div class="cat-acc-row" id="fcr-${cat.id}" onclick="toggleCatAccF('${m.id}','${cat.id}')">
-            <span>${cat.label}</span>${catChevSvg}
+            <span>${tLabel(cat.label)}</span>${catChevSvg}
           </div>
           <div class="cat-acc-body" id="fcb-${cat.id}">${catContent}</div>
         </div>`;
@@ -1997,7 +2066,7 @@ function initFerrousAccordion() {
     return `
       <div class="metal-acc-item">
         <div class="metal-acc-row" id="fmr-${m.id}" onclick="toggleMetalAccF('${m.id}')">
-          <span>${m.label}</span>${chevSvg}
+          <span>${tLabel(m.label)}</span>${chevSvg}
         </div>
         <div class="metal-acc-body" id="fmb-${m.id}">${cats}</div>
       </div>`;
@@ -2109,18 +2178,18 @@ function initPreciousAccordion() {
   container.innerHTML = PRECIOUS_TREE_DATA.map(m => {
     const cats = m.children.map(cat => {
       const leaves = cat.children.map(leaf =>
-        `<div class="leaf-row" id="plr-${leaf.id}" onclick="selectLeafAccPM('${leaf.id}')">${leaf.label}</div>`
+        `<div class="leaf-row" id="plr-${leaf.id}" onclick="selectLeafAccPM('${leaf.id}')">${tLabel(leaf.label)}</div>`
       ).join('');
       return `<div class="cat-acc-item">
         <div class="cat-acc-row" id="pcr-${cat.id}" onclick="toggleCatAccPM('${m.id}','${cat.id}')">
-          <span>${cat.label}</span>${catChevSvg}
+          <span>${tLabel(cat.label)}</span>${catChevSvg}
         </div>
         <div class="cat-acc-body" id="pcb-${cat.id}">${leaves}</div>
       </div>`;
     }).join('');
     return `<div class="metal-acc-item">
       <div class="metal-acc-row" id="pmr-${m.id}" onclick="toggleMetalAccPM('${m.id}')">
-        <span>${m.label}</span>${chevSvg}
+        <span>${tLabel(m.label)}</span>${chevSvg}
       </div>
       <div class="metal-acc-body" id="pmb-${m.id}">${cats}</div>
     </div>`;
@@ -2196,28 +2265,28 @@ function initNonMetalsAccordion() {
       const catContent = cat.children.map(item => {
         if (item.children && item.children.length > 0) {
           const leaves = item.children.map(leaf =>
-            `<div class="leaf-row leaf-deep" id="nlr-${leaf.id}" onclick="selectLeafAccNM('${leaf.id}')">${leaf.label}</div>`
+            `<div class="leaf-row leaf-deep" id="nlr-${leaf.id}" onclick="selectLeafAccNM('${leaf.id}')">${tLabel(leaf.label)}</div>`
           ).join('');
           return `<div class="subcat-acc-item">
             <div class="subcat-acc-row" id="nsr-${item.id}" onclick="toggleSubCatAccNM('${m.id}','${cat.id}','${item.id}')">
-              <span>${item.label}</span>${subChevSvg}
+              <span>${tLabel(item.label)}</span>${subChevSvg}
             </div>
             <div class="subcat-acc-body" id="nsb-${item.id}">${leaves}</div>
           </div>`;
         } else {
-          return `<div class="leaf-row" id="nlr-${item.id}" onclick="selectLeafAccNM('${item.id}')">${item.label}</div>`;
+          return `<div class="leaf-row" id="nlr-${item.id}" onclick="selectLeafAccNM('${item.id}')">${tLabel(item.label)}</div>`;
         }
       }).join('');
       return `<div class="cat-acc-item">
         <div class="cat-acc-row" id="ncr-${cat.id}" onclick="toggleCatAccNM('${m.id}','${cat.id}')">
-          <span>${cat.label}</span>${catChevSvg}
+          <span>${tLabel(cat.label)}</span>${catChevSvg}
         </div>
         <div class="cat-acc-body" id="ncb-${cat.id}">${catContent}</div>
       </div>`;
     }).join('');
     return `<div class="metal-acc-item">
       <div class="metal-acc-row" id="nmr-${m.id}" onclick="toggleMetalAccNM('${m.id}')">
-        <span>${m.label}</span>${chevSvg}
+        <span>${tLabel(m.label)}</span>${chevSvg}
       </div>
       <div class="metal-acc-body" id="nmb-${m.id}">${cats}</div>
     </div>`;
@@ -2593,6 +2662,7 @@ const i18nM = {
 
 function setLang(lang) {
   localStorage.setItem('lang', lang);
+  currentLang = lang;
   document.documentElement.lang = lang === 'sl' ? 'sl' : 'en';
   document.querySelectorAll('.lang-btn').forEach(b => b.classList.toggle('active', b.dataset.lang === lang));
   const t = i18nM[lang];
@@ -2605,6 +2675,11 @@ function setLang(lang) {
   document.querySelectorAll('[data-i18n-placeholder]').forEach(el => {
     const v = t[el.dataset.i18nPlaceholder]; if (v !== undefined) el.placeholder = v;
   });
+  // Reinit current accordion in new language
+  if (state.type === 'nonferrous') initMetalAccordion();
+  else if (state.type === 'ferrous') initFerrousAccordion();
+  else if (state.type === 'precious') initPreciousAccordion();
+  else if (state.type === 'nonmetals') initNonMetalsAccordion();
 }
 
 // Load language from localStorage (set by index.html)
