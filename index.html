@@ -907,6 +907,24 @@
       .contact-layout { grid-template-columns: 1fr; }
       .footer-top { grid-template-columns: 1fr 1fr; }
     }
+    /* ── LANG SWITCHER ── */
+    .lang-switcher {
+      display: flex; align-items: center; gap: 2px; margin-left: 12px;
+    }
+    .lang-btn {
+      display: flex; align-items: center; gap: 5px;
+      background: none; border: 1px solid transparent;
+      padding: 5px 9px; border-radius: 3px;
+      font-family: 'Inter', sans-serif; font-size: 11px;
+      font-weight: 600; letter-spacing: 0.06em;
+      color: var(--muted); cursor: pointer;
+      transition: color 0.2s ease, border-color 0.2s ease, background 0.2s ease;
+    }
+    .lang-btn:hover { color: var(--silver-lt); border-color: rgba(143,163,177,0.2); }
+    .lang-btn.active { color: var(--gold-lt); border-color: rgba(201,162,39,0.3); background: rgba(201,162,39,0.05); }
+    .lang-flag { font-size: 15px; line-height: 1; }
+    .lang-divider { width: 1px; height: 14px; background: rgba(143,163,177,0.2); margin: 0 2px; }
+
     @media (max-width: 640px) {
       nav { padding: 0 24px; }
       .nav-links, .nav-cta { display: none; }
@@ -930,12 +948,21 @@
       <img src="brand_assets/LOGO.png" alt="Metals Trading" />
     </a>
     <ul class="nav-links">
-      <li><a href="#metals">Metals</a></li>
-      <li><a href="#why">About</a></li>
-      <li><a href="#process">Process</a></li>
-      <li><a href="#contact">Contact</a></li>
+      <li><a href="#metals" data-i18n="nav_metals">Metals</a></li>
+      <li><a href="#why" data-i18n="nav_about">About</a></li>
+      <li><a href="#process" data-i18n="nav_process">Process</a></li>
+      <li><a href="#contact" data-i18n="nav_contact">Contact</a></li>
     </ul>
-    <button class="btn-primary nav-cta" onclick="openRegModal()">Start Trading</button>
+    <div class="lang-switcher">
+      <button class="lang-btn active" data-lang="en" onclick="setLang('en')">
+        <span class="lang-flag">🇬🇧</span> EN
+      </button>
+      <div class="lang-divider"></div>
+      <button class="lang-btn" data-lang="sl" onclick="setLang('sl')">
+        <span class="lang-flag">🇸🇮</span> SLO
+      </button>
+    </div>
+    <button class="btn-primary nav-cta" onclick="openRegModal()" data-i18n="nav_cta">Start Trading</button>
   </nav>
 
   <!-- ── HERO ── -->
@@ -945,32 +972,32 @@
       <div class="hero-content">
         <div class="hero-eyebrow">
           <span class="hero-eyebrow-line"></span>
-          Global Metals Exchange
+          <span data-i18n="hero_eyebrow">Global Metals Exchange</span>
         </div>
-        <h1>Trade the World's <span class="gradient-gold">Finest Metals</span> with Confidence</h1>
-        <p class="hero-sub">
+        <h1 data-i18n-html="hero_h1">Trade the World's <span class="gradient-gold">Finest Metals</span> with Confidence</h1>
+        <p class="hero-sub" data-i18n="hero_sub">
           Access live spot pricing, institutional-grade execution, and expert market intelligence across Gold, Silver, Steel, and Copper markets.
         </p>
         <div class="hero-actions">
           <button onclick="openRegModal()" class="btn-primary">
-            Open an Account
+            <span data-i18n="hero_open_account">Open an Account</span>
             <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 8h10M9 4l4 4-4 4"/></svg>
           </button>
-          <a href="markets.html" class="btn-outline">Explore Markets</a>
+          <a href="markets.html" class="btn-outline" data-i18n="hero_explore">Explore Markets</a>
         </div>
 
         <div class="hero-stats">
           <div class="hero-stat">
             <div class="hero-stat-value">$2.4B+</div>
-            <div class="hero-stat-label">Volume Traded</div>
+            <div class="hero-stat-label" data-i18n="stat_volume">Volume Traded</div>
           </div>
           <div class="hero-stat">
             <div class="hero-stat-value">48</div>
-            <div class="hero-stat-label">Countries Served</div>
+            <div class="hero-stat-label" data-i18n="stat_countries">Countries Served</div>
           </div>
           <div class="hero-stat">
             <div class="hero-stat-value">24/7</div>
-            <div class="hero-stat-label">Market Access</div>
+            <div class="hero-stat-label" data-i18n="stat_access">Market Access</div>
           </div>
         </div>
       </div>
@@ -1012,51 +1039,51 @@
   <section class="metals-section" id="metals">
     <div class="section-inner">
       <div class="metals-header">
-        <div class="section-eyebrow">Our Markets</div>
-        <h2 class="section-title">Four Metals. One Platform.</h2>
-        <p class="section-sub">We provide access to the world's most actively traded metals with competitive spreads and unmatched depth.</p>
+        <div class="section-eyebrow" data-i18n="metals_eyebrow">Our Markets</div>
+        <h2 class="section-title" data-i18n="metals_h2">Four Metals. One Platform.</h2>
+        <p class="section-sub" data-i18n="metals_sub">We provide access to the world's most actively traded metals with competitive spreads and unmatched depth.</p>
       </div>
     </div>
     <div class="section-inner">
       <div class="metals-grid">
         <div class="metal-card gold">
           <div class="metal-icon gold">Au</div>
-          <div class="metal-name">Gold</div>
-          <p class="metal-desc">The ultimate store of value. Trade spot, forwards, and options on the world's most recognized precious metal with institutional-grade liquidity.</p>
+          <div class="metal-name" data-i18n="gold_name">Gold</div>
+          <p class="metal-desc" data-i18n="gold_desc">The ultimate store of value. Trade spot, forwards, and options on the world's most recognized precious metal with institutional-grade liquidity.</p>
           <div class="metal-specs">
-            <div class="metal-spec"><span class="spec-key">Purity</span><span class="spec-val">99.99% Fine</span></div>
-            <div class="metal-spec"><span class="spec-key">Settlement</span><span class="spec-val">T+2 / T+0</span></div>
-            <div class="metal-spec"><span class="spec-key">Min. Lot</span><span class="spec-val">1 Troy Oz</span></div>
+            <div class="metal-spec"><span class="spec-key" data-i18n="spec_purity">Purity</span><span class="spec-val">99.99% Fine</span></div>
+            <div class="metal-spec"><span class="spec-key" data-i18n="spec_settlement">Settlement</span><span class="spec-val">T+2 / T+0</span></div>
+            <div class="metal-spec"><span class="spec-key" data-i18n="spec_minlot">Min. Lot</span><span class="spec-val">1 Troy Oz</span></div>
           </div>
         </div>
         <div class="metal-card silver">
           <div class="metal-icon silver">Ag</div>
-          <div class="metal-name">Silver</div>
-          <p class="metal-desc">Industrial demand meets monetary heritage. Access deep silver markets with tight spreads across global exchanges and OTC venues.</p>
+          <div class="metal-name" data-i18n="silver_name">Silver</div>
+          <p class="metal-desc" data-i18n="silver_desc">Industrial demand meets monetary heritage. Access deep silver markets with tight spreads across global exchanges and OTC venues.</p>
           <div class="metal-specs">
-            <div class="metal-spec"><span class="spec-key">Purity</span><span class="spec-val">99.9% Fine</span></div>
-            <div class="metal-spec"><span class="spec-key">Settlement</span><span class="spec-val">T+2 / T+0</span></div>
-            <div class="metal-spec"><span class="spec-key">Min. Lot</span><span class="spec-val">5,000 Oz</span></div>
+            <div class="metal-spec"><span class="spec-key" data-i18n="spec_purity">Purity</span><span class="spec-val">99.9% Fine</span></div>
+            <div class="metal-spec"><span class="spec-key" data-i18n="spec_settlement">Settlement</span><span class="spec-val">T+2 / T+0</span></div>
+            <div class="metal-spec"><span class="spec-key" data-i18n="spec_minlot">Min. Lot</span><span class="spec-val">5,000 Oz</span></div>
           </div>
         </div>
         <div class="metal-card steel">
           <div class="metal-icon steel">Fe</div>
-          <div class="metal-name">Steel</div>
-          <p class="metal-desc">The backbone of modern infrastructure. We cover HRC, CRC, and rebar contracts across major steel hubs in Europe, Asia, and the Americas.</p>
+          <div class="metal-name" data-i18n="steel_name">Steel</div>
+          <p class="metal-desc" data-i18n="steel_desc">The backbone of modern infrastructure. We cover HRC, CRC, and rebar contracts across major steel hubs in Europe, Asia, and the Americas.</p>
           <div class="metal-specs">
-            <div class="metal-spec"><span class="spec-key">Grade</span><span class="spec-val">HRC / CRC / Rebar</span></div>
-            <div class="metal-spec"><span class="spec-key">Settlement</span><span class="spec-val">Physical / Cash</span></div>
-            <div class="metal-spec"><span class="spec-key">Min. Lot</span><span class="spec-val">25 MT</span></div>
+            <div class="metal-spec"><span class="spec-key" data-i18n="spec_grade">Grade</span><span class="spec-val">HRC / CRC / Rebar</span></div>
+            <div class="metal-spec"><span class="spec-key" data-i18n="spec_settlement">Settlement</span><span class="spec-val">Physical / Cash</span></div>
+            <div class="metal-spec"><span class="spec-key" data-i18n="spec_minlot">Min. Lot</span><span class="spec-val">25 MT</span></div>
           </div>
         </div>
         <div class="metal-card copper">
           <div class="metal-icon copper">Cu</div>
-          <div class="metal-name">Copper</div>
-          <p class="metal-desc">The metal of electrification. Trade copper cathodes, wire rod, and concentrates as global demand surges with the green energy transition.</p>
+          <div class="metal-name" data-i18n="copper_name">Copper</div>
+          <p class="metal-desc" data-i18n="copper_desc">The metal of electrification. Trade copper cathodes, wire rod, and concentrates as global demand surges with the green energy transition.</p>
           <div class="metal-specs">
-            <div class="metal-spec"><span class="spec-key">Grade</span><span class="spec-val">Grade A Cathode</span></div>
-            <div class="metal-spec"><span class="spec-key">Settlement</span><span class="spec-val">LME / OTC</span></div>
-            <div class="metal-spec"><span class="spec-key">Min. Lot</span><span class="spec-val">5 MT</span></div>
+            <div class="metal-spec"><span class="spec-key" data-i18n="spec_grade">Grade</span><span class="spec-val">Grade A Cathode</span></div>
+            <div class="metal-spec"><span class="spec-key" data-i18n="spec_settlement">Settlement</span><span class="spec-val">LME / OTC</span></div>
+            <div class="metal-spec"><span class="spec-key" data-i18n="spec_minlot">Min. Lot</span><span class="spec-val">5 MT</span></div>
           </div>
         </div>
       </div>
@@ -1070,9 +1097,9 @@
     <div class="section-inner">
       <div class="why-layout">
         <div class="why-left">
-          <div class="section-eyebrow">Why Metals Trading</div>
-          <h2 class="section-title">Built for Serious Market Participants</h2>
-          <p class="section-sub">We combine decades of metals expertise with cutting-edge technology to deliver an edge that matters.</p>
+          <div class="section-eyebrow" data-i18n="why_eyebrow">Why Metals Trading</div>
+          <h2 class="section-title" data-i18n="why_h2">Built for Serious Market Participants</h2>
+          <p class="section-sub" data-i18n="why_sub">We combine decades of metals expertise with cutting-edge technology to deliver an edge that matters.</p>
           <div class="why-image">
             <img src="https://placehold.co/560x420/141C24/8FA3B1?text=Metals+Trading+Floor" alt="Trading Floor" />
             <div class="why-image-overlay"></div>
@@ -1083,36 +1110,36 @@
           <div class="feature-item">
             <div class="feature-num">01</div>
             <div class="feature-body">
-              <h3>Live Spot Pricing</h3>
-              <p>Real-time bid/ask quotes sourced from 12+ global exchanges, updated every 100ms. No stale prices, no surprises — just the market as it is.</p>
+              <h3 data-i18n="f1_title">Live Spot Pricing</h3>
+              <p data-i18n="f1_desc">Real-time bid/ask quotes sourced from 12+ global exchanges, updated every 100ms. No stale prices, no surprises — just the market as it is.</p>
             </div>
           </div>
           <div class="feature-item">
             <div class="feature-num">02</div>
             <div class="feature-body">
-              <h3>Physical Delivery Network</h3>
-              <p>Access 40+ accredited vaults and warehouses across London, Zurich, Singapore, and New York. We handle logistics so you can focus on trading.</p>
+              <h3 data-i18n="f2_title">Physical Delivery Network</h3>
+              <p data-i18n="f2_desc">Access 40+ accredited vaults and warehouses across London, Zurich, Singapore, and New York. We handle logistics so you can focus on trading.</p>
             </div>
           </div>
           <div class="feature-item">
             <div class="feature-num">03</div>
             <div class="feature-body">
-              <h3>Dedicated Relationship Managers</h3>
-              <p>Every client is assigned a senior metals specialist who understands your portfolio, your risk appetite, and your market outlook.</p>
+              <h3 data-i18n="f3_title">Dedicated Relationship Managers</h3>
+              <p data-i18n="f3_desc">Every client is assigned a senior metals specialist who understands your portfolio, your risk appetite, and your market outlook.</p>
             </div>
           </div>
           <div class="feature-item">
             <div class="feature-num">04</div>
             <div class="feature-body">
-              <h3>Regulated &amp; Transparent</h3>
-              <p>Fully licensed and regulated. Segregated client accounts, daily mark-to-market reporting, and real-time position visibility at all times.</p>
+              <h3 data-i18n="f4_title">Regulated &amp; Transparent</h3>
+              <p data-i18n="f4_desc">Fully licensed and regulated. Segregated client accounts, daily mark-to-market reporting, and real-time position visibility at all times.</p>
             </div>
           </div>
           <div class="feature-item">
             <div class="feature-num">05</div>
             <div class="feature-body">
-              <h3>Competitive Financing</h3>
-              <p>Tailored margin and financing solutions for miners, refiners, manufacturers, and institutional investors. Flexible terms, fast execution.</p>
+              <h3 data-i18n="f5_title">Competitive Financing</h3>
+              <p data-i18n="f5_desc">Tailored margin and financing solutions for miners, refiners, manufacturers, and institutional investors. Flexible terms, fast execution.</p>
             </div>
           </div>
         </div>
@@ -1126,30 +1153,30 @@
   <section class="process-section" id="process">
     <div class="section-inner">
       <div style="text-align:center; margin-bottom: 0;">
-        <div class="section-eyebrow" style="justify-content:center;">How It Works</div>
-        <h2 class="section-title">From Signup to First Trade in 48 Hours</h2>
-        <p class="section-sub" style="margin: 0 auto;">Our streamlined onboarding process gets you to market fast without compromising compliance or security.</p>
+        <div class="section-eyebrow" style="justify-content:center;" data-i18n="process_eyebrow">How It Works</div>
+        <h2 class="section-title" data-i18n="process_h2">From Signup to First Trade in 48 Hours</h2>
+        <p class="section-sub" style="margin: 0 auto;" data-i18n="process_sub">Our streamlined onboarding process gets you to market fast without compromising compliance or security.</p>
       </div>
       <div class="process-grid">
         <div class="process-step">
           <div class="step-num">01</div>
-          <div class="step-title">Apply Online</div>
-          <p class="step-desc">Complete our digital application in under 20 minutes. Submit KYC documents and entity verification — all in one place.</p>
+          <div class="step-title" data-i18n="s1_title">Apply Online</div>
+          <p class="step-desc" data-i18n="s1_desc">Complete our digital application in under 20 minutes. Submit KYC documents and entity verification — all in one place.</p>
         </div>
         <div class="process-step">
           <div class="step-num">02</div>
-          <div class="step-title">Account Review</div>
-          <p class="step-desc">Our compliance team reviews your application within 24 hours. You'll receive your account credentials and platform access immediately upon approval.</p>
+          <div class="step-title" data-i18n="s2_title">Account Review</div>
+          <p class="step-desc" data-i18n="s2_desc">Our compliance team reviews your application within 24 hours. You'll receive your account credentials and platform access immediately upon approval.</p>
         </div>
         <div class="process-step">
           <div class="step-num">03</div>
-          <div class="step-title">Fund &amp; Configure</div>
-          <p class="step-desc">Wire funds or transfer assets to your segregated account. Configure alerts, set risk limits, and connect via API or our web platform.</p>
+          <div class="step-title" data-i18n="s3_title">Fund &amp; Configure</div>
+          <p class="step-desc" data-i18n="s3_desc">Wire funds or transfer assets to your segregated account. Configure alerts, set risk limits, and connect via API or our web platform.</p>
         </div>
         <div class="process-step">
           <div class="step-num">04</div>
-          <div class="step-title">Start Trading</div>
-          <p class="step-desc">Execute your first trade with support from your dedicated relationship manager. Access real-time pricing, research, and execution tools.</p>
+          <div class="step-title" data-i18n="s4_title">Start Trading</div>
+          <p class="step-desc" data-i18n="s4_desc">Execute your first trade with support from your dedicated relationship manager. Access real-time pricing, research, and execution tools.</p>
         </div>
       </div>
     </div>
@@ -1160,36 +1187,36 @@
   <!-- ── TESTIMONIALS ── -->
   <section class="testimonials-section">
     <div class="section-inner">
-      <div class="section-eyebrow">Client Voices</div>
-      <h2 class="section-title">Trusted by Industry Leaders</h2>
+      <div class="section-eyebrow" data-i18n="test_eyebrow">Client Voices</div>
+      <h2 class="section-title" data-i18n="test_h2">Trusted by Industry Leaders</h2>
       <div class="testimonials-grid">
         <div class="testimonial-card">
-          <p class="testimonial-text">"Metals Trading gave our treasury team direct access to spot markets we couldn't reach before. The pricing is tight, execution is fast, and the reporting is exactly what our CFO needs."</p>
+          <p class="testimonial-text" data-i18n="t1_text">"Metals Trading gave our treasury team direct access to spot markets we couldn't reach before. The pricing is tight, execution is fast, and the reporting is exactly what our CFO needs."</p>
           <div class="testimonial-author">
             <img src="https://placehold.co/44x44/1B2733/8FA3B1?text=JM" class="author-avatar" alt="" />
             <div>
               <div class="author-name">James Morrow</div>
-              <div class="author-title">CFO, Redstone Manufacturing</div>
+              <div class="author-title" data-i18n="t1_title">CFO, Redstone Manufacturing</div>
             </div>
           </div>
         </div>
         <div class="testimonial-card">
-          <p class="testimonial-text">"We've been hedging our gold exposure with MT for three years. Their desk understands miners, not just traders. The relationship adds real value beyond just the execution."</p>
+          <p class="testimonial-text" data-i18n="t2_text">"We've been hedging our gold exposure with MT for three years. Their desk understands miners, not just traders. The relationship adds real value beyond just the execution."</p>
           <div class="testimonial-author">
             <img src="https://placehold.co/44x44/1B2733/8FA3B1?text=SL" class="author-avatar" alt="" />
             <div>
               <div class="author-name">Sofia Larsson</div>
-              <div class="author-title">Head of Risk, Vantage Gold Corp</div>
+              <div class="author-title" data-i18n="t2_title">Head of Risk, Vantage Gold Corp</div>
             </div>
           </div>
         </div>
         <div class="testimonial-card">
-          <p class="testimonial-text">"The copper desk at Metals Trading consistently finds us better prices than our previous prime broker. They've become a core part of our procurement strategy."</p>
+          <p class="testimonial-text" data-i18n="t3_text">"The copper desk at Metals Trading consistently finds us better prices than our previous prime broker. They've become a core part of our procurement strategy."</p>
           <div class="testimonial-author">
             <img src="https://placehold.co/44x44/1B2733/8FA3B1?text=DK" class="author-avatar" alt="" />
             <div>
               <div class="author-name">David Kim</div>
-              <div class="author-title">Director of Procurement, ElectroCon</div>
+              <div class="author-title" data-i18n="t3_title">Director of Procurement, ElectroCon</div>
             </div>
           </div>
         </div>
@@ -1202,15 +1229,15 @@
     <div class="section-inner">
       <div class="cta-inner">
         <div class="cta-text">
-          <h2>Ready to Trade at the <span class="gradient-gold">Highest Level?</span></h2>
-          <p>Speak with a metals specialist today. No commitment, no pressure — just expertise.</p>
+          <h2 data-i18n-html="cta_h2">Ready to Trade at the <span class="gradient-gold">Highest Level?</span></h2>
+          <p data-i18n="cta_sub">Speak with a metals specialist today. No commitment, no pressure — just expertise.</p>
         </div>
         <div class="cta-actions">
           <a href="#contact" class="btn-primary">
-            Request a Consultation
+            <span data-i18n="cta_btn1">Request a Consultation</span>
             <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 8h10M9 4l4 4-4 4"/></svg>
           </a>
-          <a href="#metals" class="btn-outline">View Markets</a>
+          <a href="#metals" class="btn-outline" data-i18n="cta_btn2">View Markets</a>
         </div>
       </div>
     </div>
@@ -1221,16 +1248,16 @@
     <div class="section-inner">
       <div class="contact-layout">
         <div>
-          <div class="section-eyebrow">Get in Touch</div>
-          <h2 class="section-title">Speak with a Specialist</h2>
-          <p class="section-sub">Our team is available around the clock during market hours. Reach out to discuss your trading needs, account setup, or market outlook.</p>
+          <div class="section-eyebrow" data-i18n="contact_eyebrow">Get in Touch</div>
+          <h2 class="section-title" data-i18n="contact_h2">Speak with a Specialist</h2>
+          <p class="section-sub" data-i18n="contact_sub">Our team is available around the clock during market hours. Reach out to discuss your trading needs, account setup, or market outlook.</p>
           <div class="contact-info">
             <div class="contact-item">
               <div class="contact-icon">
                 <svg viewBox="0 0 24 24"><path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07A19.5 19.5 0 013.07 10.8 19.79 19.79 0 01.1 2.18 2 2 0 012.08 0h3a2 2 0 012 1.72 12.84 12.84 0 00.7 2.81 2 2 0 01-.45 2.11L6.09 7.91a16 16 0 006 6l1.27-1.27a2 2 0 012.11-.45 12.84 12.84 0 002.81.7A2 2 0 0122 14.92z"/></svg>
               </div>
               <div>
-                <div class="contact-label">Trading Desk</div>
+                <div class="contact-label" data-i18n="contact_desk">Trading Desk</div>
                 <div class="contact-val">+1 (212) 555-0192</div>
               </div>
             </div>
@@ -1239,7 +1266,7 @@
                 <svg viewBox="0 0 24 24"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
               </div>
               <div>
-                <div class="contact-label">Email</div>
+                <div class="contact-label" data-i18n="contact_email_lbl">Email</div>
                 <div class="contact-val">trading@metalsTrading.com</div>
               </div>
             </div>
@@ -1248,8 +1275,8 @@
                 <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
               </div>
               <div>
-                <div class="contact-label">Market Hours</div>
-                <div class="contact-val">Mon–Fri 06:00–22:00 EST</div>
+                <div class="contact-label" data-i18n="contact_hours_lbl">Market Hours</div>
+                <div class="contact-val" data-i18n="contact_hours_val">Mon–Fri 06:00–22:00 EST</div>
               </div>
             </div>
           </div>
@@ -1257,39 +1284,39 @@
         <form>
           <div class="form-row">
             <div class="form-group">
-              <label for="fname">First Name</label>
-              <input type="text" id="fname" placeholder="James" />
+              <label for="fname" data-i18n="form_fname">First Name</label>
+              <input type="text" id="fname" placeholder="James" data-i18n-placeholder="form_fname_ph" />
             </div>
             <div class="form-group">
-              <label for="lname">Last Name</label>
-              <input type="text" id="lname" placeholder="Morrow" />
+              <label for="lname" data-i18n="form_lname">Last Name</label>
+              <input type="text" id="lname" placeholder="Morrow" data-i18n-placeholder="form_lname_ph" />
             </div>
           </div>
           <div class="form-group">
-            <label for="email">Email Address</label>
+            <label for="email" data-i18n="form_email">Email Address</label>
             <input type="email" id="email" placeholder="james@company.com" />
           </div>
           <div class="form-group">
-            <label for="company">Company</label>
-            <input type="text" id="company" placeholder="Your organization" />
+            <label for="company" data-i18n="form_company">Company</label>
+            <input type="text" id="company" placeholder="Your organization" data-i18n-placeholder="form_company_ph" />
           </div>
           <div class="form-group">
-            <label for="interest">Metal of Interest</label>
+            <label for="interest" data-i18n="form_interest">Metal of Interest</label>
             <select id="interest">
-              <option value="" disabled selected>Select a metal</option>
+              <option value="" disabled selected data-i18n="form_interest_ph">Select a metal</option>
               <option>Gold (XAU)</option>
               <option>Silver (XAG)</option>
               <option>Steel (HRC)</option>
               <option>Copper (HG)</option>
-              <option>Multiple / Portfolio</option>
+              <option data-i18n="form_multi">Multiple / Portfolio</option>
             </select>
           </div>
           <div class="form-group">
-            <label for="message">Message</label>
-            <textarea id="message" placeholder="Tell us about your trading needs or questions..."></textarea>
+            <label for="message" data-i18n="form_message">Message</label>
+            <textarea id="message" placeholder="Tell us about your trading needs or questions..." data-i18n-placeholder="form_message_ph"></textarea>
           </div>
           <button type="submit" class="btn-primary" style="width:100%; justify-content:center;">
-            Send Message
+            <span data-i18n="form_send">Send Message</span>
             <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 8h10M9 4l4 4-4 4"/></svg>
           </button>
         </form>
@@ -1303,7 +1330,7 @@
       <div class="footer-top">
         <div class="footer-brand">
           <img src="brand_assets/LOGO.png" alt="Metals Trading" />
-          <p>Global metals trading solutions for institutions, miners, refiners, and sophisticated investors. Precision execution. Unrivaled expertise.</p>
+          <p data-i18n="footer_brand_desc">Global metals trading solutions for institutions, miners, refiners, and sophisticated investors. Precision execution. Unrivaled expertise.</p>
           <div class="footer-metals">
             <span class="text-gold">Gold</span>
             <span style="color:var(--steel)">·</span>
@@ -1315,42 +1342,42 @@
           </div>
         </div>
         <div class="footer-col">
-          <h4>Markets</h4>
+          <h4 data-i18n="footer_markets">Markets</h4>
           <ul>
-            <li><a href="#">Gold Spot</a></li>
-            <li><a href="#">Silver Spot</a></li>
-            <li><a href="#">Steel Futures</a></li>
-            <li><a href="#">Copper Futures</a></li>
-            <li><a href="#">Options &amp; Swaps</a></li>
+            <li><a href="#" data-i18n="footer_gold_spot">Gold Spot</a></li>
+            <li><a href="#" data-i18n="footer_silver_spot">Silver Spot</a></li>
+            <li><a href="#" data-i18n="footer_steel_fut">Steel Futures</a></li>
+            <li><a href="#" data-i18n="footer_copper_fut">Copper Futures</a></li>
+            <li><a href="#" data-i18n="footer_options">Options &amp; Swaps</a></li>
           </ul>
         </div>
         <div class="footer-col">
-          <h4>Company</h4>
+          <h4 data-i18n="footer_company">Company</h4>
           <ul>
-            <li><a href="#">About Us</a></li>
-            <li><a href="#">Our Team</a></li>
-            <li><a href="#">Careers</a></li>
-            <li><a href="#">Regulatory</a></li>
-            <li><a href="#">News</a></li>
+            <li><a href="#" data-i18n="footer_about">About Us</a></li>
+            <li><a href="#" data-i18n="footer_team">Our Team</a></li>
+            <li><a href="#" data-i18n="footer_careers">Careers</a></li>
+            <li><a href="#" data-i18n="footer_regulatory">Regulatory</a></li>
+            <li><a href="#" data-i18n="footer_news">News</a></li>
           </ul>
         </div>
         <div class="footer-col">
-          <h4>Support</h4>
+          <h4 data-i18n="footer_support">Support</h4>
           <ul>
-            <li><a href="#">Trading Platform</a></li>
-            <li><a href="#">API Documentation</a></li>
-            <li><a href="#">Account Portal</a></li>
-            <li><a href="#">Contact</a></li>
-            <li><a href="#">FAQ</a></li>
+            <li><a href="#" data-i18n="footer_platform">Trading Platform</a></li>
+            <li><a href="#" data-i18n="footer_api">API Documentation</a></li>
+            <li><a href="#" data-i18n="footer_portal">Account Portal</a></li>
+            <li><a href="#" data-i18n="footer_contact">Contact</a></li>
+            <li><a href="#" data-i18n="footer_faq">FAQ</a></li>
           </ul>
         </div>
       </div>
       <div class="footer-bottom">
-        <span class="footer-copy">© 2026 Metals Trading. All rights reserved. Trading in metals carries risk of loss.</span>
+        <span class="footer-copy" data-i18n="footer_copy">© 2026 Metals Trading. All rights reserved. Trading in metals carries risk of loss.</span>
         <div style="display:flex; gap:24px;">
-          <a href="#" style="font-size:12px; color:var(--steel); text-decoration:none;">Privacy Policy</a>
-          <a href="#" style="font-size:12px; color:var(--steel); text-decoration:none;">Terms of Service</a>
-          <a href="#" style="font-size:12px; color:var(--steel); text-decoration:none;">Disclosures</a>
+          <a href="#" style="font-size:12px; color:var(--steel); text-decoration:none;" data-i18n="footer_privacy">Privacy Policy</a>
+          <a href="#" style="font-size:12px; color:var(--steel); text-decoration:none;" data-i18n="footer_terms">Terms of Service</a>
+          <a href="#" style="font-size:12px; color:var(--steel); text-decoration:none;" data-i18n="footer_disc">Disclosures</a>
         </div>
       </div>
     </div>
@@ -1490,6 +1517,143 @@
   document.addEventListener('keydown', function(e) {
     if (e.key === 'Escape') closeRegModal();
   });
+</script>
+
+<script>
+// ── i18n TRANSLATIONS ──
+const i18n = {
+  en: {
+    nav_metals:'Metals', nav_about:'About', nav_process:'Process', nav_contact:'Contact', nav_cta:'Start Trading',
+    hero_eyebrow:'Global Metals Exchange',
+    hero_h1:'Trade the World\'s <span class="gradient-gold">Finest Metals</span> with Confidence',
+    hero_sub:'Access live spot pricing, institutional-grade execution, and expert market intelligence across Gold, Silver, Steel, and Copper markets.',
+    hero_open_account:'Open an Account', hero_explore:'Explore Markets',
+    stat_volume:'Volume Traded', stat_countries:'Countries Served', stat_access:'Market Access',
+    metals_eyebrow:'Our Markets', metals_h2:'Four Metals. One Platform.',
+    metals_sub:'We provide access to the world\'s most actively traded metals with competitive spreads and unmatched depth.',
+    gold_name:'Gold', gold_desc:'The ultimate store of value. Trade spot, forwards, and options on the world\'s most recognized precious metal with institutional-grade liquidity.',
+    silver_name:'Silver', silver_desc:'Industrial demand meets monetary heritage. Access deep silver markets with tight spreads across global exchanges and OTC venues.',
+    steel_name:'Steel', steel_desc:'The backbone of modern infrastructure. We cover HRC, CRC, and rebar contracts across major steel hubs in Europe, Asia, and the Americas.',
+    copper_name:'Copper', copper_desc:'The metal of electrification. Trade copper cathodes, wire rod, and concentrates as global demand surges with the green energy transition.',
+    spec_purity:'Purity', spec_settlement:'Settlement', spec_minlot:'Min. Lot', spec_grade:'Grade',
+    why_eyebrow:'Why Metals Trading', why_h2:'Built for Serious Market Participants',
+    why_sub:'We combine decades of metals expertise with cutting-edge technology to deliver an edge that matters.',
+    f1_title:'Live Spot Pricing', f1_desc:'Real-time bid/ask quotes sourced from 12+ global exchanges, updated every 100ms. No stale prices, no surprises — just the market as it is.',
+    f2_title:'Physical Delivery Network', f2_desc:'Access 40+ accredited vaults and warehouses across London, Zurich, Singapore, and New York. We handle logistics so you can focus on trading.',
+    f3_title:'Dedicated Relationship Managers', f3_desc:'Every client is assigned a senior metals specialist who understands your portfolio, your risk appetite, and your market outlook.',
+    f4_title:'Regulated & Transparent', f4_desc:'Fully licensed and regulated. Segregated client accounts, daily mark-to-market reporting, and real-time position visibility at all times.',
+    f5_title:'Competitive Financing', f5_desc:'Tailored margin and financing solutions for miners, refiners, manufacturers, and institutional investors. Flexible terms, fast execution.',
+    process_eyebrow:'How It Works', process_h2:'From Signup to First Trade in 48 Hours',
+    process_sub:'Our streamlined onboarding process gets you to market fast without compromising compliance or security.',
+    s1_title:'Apply Online', s1_desc:'Complete our digital application in under 20 minutes. Submit KYC documents and entity verification — all in one place.',
+    s2_title:'Account Review', s2_desc:'Our compliance team reviews your application within 24 hours. You\'ll receive your account credentials and platform access immediately upon approval.',
+    s3_title:'Fund & Configure', s3_desc:'Wire funds or transfer assets to your segregated account. Configure alerts, set risk limits, and connect via API or our web platform.',
+    s4_title:'Start Trading', s4_desc:'Execute your first trade with support from your dedicated relationship manager. Access real-time pricing, research, and execution tools.',
+    test_eyebrow:'Client Voices', test_h2:'Trusted by Industry Leaders',
+    t1_text:'"Metals Trading gave our treasury team direct access to spot markets we couldn\'t reach before. The pricing is tight, execution is fast, and the reporting is exactly what our CFO needs."',
+    t1_title:'CFO, Redstone Manufacturing',
+    t2_text:'"We\'ve been hedging our gold exposure with MT for three years. Their desk understands miners, not just traders. The relationship adds real value beyond just the execution."',
+    t2_title:'Head of Risk, Vantage Gold Corp',
+    t3_text:'"The copper desk at Metals Trading consistently finds us better prices than our previous prime broker. They\'ve become a core part of our procurement strategy."',
+    t3_title:'Director of Procurement, ElectroCon',
+    cta_h2:'Ready to Trade at the <span class="gradient-gold">Highest Level?</span>',
+    cta_sub:'Speak with a metals specialist today. No commitment, no pressure — just expertise.',
+    cta_btn1:'Request a Consultation', cta_btn2:'View Markets',
+    contact_eyebrow:'Get in Touch', contact_h2:'Speak with a Specialist',
+    contact_sub:'Our team is available around the clock during market hours. Reach out to discuss your trading needs, account setup, or market outlook.',
+    contact_desk:'Trading Desk', contact_email_lbl:'Email', contact_hours_lbl:'Market Hours', contact_hours_val:'Mon–Fri 06:00–22:00 EST',
+    form_fname:'First Name', form_fname_ph:'James', form_lname:'Last Name', form_lname_ph:'Morrow',
+    form_email:'Email Address', form_company:'Company', form_company_ph:'Your organization',
+    form_interest:'Metal of Interest', form_interest_ph:'Select a metal', form_multi:'Multiple / Portfolio',
+    form_message:'Message', form_message_ph:'Tell us about your trading needs or questions...', form_send:'Send Message',
+    footer_brand_desc:'Global metals trading solutions for institutions, miners, refiners, and sophisticated investors. Precision execution. Unrivaled expertise.',
+    footer_markets:'Markets', footer_gold_spot:'Gold Spot', footer_silver_spot:'Silver Spot', footer_steel_fut:'Steel Futures', footer_copper_fut:'Copper Futures', footer_options:'Options & Swaps',
+    footer_company:'Company', footer_about:'About Us', footer_team:'Our Team', footer_careers:'Careers', footer_regulatory:'Regulatory', footer_news:'News',
+    footer_support:'Support', footer_platform:'Trading Platform', footer_api:'API Documentation', footer_portal:'Account Portal', footer_contact:'Contact', footer_faq:'FAQ',
+    footer_copy:'© 2026 Metals Trading. All rights reserved. Trading in metals carries risk of loss.',
+    footer_privacy:'Privacy Policy', footer_terms:'Terms of Service', footer_disc:'Disclosures',
+  },
+  sl: {
+    nav_metals:'Kovine', nav_about:'O nas', nav_process:'Postopek', nav_contact:'Kontakt', nav_cta:'Začni trgovati',
+    hero_eyebrow:'Globalna borza kovin',
+    hero_h1:'Trgujte z <span class="gradient-gold">najboljšimi kovinami</span> sveta z zaupanjem',
+    hero_sub:'Dostopajte do cen v živo, institucionalnega izvajanja poslov in strokovnih tržnih informacij za zlato, srebro, jeklo in baker.',
+    hero_open_account:'Odprite račun', hero_explore:'Raziščite trge',
+    stat_volume:'Obseg transakcij', stat_countries:'Držav v mreži', stat_access:'Dostop do trga',
+    metals_eyebrow:'Naši trgi', metals_h2:'Štiri kovine. Ena platforma.',
+    metals_sub:'Zagotavljamo dostop do svetovno najbolj prometnih kovin s konkurenčnimi razmiki in neprimerljivo globino trga.',
+    gold_name:'Zlato', gold_desc:'Ultimativna shramba vrednosti. Trgujte s spot pogodbami, terminskimi pogodbami in opcijami na najprepoznavnejšo plemenito kovino z institucionalnim nivojem likvidnosti.',
+    silver_name:'Srebro', silver_desc:'Industrijsko povpraševanje sreča denarno dediščino. Dostopajte do globokih srebrnih trgov s tesnimi razmiki na globalnih borzah in OTC trgih.',
+    steel_name:'Jeklo', steel_desc:'Hrbtenica sodobne infrastrukture. Pokrivamo pogodbe HRC, CRC in armaturno jeklo na ključnih jeklenih vozliščih v Evropi, Aziji in Ameriki.',
+    copper_name:'Baker', copper_desc:'Kovina elektrifikacije. Trgujte z bakrovimi katodami, žičnimi palicami in koncentrati, ko globalno povpraševanje narašča z zelenim energetskim prehodom.',
+    spec_purity:'Čistost', spec_settlement:'Poravnava', spec_minlot:'Min. lot', spec_grade:'Kakovost',
+    why_eyebrow:'Zakaj Metals Trading', why_h2:'Zgrajeno za resne udeležence na trgu',
+    why_sub:'Združujemo desetletja strokovnega znanja o kovinah z najsodobnejšo tehnologijo za prednost, ki šteje.',
+    f1_title:'Cene v živo', f1_desc:'Kotacije v realnem času iz 12+ globalnih borz, posodobljene vsake 100ms. Brez zastarelih cen, brez presenečenj — samo trg tak, kot je.',
+    f2_title:'Mreža fizične dostave', f2_desc:'Dostop do 40+ akreditiranih trezorjev in skladišč v Londonu, Zürichu, Singapurju in New Yorku. Mi poskrbimo za logistiko.',
+    f3_title:'Osebni svetovalci', f3_desc:'Vsaki stranki je dodeljen izkušen specialist za kovine, ki razume vaš portfelj, vaš apetit po tveganju in vaš tržni pogled.',
+    f4_title:'Regulirano in transparentno', f4_desc:'Polno licencirano in regulirano. Ločeni računi strank, dnevno mark-to-market poročanje in vidnost pozicij v realnem času.',
+    f5_title:'Konkurenčno financiranje', f5_desc:'Prilagojene rešitve za rudarje, rafinerje, proizvajalce in institucionalne vlagatelje. Fleksibilni pogoji, hitro izvajanje.',
+    process_eyebrow:'Kako deluje', process_h2:'Od registracije do prvega posla v 48 urah',
+    process_sub:'Naš poenostavljen proces vključevanja vas pripelje na trg hitro brez ogrožanja skladnosti ali varnosti.',
+    s1_title:'Prijavite se online', s1_desc:'Izpolnite našo digitalno prijavo v manj kot 20 minutah. Oddajte KYC dokumente in verificirajte subjekt — vse na enem mestu.',
+    s2_title:'Pregled računa', s2_desc:'Naša ekipa za skladnost pregleda vašo prijavo v 24 urah. Dostop do platforme prejmete takoj po odobritvi.',
+    s3_title:'Naložite sredstva', s3_desc:'Nakažite sredstva ali prenesite premoženje na vaš ločeni račun. Nastavite alarme, omejitve tveganja in povežite se prek API ali spletne platforme.',
+    s4_title:'Začnite trgovati', s4_desc:'Sklenite prvi posel s podporo vašega osebnega svetovalca. Dostopajte do cen v realnem času, analiz in orodij za izvajanje poslov.',
+    test_eyebrow:'Naše stranke', test_h2:'Zaupanje vodilnih v industriji',
+    t1_text:'"Metals Trading je naši finančni ekipi omogočil neposreden dostop do spot trgov, ki jih prej nismo mogli doseči. Cene so tesne, izvajanje je hitro, poročanje pa točno takšno, kot ga potrebuje naš CFO."',
+    t1_title:'CFO, Redstone Manufacturing',
+    t2_text:'"Varovalne posle na zlatu z MT sklepamo že tri leta. Njihova ekipa razume rudarje, ne le trgovce. Odnos prinaša pravo vrednost onkraj samega izvajanja."',
+    t2_title:'Vodja tveganj, Vantage Gold Corp',
+    t3_text:'"Bakrena ekipa pri Metals Trading nam dosledno najde boljše cene kot naš prejšnji prime broker. Postali so ključni del naše nabavne strategije."',
+    t3_title:'Direktor nabave, ElectroCon',
+    cta_h2:'Pripravljeni na trgovanje na <span class="gradient-gold">najvišjem nivoju?</span>',
+    cta_sub:'Pogovorite se s strokovnjakom za kovine danes. Brez obveznosti, brez pritiska — samo strokovnost.',
+    cta_btn1:'Zahtevajte posvet', cta_btn2:'Oglejte trge',
+    contact_eyebrow:'Stopite v stik', contact_h2:'Pogovorite se s strokovnjakom',
+    contact_sub:'Naša ekipa je na voljo ves čas med tržnimi urami. Stopite v stik in razpravljajte o vaših potrebah.',
+    contact_desk:'Trgovska pisarna', contact_email_lbl:'E-pošta', contact_hours_lbl:'Tržne ure', contact_hours_val:'Pon–Pet 06:00–22:00 EST',
+    form_fname:'Ime', form_fname_ph:'Janez', form_lname:'Priimek', form_lname_ph:'Novak',
+    form_email:'E-poštni naslov', form_company:'Podjetje', form_company_ph:'Vaša organizacija',
+    form_interest:'Kovina v interesu', form_interest_ph:'Izberite kovino', form_multi:'Večkratno / Portfelj',
+    form_message:'Sporočilo', form_message_ph:'Povejte nam o vaših potrebah glede trgovanja ali vprašanjih...', form_send:'Pošlji sporočilo',
+    footer_brand_desc:'Globalne rešitve za trgovanje s kovinami za institucije, rudarje, rafinerije in izkušene vlagatelje. Natančno izvajanje. Neprimerljiva strokovnost.',
+    footer_markets:'Trgi', footer_gold_spot:'Zlato spot', footer_silver_spot:'Srebro spot', footer_steel_fut:'Jeklo terminske pogodbe', footer_copper_fut:'Baker terminske pogodbe', footer_options:'Opcije in zamenjave',
+    footer_company:'Podjetje', footer_about:'O nas', footer_team:'Naša ekipa', footer_careers:'Kariera', footer_regulatory:'Regulativa', footer_news:'Novice',
+    footer_support:'Podpora', footer_platform:'Platforma za trgovanje', footer_api:'API dokumentacija', footer_portal:'Portal računa', footer_contact:'Kontakt', footer_faq:'Pogosta vprašanja',
+    footer_copy:'© 2026 Metals Trading. Vse pravice pridržane. Trgovanje s kovinami prinaša tveganje izgube.',
+    footer_privacy:'Politika zasebnosti', footer_terms:'Pogoji uporabe', footer_disc:'Razkritja',
+  }
+};
+
+function setLang(lang) {
+  localStorage.setItem('lang', lang);
+  document.documentElement.lang = lang === 'sl' ? 'sl' : 'en';
+  document.querySelectorAll('.lang-btn').forEach(b => b.classList.toggle('active', b.dataset.lang === lang));
+  const t = i18n[lang];
+  document.querySelectorAll('[data-i18n]').forEach(el => {
+    const v = t[el.dataset.i18n]; if (v !== undefined) el.textContent = v;
+  });
+  document.querySelectorAll('[data-i18n-html]').forEach(el => {
+    const v = t[el.dataset.i18nHtml]; if (v !== undefined) el.innerHTML = v;
+  });
+  document.querySelectorAll('[data-i18n-placeholder]').forEach(el => {
+    const v = t[el.dataset.i18nPlaceholder]; if (v !== undefined) el.placeholder = v;
+  });
+}
+
+// Auto-detect language on load
+(async function() {
+  const stored = localStorage.getItem('lang');
+  if (stored) { setLang(stored); return; }
+  try {
+    const res = await fetch('https://ipapi.co/json/');
+    const data = await res.json();
+    setLang(data.country_code === 'SI' ? 'sl' : 'en');
+  } catch {
+    setLang('en');
+  }
+})();
 </script>
 
 </body>
