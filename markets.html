@@ -278,6 +278,34 @@
     }
     .price-input:focus { border-color: var(--gold); }
 
+    /* ── SEARCH BAR ── */
+    .search-wrap {
+      position: relative; display: flex; align-items: center;
+      margin-bottom: 20px;
+      background: var(--ink-3);
+      border: 1px solid rgba(143,163,177,0.15);
+      border-radius: 4px;
+      transition: border-color 0.2s ease;
+    }
+    .search-wrap:focus-within { border-color: var(--gold); }
+    .search-icon {
+      width: 15px; height: 15px; flex-shrink: 0;
+      color: var(--muted); margin: 0 10px 0 14px;
+      pointer-events: none;
+    }
+    .search-input {
+      flex: 1; background: none; border: none; outline: none;
+      font-family: 'Inter', sans-serif; font-size: 13px;
+      color: #E8EEF2; padding: 11px 0;
+    }
+    .search-input::placeholder { color: var(--muted); }
+    .search-clear {
+      background: none; border: none; cursor: pointer;
+      color: var(--muted); font-size: 18px; line-height: 1;
+      padding: 0 14px; transition: color 0.15s ease;
+    }
+    .search-clear:hover { color: #E8EEF2; }
+
     /* ── RESULTS PANEL ── */
     .results-panel { padding: 28px 36px; }
     .results-bar {
@@ -791,6 +819,16 @@
 
   <!-- ── RESULTS PANEL ── -->
   <main class="results-panel">
+
+    <!-- SEARCH BAR -->
+    <div class="search-wrap">
+      <svg class="search-icon" viewBox="0 0 18 18" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+        <circle cx="7.5" cy="7.5" r="5.5"/><path d="M13.5 13.5l3 3"/>
+      </svg>
+      <input class="search-input" id="search-input" type="text" placeholder="Iščite po nazivu, materialu, opisu, specifikacijah …" oninput="onSearchInput()" autocomplete="off" />
+      <button class="search-clear" id="search-clear" onclick="clearSearch()" style="display:none;">×</button>
+    </div>
+
     <div class="results-bar">
       <div>
         <div class="results-count" id="results-count">Prikazano: <strong id="count-num">12</strong> oglasov</div>
@@ -1206,6 +1244,7 @@ const TREE_DATA = [
 const state = {
   type: 'nonferrous',
   currency: 'usd',
+  search: '',
   material: [],
   treeSelection: null, // { metalId, matKey, metalLabel, leafLabel }
   purity: [],
@@ -2342,7 +2381,34 @@ function getFiltered() {
   if (!isNaN(pFrom)) list = list.filter(l => (state.currency==='usd'?l.priceUsd:l.priceEur) >= pFrom);
   if (!isNaN(pTo))   list = list.filter(l => (state.currency==='usd'?l.priceUsd:l.priceEur) <= pTo);
 
+  // search filter
+  if (state.search) {
+    const q = state.search.toLowerCase();
+    list = list.filter(l =>
+      (l.name  && l.name.toLowerCase().includes(q))  ||
+      (l.sub   && l.sub.toLowerCase().includes(q))   ||
+      (l.material && l.material.toLowerCase().includes(q)) ||
+      (l.shape && l.shape.toLowerCase().includes(q)) ||
+      (l.origin && l.origin.toLowerCase().includes(q)) ||
+      (l.purity && l.purity.toLowerCase().includes(q))
+    );
+  }
+
   return list;
+}
+
+function onSearchInput() {
+  const val = document.getElementById('search-input').value;
+  state.search = val;
+  document.getElementById('search-clear').style.display = val ? '' : 'none';
+  updateFilters();
+}
+
+function clearSearch() {
+  document.getElementById('search-input').value = '';
+  state.search = '';
+  document.getElementById('search-clear').style.display = 'none';
+  updateFilters();
 }
 
 function updateFilters() {
@@ -2430,7 +2496,9 @@ function renderActiveTags() {
 function clearTag(i) { window._tagClearFns[i](); }
 
 function resetAll() {
-  state.material=[]; state.treeSelection=null; state.purity=[]; state.shape=[]; state.weight=[]; state.origin=''; state.quote=['spot'];
+  state.material=[]; state.treeSelection=null; state.purity=[]; state.shape=[]; state.weight=[]; state.origin=''; state.quote=['spot']; state.search='';
+  document.getElementById('search-input').value = '';
+  document.getElementById('search-clear').style.display = 'none';
   state.cert = { auth:'any', serial:'any', mint:'any', assay:'any' };
   if (state.type === 'nonferrous') initMetalAccordion();
   if (state.type === 'ferrous')    initFerrousAccordion();
