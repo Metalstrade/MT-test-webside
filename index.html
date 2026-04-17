@@ -963,8 +963,8 @@
         <span class="lang-flag">🇸🇮</span> SLO
       </button>
     </div>
-    <button class="btn-outline nav-cta" onclick="openSignInModal()" data-i18n="nav_signin" style="margin-right:8px;">Sign In</button>
-    <button class="btn-primary nav-cta" onclick="openRegModal()" data-i18n="nav_cta">Start Trading</button>
+    <button id="nav-signin-btn" class="btn-outline nav-cta" onclick="openSignInModal()" data-i18n="nav_signin" style="margin-right:8px;">Sign In</button>
+    <button id="nav-reg-btn" class="btn-primary nav-cta" onclick="openRegModal()" data-i18n="nav_cta">Start Trading</button>
   </nav>
 
   <!-- ── HERO ── -->
@@ -981,7 +981,7 @@
           Access live spot pricing, institutional-grade execution, and expert market intelligence across Gold, Silver, Steel, and Copper markets.
         </p>
         <div class="hero-actions">
-          <button onclick="openRegModal()" class="btn-primary">
+          <button id="hero-reg-btn" onclick="openRegModal()" class="btn-primary">
             <span data-i18n="hero_open_account">Open an Account</span>
             <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 8h10M9 4l4 4-4 4"/></svg>
           </button>
@@ -1687,18 +1687,43 @@
     }
     document.getElementById('signin-form').style.display = 'none';
     document.getElementById('signin-success').style.display = 'block';
+    localStorage.setItem('signed_in', 'true');
+    setSignedInBtn();
+  }
+
+  function setSignedInBtn() {
+    const btn = document.getElementById('nav-signin-btn');
+    if (!btn) return;
+    btn.dataset.i18n = 'nav_signed_in';
+    const lang = localStorage.getItem('lang') || 'en';
+    btn.textContent = i18n[lang].nav_signed_in;
+    btn.style.borderColor = 'var(--gold)';
+    btn.style.color = 'var(--gold)';
+    btn.style.cursor = 'default';
+    btn.onclick = null;
+    const navReg = document.getElementById('nav-reg-btn');
+    if (navReg) navReg.style.display = 'none';
+    const heroReg = document.getElementById('hero-reg-btn');
+    if (heroReg) heroReg.style.display = 'none';
   }
 
   document.addEventListener('keydown', function(e) {
     if (e.key === 'Escape') { closeRegModal(); closeSignInModal(); }
   });
+
+  // Restore signed-in state on page load
+  if (localStorage.getItem('signed_in') === 'true') {
+    document.addEventListener('DOMContentLoaded', setSignedInBtn);
+    // fallback if DOM already loaded
+    if (document.readyState !== 'loading') setSignedInBtn();
+  }
 </script>
 
 <script>
 // ── i18n TRANSLATIONS ──
 const i18n = {
   en: {
-    nav_metals:'Metals', nav_about:'About', nav_process:'Process', nav_contact:'Contact', nav_cta:'Start Trading', nav_signin:'Sign In',
+    nav_metals:'Metals', nav_about:'About', nav_process:'Process', nav_contact:'Contact', nav_cta:'Start Trading', nav_signin:'Sign In', nav_signed_in:'Signed In',
     hero_eyebrow:'Global Metals Exchange',
     hero_h1:'Trade the World\'s <span class="gradient-gold">Finest Metals</span> with Confidence',
     hero_sub:'Access live spot pricing, institutional-grade execution, and expert market intelligence across Gold, Silver, Steel, and Copper markets.',
@@ -1766,7 +1791,7 @@ const i18n = {
     reg_error_duplicate:'This email address is already registered.', reg_error_generic:'An error occurred. Please try again.',
   },
   sl: {
-    nav_metals:'Kovine', nav_about:'O nas', nav_process:'Postopek', nav_contact:'Kontakt', nav_cta:'Začni trgovati', nav_signin:'Prijavi se',
+    nav_metals:'Kovine', nav_about:'O nas', nav_process:'Postopek', nav_contact:'Kontakt', nav_cta:'Začni trgovati', nav_signin:'Prijavi se', nav_signed_in:'Prijavljen',
     hero_eyebrow:'Globalna borza kovin',
     hero_h1:'Trgujte z <span class="gradient-gold">najboljšimi kovinami</span> sveta z zaupanjem',
     hero_sub:'Dostopajte do cen v živo, institucionalnega izvajanja poslov in strokovnih tržnih informacij za zlato, srebro, jeklo in baker.',
