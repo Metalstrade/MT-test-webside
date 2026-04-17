@@ -5,6 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Metals Trading — Gold · Silver · Steel · Copper</title>
   <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;500;600;700&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet" />
@@ -962,6 +963,7 @@
         <span class="lang-flag">🇸🇮</span> SLO
       </button>
     </div>
+    <button class="btn-outline nav-cta" onclick="openSignInModal()" data-i18n="nav_signin" style="margin-right:8px;">Sign In</button>
     <button class="btn-primary nav-cta" onclick="openRegModal()" data-i18n="nav_cta">Start Trading</button>
   </nav>
 
@@ -1412,29 +1414,27 @@
     " onmouseover="this.style.color='var(--gold)'" onmouseout="this.style.color='var(--muted)'">&#x2715;</button>
 
     <!-- heading -->
-    <div style="margin-bottom:8px; font-size:11px; letter-spacing:0.12em; text-transform:uppercase; color:var(--gold); font-family:'Inter',sans-serif; font-weight:500;">
-      Začetek trgovanja
+    <div style="margin-bottom:8px; font-size:11px; letter-spacing:0.12em; text-transform:uppercase; color:var(--gold); font-family:'Inter',sans-serif; font-weight:500;" data-i18n="reg_eyebrow">
+      Start Trading
     </div>
-    <h2 style="margin:0 0 28px; font-family:'Cormorant Garamond',serif; font-size:28px; color:#E8EEF2; letter-spacing:-0.02em; line-height:1.15;">
-      Odprite račun
+    <h2 style="margin:0 0 28px; font-family:'Cormorant Garamond',serif; font-size:28px; color:#E8EEF2; letter-spacing:-0.02em; line-height:1.15;" data-i18n="reg_title">
+      Open an Account
     </h2>
 
     <form id="reg-form" onsubmit="submitRegForm(event)" style="display:flex; flex-direction:column; gap:16px;">
       <div style="display:grid; grid-template-columns:1fr 1fr; gap:16px;">
-        <!-- Ime -->
         <div>
-          <label style="display:block; font-size:11px; letter-spacing:0.08em; text-transform:uppercase; color:var(--muted); margin-bottom:6px; font-family:'Inter',sans-serif;">Ime</label>
-          <input type="text" name="ime" required placeholder="npr. Janez" style="
+          <label style="display:block; font-size:11px; letter-spacing:0.08em; text-transform:uppercase; color:var(--muted); margin-bottom:6px; font-family:'Inter',sans-serif;" data-i18n="reg_firstname">First Name</label>
+          <input type="text" name="ime" required data-i18n-placeholder="reg_firstname_ph" placeholder="e.g. James" style="
             width:100%; padding:11px 14px;
             background:var(--ink-3); border:1px solid rgba(143,163,177,0.2);
             border-radius:3px; color:#E8EEF2; font-family:'Inter',sans-serif; font-size:14px;
             outline:none; transition:border-color 0.2s ease;
           " onfocus="this.style.borderColor='var(--gold)'" onblur="this.style.borderColor='rgba(143,163,177,0.2)'" />
         </div>
-        <!-- Priimek -->
         <div>
-          <label style="display:block; font-size:11px; letter-spacing:0.08em; text-transform:uppercase; color:var(--muted); margin-bottom:6px; font-family:'Inter',sans-serif;">Priimek</label>
-          <input type="text" name="priimek" required placeholder="npr. Novak" style="
+          <label style="display:block; font-size:11px; letter-spacing:0.08em; text-transform:uppercase; color:var(--muted); margin-bottom:6px; font-family:'Inter',sans-serif;" data-i18n="reg_lastname">Last Name</label>
+          <input type="text" name="priimek" required data-i18n-placeholder="reg_lastname_ph" placeholder="e.g. Smith" style="
             width:100%; padding:11px 14px;
             background:var(--ink-3); border:1px solid rgba(143,163,177,0.2);
             border-radius:3px; color:#E8EEF2; font-family:'Inter',sans-serif; font-size:14px;
@@ -1443,10 +1443,9 @@
         </div>
       </div>
 
-      <!-- Email -->
       <div>
-        <label style="display:block; font-size:11px; letter-spacing:0.08em; text-transform:uppercase; color:var(--muted); margin-bottom:6px; font-family:'Inter',sans-serif;">E-pošta</label>
-        <input type="email" name="email" required placeholder="janez@primer.si" style="
+        <label style="display:block; font-size:11px; letter-spacing:0.08em; text-transform:uppercase; color:var(--muted); margin-bottom:6px; font-family:'Inter',sans-serif;" data-i18n="reg_email">Email</label>
+        <input type="email" name="email" required data-i18n-placeholder="reg_email_ph" placeholder="james@example.com" style="
           width:100%; padding:11px 14px;
           background:var(--ink-3); border:1px solid rgba(143,163,177,0.2);
           border-radius:3px; color:#E8EEF2; font-family:'Inter',sans-serif; font-size:14px;
@@ -1454,10 +1453,9 @@
         " onfocus="this.style.borderColor='var(--gold)'" onblur="this.style.borderColor='rgba(143,163,177,0.2)'" />
       </div>
 
-      <!-- Telefon -->
       <div>
-        <label style="display:block; font-size:11px; letter-spacing:0.08em; text-transform:uppercase; color:var(--muted); margin-bottom:6px; font-family:'Inter',sans-serif;">Telefonska številka</label>
-        <input type="tel" name="telefon" required placeholder="+386 41 123 456" style="
+        <label style="display:block; font-size:11px; letter-spacing:0.08em; text-transform:uppercase; color:var(--muted); margin-bottom:6px; font-family:'Inter',sans-serif;" data-i18n="reg_phone">Phone Number</label>
+        <input type="tel" name="telefon" required data-i18n-placeholder="reg_phone_ph" placeholder="+386 41 123 456" style="
           width:100%; padding:11px 14px;
           background:var(--ink-3); border:1px solid rgba(143,163,177,0.2);
           border-radius:3px; color:#E8EEF2; font-family:'Inter',sans-serif; font-size:14px;
@@ -1465,10 +1463,9 @@
         " onfocus="this.style.borderColor='var(--gold)'" onblur="this.style.borderColor='rgba(143,163,177,0.2)'" />
       </div>
 
-      <!-- Davčna -->
       <div>
-        <label style="display:block; font-size:11px; letter-spacing:0.08em; text-transform:uppercase; color:var(--muted); margin-bottom:6px; font-family:'Inter',sans-serif;">Davčna številka</label>
-        <input type="text" name="davcna" required placeholder="SI12345678" style="
+        <label style="display:block; font-size:11px; letter-spacing:0.08em; text-transform:uppercase; color:var(--muted); margin-bottom:6px; font-family:'Inter',sans-serif;" data-i18n="reg_tax">Tax Number</label>
+        <input type="text" name="davcna" required data-i18n-placeholder="reg_tax_ph" placeholder="SI12345678" style="
           width:100%; padding:11px 14px;
           background:var(--ink-3); border:1px solid rgba(143,163,177,0.2);
           border-radius:3px; color:#E8EEF2; font-family:'Inter',sans-serif; font-size:14px;
@@ -1476,27 +1473,142 @@
         " onfocus="this.style.borderColor='var(--gold)'" onblur="this.style.borderColor='rgba(143,163,177,0.2)'" />
       </div>
 
-      <!-- Submit -->
-      <button type="submit" class="btn-primary" style="width:100%; justify-content:center; margin-top:8px; padding:15px 32px; font-size:13px;">
-        Registriraj se
+      <!-- CAPTCHA -->
+      <div style="background:var(--ink-3); border:1px solid rgba(201,162,39,0.2); border-radius:3px; padding:14px 16px;">
+        <label style="display:block; font-size:11px; letter-spacing:0.08em; text-transform:uppercase; color:var(--gold); margin-bottom:10px; font-family:'Inter',sans-serif;" data-i18n="captcha_label">Security Check</label>
+        <div style="display:flex; align-items:center; gap:12px;">
+          <span id="reg-captcha-question" style="font-family:'Cormorant Garamond',serif; font-size:22px; color:#E8EEF2; min-width:80px;"></span>
+          <input type="text" id="reg-captcha-answer" inputmode="numeric" pattern="[0-9]*" autocomplete="off" required data-i18n-placeholder="captcha_placeholder" placeholder="Your answer" style="
+            flex:1; padding:9px 12px;
+            background:var(--ink); border:1px solid rgba(143,163,177,0.2);
+            border-radius:3px; color:#E8EEF2; font-family:'Inter',sans-serif; font-size:14px;
+            outline:none; transition:border-color 0.2s ease;
+          " onfocus="this.style.borderColor='var(--gold)'" onblur="this.style.borderColor='rgba(143,163,177,0.2)'" />
+        </div>
+        <p id="reg-captcha-error" style="display:none; margin:8px 0 0; font-size:12px; color:#E57373; font-family:'Inter',sans-serif;" data-i18n="captcha_error">Incorrect answer. Please try again.</p>
+      </div>
+
+      <p id="reg-submit-error" style="display:none; margin:0; font-size:12px; color:#E57373; text-align:center; font-family:'Inter',sans-serif;"></p>
+
+      <button type="submit" id="reg-submit-btn" class="btn-primary" style="width:100%; justify-content:center; margin-top:8px; padding:15px 32px; font-size:13px;" data-i18n="reg_submit">
+        Register
       </button>
 
-      <p style="margin:0; font-size:11px; color:var(--muted); text-align:center; font-family:'Inter',sans-serif; line-height:1.6;">
-        Z registracijo se strinjate s <a href="#" style="color:var(--gold); text-decoration:none;">pogoji uporabe</a> in <a href="#" style="color:var(--gold); text-decoration:none;">politiko zasebnosti</a>.
+      <p style="margin:0; font-size:11px; color:var(--muted); text-align:center; font-family:'Inter',sans-serif; line-height:1.6;" data-i18n-html="reg_terms_full">
+        By registering you agree to our <a href="#" style="color:var(--gold); text-decoration:none;">terms of service</a> and <a href="#" style="color:var(--gold); text-decoration:none;">privacy policy</a>.
       </p>
     </form>
 
     <!-- Success state (hidden) -->
     <div id="reg-success" style="display:none; text-align:center; padding:20px 0;">
       <div style="font-size:40px; margin-bottom:16px;">✓</div>
-      <h3 style="font-family:'Cormorant Garamond',serif; font-size:24px; color:var(--gold); margin:0 0 8px;">Uspešno ste se registrirali!</h3>
-      <p style="color:var(--muted); font-size:14px; font-family:'Inter',sans-serif; margin:0 0 24px;">Kmalu vas bomo kontaktirali.</p>
-      <button onclick="closeRegModal()" class="btn-primary" style="justify-content:center;">Zapri</button>
+      <h3 style="font-family:'Cormorant Garamond',serif; font-size:24px; color:var(--gold); margin:0 0 8px;" data-i18n="reg_success_title">Successfully registered!</h3>
+      <p style="color:var(--muted); font-size:14px; font-family:'Inter',sans-serif; margin:0 0 24px;" data-i18n="reg_success_msg">We will contact you shortly.</p>
+      <button onclick="closeRegModal()" class="btn-primary" style="justify-content:center;" data-i18n="modal_close">Close</button>
+    </div>
+  </div>
+</div>
+
+<!-- ── SIGN IN MODAL ── -->
+<div id="signin-modal" style="
+  display:none;
+  position:fixed; inset:0; z-index:9999;
+  background:rgba(13,17,23,0.85);
+  backdrop-filter:blur(8px);
+  -webkit-backdrop-filter:blur(8px);
+  align-items:center; justify-content:center;
+" onclick="if(event.target===this)closeSignInModal()">
+  <div style="
+    position:relative;
+    background:var(--ink-2);
+    border:1px solid rgba(201,162,39,0.25);
+    border-radius:4px;
+    padding:48px 44px 44px;
+    width:100%; max-width:420px;
+    margin:16px;
+    box-shadow:0 8px 60px rgba(0,0,0,0.6), 0 0 0 1px rgba(201,162,39,0.08);
+  ">
+    <button onclick="closeSignInModal()" style="
+      position:absolute; top:16px; right:20px;
+      background:none; border:none; color:var(--muted);
+      font-size:22px; cursor:pointer; line-height:1;
+      transition:color 0.15s ease;
+    " onmouseover="this.style.color='var(--gold)'" onmouseout="this.style.color='var(--muted)'">&#x2715;</button>
+
+    <div style="margin-bottom:8px; font-size:11px; letter-spacing:0.12em; text-transform:uppercase; color:var(--gold); font-family:'Inter',sans-serif; font-weight:500;" data-i18n="signin_eyebrow">
+      Account Access
+    </div>
+    <h2 style="margin:0 0 28px; font-family:'Cormorant Garamond',serif; font-size:28px; color:#E8EEF2; letter-spacing:-0.02em; line-height:1.15;" data-i18n="signin_title">
+      Sign In
+    </h2>
+
+    <form id="signin-form" onsubmit="submitSignInForm(event)" style="display:flex; flex-direction:column; gap:16px;">
+      <div>
+        <label style="display:block; font-size:11px; letter-spacing:0.08em; text-transform:uppercase; color:var(--muted); margin-bottom:6px; font-family:'Inter',sans-serif;" data-i18n="signin_email">Email Address</label>
+        <input type="email" name="email" required data-i18n-placeholder="signin_email_ph" placeholder="james@example.com" style="
+          width:100%; padding:11px 14px;
+          background:var(--ink-3); border:1px solid rgba(143,163,177,0.2);
+          border-radius:3px; color:#E8EEF2; font-family:'Inter',sans-serif; font-size:14px;
+          outline:none; transition:border-color 0.2s ease;
+        " onfocus="this.style.borderColor='var(--gold)'" onblur="this.style.borderColor='rgba(143,163,177,0.2)'" />
+      </div>
+
+      <div>
+        <label style="display:block; font-size:11px; letter-spacing:0.08em; text-transform:uppercase; color:var(--muted); margin-bottom:6px; font-family:'Inter',sans-serif;" data-i18n="signin_password">Password</label>
+        <input type="password" name="password" required data-i18n-placeholder="signin_password_ph" placeholder="••••••••" style="
+          width:100%; padding:11px 14px;
+          background:var(--ink-3); border:1px solid rgba(143,163,177,0.2);
+          border-radius:3px; color:#E8EEF2; font-family:'Inter',sans-serif; font-size:14px;
+          outline:none; transition:border-color 0.2s ease;
+        " onfocus="this.style.borderColor='var(--gold)'" onblur="this.style.borderColor='rgba(143,163,177,0.2)'" />
+      </div>
+
+      <!-- CAPTCHA -->
+      <div style="background:var(--ink-3); border:1px solid rgba(201,162,39,0.2); border-radius:3px; padding:14px 16px;">
+        <label style="display:block; font-size:11px; letter-spacing:0.08em; text-transform:uppercase; color:var(--gold); margin-bottom:10px; font-family:'Inter',sans-serif;" data-i18n="captcha_label">Security Check</label>
+        <div style="display:flex; align-items:center; gap:12px;">
+          <span id="signin-captcha-question" style="font-family:'Cormorant Garamond',serif; font-size:22px; color:#E8EEF2; min-width:80px;"></span>
+          <input type="text" id="signin-captcha-answer" inputmode="numeric" pattern="[0-9]*" autocomplete="off" required data-i18n-placeholder="captcha_placeholder" placeholder="Your answer" style="
+            flex:1; padding:9px 12px;
+            background:var(--ink); border:1px solid rgba(143,163,177,0.2);
+            border-radius:3px; color:#E8EEF2; font-family:'Inter',sans-serif; font-size:14px;
+            outline:none; transition:border-color 0.2s ease;
+          " onfocus="this.style.borderColor='var(--gold)'" onblur="this.style.borderColor='rgba(143,163,177,0.2)'" />
+        </div>
+        <p id="signin-captcha-error" style="display:none; margin:8px 0 0; font-size:12px; color:#E57373; font-family:'Inter',sans-serif;" data-i18n="captcha_error">Incorrect answer. Please try again.</p>
+      </div>
+
+      <button type="submit" class="btn-primary" style="width:100%; justify-content:center; margin-top:8px; padding:15px 32px; font-size:13px;" data-i18n="signin_submit">
+        Sign In
+      </button>
+    </form>
+
+    <!-- Success state (hidden) -->
+    <div id="signin-success" style="display:none; text-align:center; padding:20px 0;">
+      <div style="font-size:40px; margin-bottom:16px;">✓</div>
+      <h3 style="font-family:'Cormorant Garamond',serif; font-size:24px; color:var(--gold); margin:0 0 8px;" data-i18n="signin_success_title">Welcome back!</h3>
+      <p style="color:var(--muted); font-size:14px; font-family:'Inter',sans-serif; margin:0 0 24px;" data-i18n="signin_success_msg">You are now signed in.</p>
+      <button onclick="closeSignInModal()" class="btn-primary" style="justify-content:center;" data-i18n="modal_close">Close</button>
     </div>
   </div>
 </div>
 
 <script>
+  // ── SUPABASE ──
+  const sb = supabase.createClient(
+    'https://xurgxkrnmutmocqbjffw.supabase.co',
+    'sb_publishable_2YGXEXBZS2gXuw4j1ZL4_g_UHuRaoE3'
+  );
+
+  function generateCaptcha(prefix) {
+    const a = Math.floor(Math.random() * 9) + 1;
+    const b = Math.floor(Math.random() * 9) + 1;
+    document.getElementById(prefix + '-captcha-question').textContent = a + ' + ' + b + ' = ?';
+    document.getElementById(prefix + '-captcha-answer').dataset.answer = String(a + b);
+    document.getElementById(prefix + '-captcha-answer').value = '';
+    document.getElementById(prefix + '-captcha-error').style.display = 'none';
+  }
+
   function openRegModal() {
     const m = document.getElementById('reg-modal');
     m.style.display = 'flex';
@@ -1504,18 +1616,81 @@
     document.getElementById('reg-form').style.display = 'flex';
     document.getElementById('reg-success').style.display = 'none';
     document.getElementById('reg-form').reset();
+    generateCaptcha('reg');
   }
   function closeRegModal() {
     document.getElementById('reg-modal').style.display = 'none';
     document.body.style.overflow = '';
   }
-  function submitRegForm(e) {
+  async function submitRegForm(e) {
     e.preventDefault();
+    const answerEl = document.getElementById('reg-captcha-answer');
+    if (answerEl.value.trim() !== answerEl.dataset.answer) {
+      document.getElementById('reg-captcha-error').style.display = 'block';
+      generateCaptcha('reg');
+      return;
+    }
+
+    const lang = localStorage.getItem('lang') || 'en';
+    const errEl = document.getElementById('reg-submit-error');
+    const btn = document.getElementById('reg-submit-btn');
+    errEl.style.display = 'none';
+    btn.disabled = true;
+    btn.style.opacity = '0.6';
+    btn.textContent = lang === 'sl' ? 'Pošiljam...' : 'Submitting...';
+
+    const fd = new FormData(document.getElementById('reg-form'));
+    const { error } = await sb.from('registrations').insert({
+      first_name: fd.get('ime'),
+      last_name: fd.get('priimek'),
+      email: fd.get('email'),
+      phone: fd.get('telefon'),
+      tax_number: fd.get('davcna'),
+    });
+
+    btn.disabled = false;
+    btn.style.opacity = '1';
+    btn.textContent = i18n[lang].reg_submit;
+
+    if (error) {
+      errEl.textContent = error.code === '23505'
+        ? i18n[lang].reg_error_duplicate
+        : i18n[lang].reg_error_generic;
+      errEl.style.display = 'block';
+      return;
+    }
+
     document.getElementById('reg-form').style.display = 'none';
     document.getElementById('reg-success').style.display = 'block';
   }
+
+  function openSignInModal() {
+    const m = document.getElementById('signin-modal');
+    m.style.display = 'flex';
+    document.body.style.overflow = 'hidden';
+    document.getElementById('signin-form').style.display = 'flex';
+    document.getElementById('signin-success').style.display = 'none';
+    document.getElementById('signin-form').reset();
+    generateCaptcha('signin');
+  }
+  function closeSignInModal() {
+    document.getElementById('signin-modal').style.display = 'none';
+    document.body.style.overflow = '';
+  }
+  function submitSignInForm(e) {
+    e.preventDefault();
+    const answerEl = document.getElementById('signin-captcha-answer');
+    if (answerEl.value.trim() !== answerEl.dataset.answer) {
+      document.getElementById('signin-captcha-error').style.display = 'block';
+      generateCaptcha('signin');
+      return;
+    }
+    document.getElementById('signin-form').style.display = 'none';
+    document.getElementById('signin-success').style.display = 'block';
+  }
+
   document.addEventListener('keydown', function(e) {
-    if (e.key === 'Escape') closeRegModal();
+    if (e.key === 'Escape') { closeRegModal(); closeSignInModal(); }
   });
 </script>
 
@@ -1523,7 +1698,7 @@
 // ── i18n TRANSLATIONS ──
 const i18n = {
   en: {
-    nav_metals:'Metals', nav_about:'About', nav_process:'Process', nav_contact:'Contact', nav_cta:'Start Trading',
+    nav_metals:'Metals', nav_about:'About', nav_process:'Process', nav_contact:'Contact', nav_cta:'Start Trading', nav_signin:'Sign In',
     hero_eyebrow:'Global Metals Exchange',
     hero_h1:'Trade the World\'s <span class="gradient-gold">Finest Metals</span> with Confidence',
     hero_sub:'Access live spot pricing, institutional-grade execution, and expert market intelligence across Gold, Silver, Steel, and Copper markets.',
@@ -1572,9 +1747,26 @@ const i18n = {
     footer_support:'Support', footer_platform:'Trading Platform', footer_api:'API Documentation', footer_portal:'Account Portal', footer_contact:'Contact', footer_faq:'FAQ',
     footer_copy:'© 2026 Metals Trading. All rights reserved. Trading in metals carries risk of loss.',
     footer_privacy:'Privacy Policy', footer_terms:'Terms of Service', footer_disc:'Disclosures',
+    reg_eyebrow:'Start Trading', reg_title:'Open an Account',
+    reg_firstname:'First Name', reg_firstname_ph:'e.g. James',
+    reg_lastname:'Last Name', reg_lastname_ph:'e.g. Smith',
+    reg_email:'Email', reg_email_ph:'james@example.com',
+    reg_phone:'Phone Number', reg_phone_ph:'+1 555 123 456',
+    reg_tax:'Tax Number', reg_tax_ph:'SI12345678',
+    reg_submit:'Register',
+    reg_terms_full:'By registering you agree to our <a href="#" style="color:var(--gold);text-decoration:none;">terms of service</a> and <a href="#" style="color:var(--gold);text-decoration:none;">privacy policy</a>.',
+    reg_success_title:'Successfully registered!', reg_success_msg:'We will contact you shortly.',
+    modal_close:'Close',
+    captcha_label:'Security Check', captcha_placeholder:'Your answer', captcha_error:'Incorrect answer. Please try again.',
+    signin_eyebrow:'Account Access', signin_title:'Sign In',
+    signin_email:'Email Address', signin_email_ph:'james@example.com',
+    signin_password:'Password', signin_password_ph:'••••••••',
+    signin_submit:'Sign In',
+    signin_success_title:'Welcome back!', signin_success_msg:'You are now signed in.',
+    reg_error_duplicate:'This email address is already registered.', reg_error_generic:'An error occurred. Please try again.',
   },
   sl: {
-    nav_metals:'Kovine', nav_about:'O nas', nav_process:'Postopek', nav_contact:'Kontakt', nav_cta:'Začni trgovati',
+    nav_metals:'Kovine', nav_about:'O nas', nav_process:'Postopek', nav_contact:'Kontakt', nav_cta:'Začni trgovati', nav_signin:'Prijavi se',
     hero_eyebrow:'Globalna borza kovin',
     hero_h1:'Trgujte z <span class="gradient-gold">najboljšimi kovinami</span> sveta z zaupanjem',
     hero_sub:'Dostopajte do cen v živo, institucionalnega izvajanja poslov in strokovnih tržnih informacij za zlato, srebro, jeklo in baker.',
@@ -1623,6 +1815,23 @@ const i18n = {
     footer_support:'Podpora', footer_platform:'Platforma za trgovanje', footer_api:'API dokumentacija', footer_portal:'Portal računa', footer_contact:'Kontakt', footer_faq:'Pogosta vprašanja',
     footer_copy:'© 2026 Metals Trading. Vse pravice pridržane. Trgovanje s kovinami prinaša tveganje izgube.',
     footer_privacy:'Politika zasebnosti', footer_terms:'Pogoji uporabe', footer_disc:'Razkritja',
+    reg_eyebrow:'Začetek trgovanja', reg_title:'Odprite račun',
+    reg_firstname:'Ime', reg_firstname_ph:'npr. Janez',
+    reg_lastname:'Priimek', reg_lastname_ph:'npr. Novak',
+    reg_email:'E-pošta', reg_email_ph:'janez@primer.si',
+    reg_phone:'Telefonska številka', reg_phone_ph:'+386 41 123 456',
+    reg_tax:'Davčna številka', reg_tax_ph:'SI12345678',
+    reg_submit:'Registriraj se',
+    reg_terms_full:'Z registracijo se strinjate s <a href="#" style="color:var(--gold);text-decoration:none;">pogoji uporabe</a> in <a href="#" style="color:var(--gold);text-decoration:none;">politiko zasebnosti</a>.',
+    reg_success_title:'Uspešno ste se registrirali!', reg_success_msg:'Kmalu vas bomo kontaktirali.',
+    modal_close:'Zapri',
+    captcha_label:'Varnostna preveritev', captcha_placeholder:'Vaš odgovor', captcha_error:'Napačen odgovor. Poskusite znova.',
+    signin_eyebrow:'Dostop do računa', signin_title:'Prijava',
+    signin_email:'E-poštni naslov', signin_email_ph:'janez@primer.si',
+    signin_password:'Geslo', signin_password_ph:'••••••••',
+    signin_submit:'Prijavi se',
+    signin_success_title:'Dobrodošli nazaj!', signin_success_msg:'Uspešno ste se prijavili.',
+    reg_error_duplicate:'Ta e-poštni naslov je že registriran.', reg_error_generic:'Prišlo je do napake. Poskusite znova.',
   }
 };
 
