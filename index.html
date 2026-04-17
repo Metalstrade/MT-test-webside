@@ -1473,6 +1473,17 @@
         " onfocus="this.style.borderColor='var(--gold)'" onblur="this.style.borderColor='rgba(143,163,177,0.2)'" />
       </div>
 
+      <!-- Password -->
+      <div>
+        <label style="display:block; font-size:11px; letter-spacing:0.08em; text-transform:uppercase; color:var(--muted); margin-bottom:6px; font-family:'Inter',sans-serif;" data-i18n="reg_password">Password</label>
+        <input type="password" name="password" required minlength="8" data-i18n-placeholder="reg_password_ph" placeholder="min. 8 characters" style="
+          width:100%; padding:11px 14px;
+          background:var(--ink-3); border:1px solid rgba(143,163,177,0.2);
+          border-radius:3px; color:#E8EEF2; font-family:'Inter',sans-serif; font-size:14px;
+          outline:none; transition:border-color 0.2s ease;
+        " onfocus="this.style.borderColor='var(--gold)'" onblur="this.style.borderColor='rgba(143,163,177,0.2)'" />
+      </div>
+
       <!-- CAPTCHA -->
       <div style="background:var(--ink-3); border:1px solid rgba(201,162,39,0.2); border-radius:3px; padding:14px 16px;">
         <label style="display:block; font-size:11px; letter-spacing:0.08em; text-transform:uppercase; color:var(--gold); margin-bottom:10px; font-family:'Inter',sans-serif;" data-i18n="captcha_label">Security Check</label>
@@ -1501,9 +1512,9 @@
 
     <!-- Success state (hidden) -->
     <div id="reg-success" style="display:none; text-align:center; padding:20px 0;">
-      <div style="font-size:40px; margin-bottom:16px;">✓</div>
-      <h3 style="font-family:'Cormorant Garamond',serif; font-size:24px; color:var(--gold); margin:0 0 8px;" data-i18n="reg_success_title">Successfully registered!</h3>
-      <p style="color:var(--muted); font-size:14px; font-family:'Inter',sans-serif; margin:0 0 24px;" data-i18n="reg_success_msg">We will contact you shortly.</p>
+      <div style="font-size:40px; margin-bottom:16px;">✉️</div>
+      <h3 style="font-family:'Cormorant Garamond',serif; font-size:24px; color:var(--gold); margin:0 0 8px;" data-i18n="reg_success_title">Check your email!</h3>
+      <p id="reg-success-msg" style="color:var(--muted); font-size:14px; font-family:'Inter',sans-serif; margin:0 0 24px; line-height:1.6;"></p>
       <button onclick="closeRegModal()" class="btn-primary" style="justify-content:center;" data-i18n="modal_close">Close</button>
     </div>
   </div>
@@ -1578,7 +1589,9 @@
         <p id="signin-captcha-error" style="display:none; margin:8px 0 0; font-size:12px; color:#E57373; font-family:'Inter',sans-serif;" data-i18n="captcha_error">Incorrect answer. Please try again.</p>
       </div>
 
-      <button type="submit" class="btn-primary" style="width:100%; justify-content:center; margin-top:8px; padding:15px 32px; font-size:13px;" data-i18n="signin_submit">
+      <p id="signin-submit-error" style="display:none; margin:0; font-size:12px; color:#E57373; text-align:center; font-family:'Inter',sans-serif;"></p>
+
+      <button type="submit" id="signin-submit-btn" class="btn-primary" style="width:100%; justify-content:center; margin-top:8px; padding:15px 32px; font-size:13px;" data-i18n="signin_submit">
         Sign In
       </button>
     </form>
@@ -1640,12 +1653,17 @@
     btn.textContent = lang === 'sl' ? 'Pošiljam...' : 'Submitting...';
 
     const fd = new FormData(document.getElementById('reg-form'));
-    const { error } = await sb.from('registrations').insert({
-      first_name: fd.get('ime'),
-      last_name: fd.get('priimek'),
+    const { data, error } = await sb.auth.signUp({
       email: fd.get('email'),
-      phone: fd.get('telefon'),
-      tax_number: fd.get('davcna'),
+      password: fd.get('password'),
+      options: {
+        data: {
+          first_name: fd.get('ime'),
+          last_name: fd.get('priimek'),
+          phone: fd.get('telefon'),
+          tax_number: fd.get('davcna'),
+        }
+      }
     });
 
     btn.disabled = false;
@@ -1653,12 +1671,18 @@
     btn.textContent = i18n[lang].reg_submit;
 
     if (error) {
-      errEl.textContent = error.code === '23505'
+      errEl.textContent = error.message.includes('already')
         ? i18n[lang].reg_error_duplicate
         : i18n[lang].reg_error_generic;
       errEl.style.display = 'block';
       return;
     }
+
+    const email = fd.get('email');
+    document.getElementById('reg-success-msg').textContent =
+      lang === 'sl'
+        ? `Poslali smo potrditveni link na ${email}. Kliknite nanj, da aktivirate račun.`
+        : `We sent a confirmation link to ${email}. Click it to activate your account.`;
 
     document.getElementById('reg-form').style.display = 'none';
     document.getElementById('reg-success').style.display = 'block';
@@ -1677,7 +1701,7 @@
     document.getElementById('signin-modal').style.display = 'none';
     document.body.style.overflow = '';
   }
-  function submitSignInForm(e) {
+  async function submitSignInForm(e) {
     e.preventDefault();
     const answerEl = document.getElementById('signin-captcha-answer');
     if (answerEl.value.trim() !== answerEl.dataset.answer) {
@@ -1685,6 +1709,35 @@
       generateCaptcha('signin');
       return;
     }
+
+    const lang = localStorage.getItem('lang') || 'en';
+    const errEl = document.getElementById('signin-submit-error');
+    const btn = document.getElementById('signin-submit-btn');
+    if (errEl) errEl.style.display = 'none';
+    btn.disabled = true;
+    btn.style.opacity = '0.6';
+    btn.textContent = lang === 'sl' ? 'Prijavljam...' : 'Signing in...';
+
+    const fd = new FormData(document.getElementById('signin-form'));
+    const { data, error } = await sb.auth.signInWithPassword({
+      email: fd.get('email'),
+      password: fd.get('password'),
+    });
+
+    btn.disabled = false;
+    btn.style.opacity = '1';
+    btn.textContent = i18n[lang].signin_submit;
+
+    if (error) {
+      if (errEl) {
+        errEl.textContent = error.message.includes('confirm')
+          ? i18n[lang].signin_error_unconfirmed
+          : i18n[lang].signin_error_invalid;
+        errEl.style.display = 'block';
+      }
+      return;
+    }
+
     document.getElementById('signin-form').style.display = 'none';
     document.getElementById('signin-success').style.display = 'block';
     localStorage.setItem('signed_in', 'true');
@@ -1711,12 +1764,23 @@
     if (e.key === 'Escape') { closeRegModal(); closeSignInModal(); }
   });
 
-  // Restore signed-in state on page load
-  if (localStorage.getItem('signed_in') === 'true') {
-    document.addEventListener('DOMContentLoaded', setSignedInBtn);
-    // fallback if DOM already loaded
-    if (document.readyState !== 'loading') setSignedInBtn();
-  }
+  // Restore session on page load (handles email confirmation redirect)
+  sb.auth.getSession().then(({ data: { session } }) => {
+    if (session) {
+      localStorage.setItem('signed_in', 'true');
+      setSignedInBtn();
+    }
+  });
+
+  // Listen for auth events (sign-in after email confirmation)
+  sb.auth.onAuthStateChange((event, session) => {
+    if ((event === 'SIGNED_IN' || event === 'TOKEN_REFRESHED') && session) {
+      localStorage.setItem('signed_in', 'true');
+      setSignedInBtn();
+    } else if (event === 'SIGNED_OUT') {
+      localStorage.removeItem('signed_in');
+    }
+  });
 </script>
 
 <script>
@@ -1788,7 +1852,10 @@ const i18n = {
     signin_password:'Password', signin_password_ph:'••••••••',
     signin_submit:'Sign In',
     signin_success_title:'Welcome back!', signin_success_msg:'You are now signed in.',
+    signin_error_invalid:'Incorrect email or password.', signin_error_unconfirmed:'Please confirm your email first.',
     reg_error_duplicate:'This email address is already registered.', reg_error_generic:'An error occurred. Please try again.',
+    reg_success_title:'Check your email!',
+    reg_password:'Password', reg_password_ph:'min. 8 characters',
   },
   sl: {
     nav_metals:'Kovine', nav_about:'O nas', nav_process:'Postopek', nav_contact:'Kontakt', nav_cta:'Začni trgovati', nav_signin:'Prijavi se', nav_signed_in:'Prijavljen',
@@ -1856,7 +1923,10 @@ const i18n = {
     signin_password:'Geslo', signin_password_ph:'••••••••',
     signin_submit:'Prijavi se',
     signin_success_title:'Dobrodošli nazaj!', signin_success_msg:'Uspešno ste se prijavili.',
+    signin_error_invalid:'Napačen e-poštni naslov ali geslo.', signin_error_unconfirmed:'Najprej potrdite e-pošto.',
     reg_error_duplicate:'Ta e-poštni naslov je že registriran.', reg_error_generic:'Prišlo je do napake. Poskusite znova.',
+    reg_success_title:'Preverite e-pošto!',
+    reg_password:'Geslo', reg_password_ph:'najmanj 8 znakov',
   }
 };
 
