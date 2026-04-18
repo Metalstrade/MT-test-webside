@@ -225,7 +225,7 @@
       z-index: 1;
       max-width: 1280px;
       margin: 0 auto;
-      padding: 120px 48px 80px;
+      padding: 158px 48px 80px;
       display: grid;
       grid-template-columns: 1fr 1fr;
       gap: 80px;
@@ -926,6 +926,33 @@
     .lang-flag { font-size: 15px; line-height: 1; }
     .lang-divider { width: 1px; height: 14px; background: rgba(143,163,177,0.2); margin: 0 2px; }
 
+    /* ── TICKER BAR ── */
+    #ticker-bar {
+      position: fixed; top: 72px; left: 0; right: 0; z-index: 98;
+      height: 34px;
+      background: rgba(9,13,19,0.97);
+      border-bottom: 1px solid rgba(201,162,39,0.14);
+      overflow: hidden;
+      display: flex; align-items: center;
+    }
+    #ticker-track {
+      display: flex; align-items: center; white-space: nowrap;
+      animation: ticker-scroll 40s linear infinite;
+      will-change: transform;
+    }
+    #ticker-track:hover { animation-play-state: paused; }
+    @keyframes ticker-scroll {
+      0%   { transform: translateX(0); }
+      100% { transform: translateX(-50%); }
+    }
+    .t-item { display: inline-flex; align-items: center; gap: 7px; padding: 0 24px; }
+    .t-sym { font-family:'Inter',sans-serif; font-size:10px; font-weight:600; letter-spacing:0.12em; text-transform:uppercase; color:var(--muted); }
+    .t-pct { font-family:'Inter',sans-serif; font-size:10px; font-weight:700; letter-spacing:0.06em; }
+    .t-pct.up   { color:#4CAF50; }
+    .t-pct.down { color:#EF5350; }
+    .t-pct.flat { color:var(--muted); }
+    .t-dot { color:rgba(201,162,39,0.25); font-size:7px; padding: 0 4px; }
+
     /* ── HAMBURGER DROPDOWN ── */
     .nav-dropdown { position: relative; margin-left: 12px; }
     .hamburger-btn {
@@ -969,7 +996,7 @@
       nav { padding: 0 24px; }
       .nav-links, .nav-cta { display: none; }
       .section-inner { padding: 0 24px; }
-      .hero-inner { padding: 100px 24px 60px; }
+      .hero-inner { padding: 136px 24px 60px; }
       .metals-grid { grid-template-columns: 1fr; }
       .process-grid { grid-template-columns: 1fr; }
       .form-row { grid-template-columns: 1fr; }
@@ -1035,6 +1062,14 @@
       </div>
     </div>
   </nav>
+
+  <!-- ── TICKER BAR ── -->
+  <div id="ticker-bar">
+    <div id="ticker-track">
+      <span class="t-item"><span class="t-sym">AU</span><span class="t-pct flat">—</span></span>
+      <span class="t-dot">◆</span>
+    </div>
+  </div>
 
   <!-- ── HERO ── -->
   <section class="hero">
@@ -1878,6 +1913,60 @@
   document.addEventListener('keydown', function(e) {
     if (e.key === 'Escape') { closeRegModal(); closeSignInModal(); }
   });
+
+  // ── TICKER ──
+  const TICKER_SYMBOLS = [
+    { s:'GC=F',  label:'AU'   },
+    { s:'SI=F',  label:'AG'   },
+    { s:'HG=F',  label:'CU'   },
+    { s:'CL=F',  label:'OIL'  },
+    { s:'BTC-USD', label:'BTC' },
+    { s:'^GSPC', label:'S&P'  },
+    { s:'^IXIC', label:'NDQ'  },
+  ];
+
+  async function fetchPct(symbol) {
+    const url = `https://query1.finance.yahoo.com/v8/finance/chart/${encodeURIComponent(symbol)}?range=2d&interval=1d`;
+    const proxy = `https://corsproxy.io/?url=${encodeURIComponent(url)}`;
+    for (const u of [url, proxy]) {
+      try {
+        const res = await fetch(u);
+        if (!res.ok) continue;
+        const json = await res.json();
+        const meta = json.chart?.result?.[0]?.meta;
+        if (!meta) continue;
+        const prev = meta.chartPreviousClose;
+        const curr = meta.regularMarketPrice;
+        if (prev && curr) return (curr - prev) / prev * 100;
+      } catch { continue; }
+    }
+    return null;
+  }
+
+  async function initTicker() {
+    const track = document.getElementById('ticker-track');
+    if (!track) return;
+
+    const pcts = await Promise.all(TICKER_SYMBOLS.map(x => fetchPct(x.s)));
+
+    const items = TICKER_SYMBOLS.map((x, i) => ({ label: x.label, pct: pcts[i] }));
+
+    function buildHTML(arr) {
+      return arr.map(item => {
+        const p = item.pct, has = p != null;
+        const cls = !has ? 'flat' : p > 0 ? 'up' : p < 0 ? 'down' : 'flat';
+        const str = has ? `${p > 0 ? '+' : ''}${p.toFixed(2)}%` : '—';
+        return `<span class="t-item"><span class="t-sym">${item.label}</span><span class="t-pct ${cls}">${str}</span></span><span class="t-dot">◆</span>`;
+      }).join('');
+    }
+
+    const html = buildHTML(items);
+    track.innerHTML = html + html;
+    const half = track.scrollWidth / 2;
+    track.style.animationDuration = `${Math.max(20, half / 60)}s`;
+  }
+
+  initTicker();
 
   // Restore session on page load (handles email confirmation redirect)
   sb.auth.getSession().then(({ data: { session } }) => {
