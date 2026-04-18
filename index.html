@@ -937,13 +937,7 @@
     }
     #ticker-track {
       display: flex; align-items: center; white-space: nowrap;
-      animation: ticker-scroll 40s linear infinite;
       will-change: transform;
-    }
-    #ticker-track:hover { animation-play-state: paused; }
-    @keyframes ticker-scroll {
-      0%   { transform: translateX(0); }
-      100% { transform: translateX(-50%); }
     }
     .t-item { display: inline-flex; align-items: center; gap: 7px; padding: 0 24px; }
     .t-sym { font-family:'Inter',sans-serif; font-size:10px; font-weight:600; letter-spacing:0.12em; text-transform:uppercase; color:var(--muted); }
@@ -1925,40 +1919,17 @@
     { s:'^IXIC', label:'NDQ'  },
   ];
 
-  async function fetchPct(symbol) {
-    const base = `https://query1.finance.yahoo.com/v8/finance/chart/${encodeURIComponent(symbol)}?range=2d&interval=1d`;
-    const urls = [
-      base,
-      `https://corsproxy.io/?url=${encodeURIComponent(base)}`,
-      `https://api.allorigins.win/get?url=${encodeURIComponent(base)}`,
-    ];
-    for (const u of urls) {
-      try {
-        const ctrl = new AbortController();
-        const timer = setTimeout(() => ctrl.abort(), 5000);
-        const res = await fetch(u, { signal: ctrl.signal });
-        clearTimeout(timer);
-        if (!res.ok) continue;
-        let json = await res.json();
-        // allorigins wraps in {contents}
-        if (json.contents) json = JSON.parse(json.contents);
-        const meta = json.chart?.result?.[0]?.meta;
-        if (!meta) continue;
-        const prev = meta.chartPreviousClose;
-        const curr = meta.regularMarketPrice;
-        if (prev && curr) return (curr - prev) / prev * 100;
-      } catch { continue; }
-    }
-    return null;
-  }
-
   async function initTicker() {
     const track = document.getElementById('ticker-track');
     if (!track) return;
 
-    const pcts = await Promise.all(TICKER_SYMBOLS.map(x => fetchPct(x.s)));
-
-    const items = TICKER_SYMBOLS.map((x, i) => ({ label: x.label, pct: pcts[i] }));
+    let items = TICKER_SYMBOLS.map(x => ({ label: x.label, pct: null }));
+    try {
+      const res = await fetch(
+        'https://xurgxkrnmutmocqbjffw.supabase.co/functions/v1/clever-responder'
+      );
+      if (res.ok) items = await res.json();
+    } catch {}
 
     function buildHTML(arr) {
       return arr.map(item => {
@@ -1971,8 +1942,27 @@
 
     const html = buildHTML(items);
     track.innerHTML = html + html;
-    const half = track.scrollWidth / 2;
-    track.style.animationDuration = `${Math.max(20, half / 60)}s`;
+
+    // wait for layout then start JS-driven scroll
+    requestAnimationFrame(() => {
+      const half = track.scrollWidth / 2;
+      const speed = 60; // px per second
+      let x = 0;
+      let paused = false;
+      track.addEventListener('mouseenter', () => { paused = true; });
+      track.addEventListener('mouseleave', () => { paused = false; });
+      let last = null;
+      function step(ts) {
+        if (last !== null && !paused) {
+          x -= speed * (ts - last) / 1000;
+          if (x <= -half) x += half;
+          track.style.transform = `translateX(${x}px)`;
+        }
+        last = ts;
+        requestAnimationFrame(step);
+      }
+      requestAnimationFrame(step);
+    });
   }
 
   initTicker();
