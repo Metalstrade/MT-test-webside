@@ -1610,7 +1610,8 @@
   // ── SUPABASE ──
   const sb = supabase.createClient(
     'https://xurgxkrnmutmocqbjffw.supabase.co',
-    'sb_publishable_2YGXEXBZS2gXuw4j1ZL4_g_UHuRaoE3'
+    'sb_publishable_2YGXEXBZS2gXuw4j1ZL4_g_UHuRaoE3',
+    { auth: { detectSessionInUrl: true, persistSession: true, autoRefreshToken: true } }
   );
 
   function generateCaptcha(prefix) {
@@ -1657,6 +1658,7 @@
       email: fd.get('email'),
       password: fd.get('password'),
       options: {
+        emailRedirectTo: 'https://metalstrade.github.io/MT-test-webside',
         data: {
           first_name: fd.get('ime'),
           last_name: fd.get('priimek'),
@@ -1774,7 +1776,7 @@
 
   // Listen for auth events (sign-in after email confirmation)
   sb.auth.onAuthStateChange((event, session) => {
-    if ((event === 'SIGNED_IN' || event === 'TOKEN_REFRESHED') && session) {
+    if (session && (event === 'SIGNED_IN' || event === 'TOKEN_REFRESHED' || event === 'INITIAL_SESSION')) {
       localStorage.setItem('signed_in', 'true');
       setSignedInBtn();
     } else if (event === 'SIGNED_OUT') {
