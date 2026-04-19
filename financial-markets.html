@@ -101,21 +101,46 @@
     }
     .page-header p { font-size: 14px; color: var(--muted); max-width: 560px; }
 
-    /* WIDGET CONTAINER */
-    .widget-wrap {
-      padding: 32px 48px 48px;
+    /* CONTROLS */
+    .market-controls { padding: 24px 48px 0; }
+    .cat-tabs { display: flex; gap: 4px; margin-bottom: 20px; flex-wrap: wrap; }
+    .cat-btn {
+      padding: 9px 22px; border: 1px solid rgba(143,163,177,0.18);
+      border-radius: 4px; background: transparent; cursor: pointer;
+      font-family: 'Inter', sans-serif; font-size: 12px; font-weight: 600;
+      letter-spacing: 0.07em; text-transform: uppercase; color: var(--muted);
+      transition: all 0.2s ease;
     }
-    .tradingview-widget-container {
-      border-radius: 12px;
-      overflow: hidden;
-      border: 1px solid rgba(201,162,39,0.1);
-      background: var(--ink-2);
+    .cat-btn:hover { border-color: rgba(201,162,39,0.4); color: var(--gold-lt); }
+    .cat-btn.active { background: rgba(201,162,39,0.1); border-color: var(--gold); color: var(--gold-lt); }
+
+    .symbol-grid { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 20px; }
+    .sym-btn {
+      padding: 7px 16px; border: 1px solid rgba(143,163,177,0.15);
+      border-radius: 100px; background: var(--ink-2); cursor: pointer;
+      font-family: 'Inter', sans-serif; font-size: 11px; font-weight: 600;
+      letter-spacing: 0.05em; color: var(--muted);
+      transition: all 0.18s ease;
     }
+    .sym-btn:hover { border-color: rgba(201,162,39,0.35); color: #C0D0D8; }
+    .sym-btn.active { background: rgba(201,162,39,0.12); border-color: var(--gold); color: var(--gold-lt); }
+    .sym-btn .sym-name { font-weight: 400; opacity: 0.7; margin-left: 4px; font-size: 10px; }
+
+    /* CHART */
+    .chart-wrap { padding: 0 48px 48px; }
+    #tv-chart-container {
+      border-radius: 10px; overflow: hidden;
+      border: 1px solid rgba(201,162,39,0.12);
+      background: var(--ink-2); height: 560px;
+    }
+    #tv-chart-container iframe { display: block; }
 
     @media (max-width: 768px) {
       nav { padding: 0 20px; }
       .page-header { padding: 28px 20px 20px; }
-      .widget-wrap { padding: 20px 20px 40px; }
+      .market-controls { padding: 16px 20px 0; }
+      .chart-wrap { padding: 0 20px 40px; }
+      #tv-chart-container { height: 420px; }
     }
   </style>
 </head>
@@ -160,86 +185,12 @@
       <p data-i18n="markets_sub_fm">Real-time prices and charts powered by TradingView. Select a category, then click any asset to view its chart.</p>
     </div>
 
-    <div class="widget-wrap">
-      <!-- TradingView Market Overview Widget -->
-      <div class="tradingview-widget-container">
-        <div class="tradingview-widget-container__widget"></div>
-        <script type="text/javascript" src="https://s3.tradingview.com/external-embedding/embed-widget-market-overview.js" async>
-        {
-          "colorTheme": "dark",
-          "dateRange": "1D",
-          "showChart": true,
-          "locale": "en",
-          "largeChartUrl": "",
-          "isTransparent": true,
-          "showSymbolLogo": true,
-          "showFloatingTooltip": false,
-          "width": "100%",
-          "height": "720",
-          "plotLineColorGrowing": "rgba(201,162,39,1)",
-          "plotLineColorFalling": "rgba(239,83,80,1)",
-          "gridLineColor": "rgba(90,110,122,0.1)",
-          "scaleFontColor": "rgba(107,128,144,1)",
-          "belowLineFillColorGrowing": "rgba(201,162,39,0.07)",
-          "belowLineFillColorFalling": "rgba(239,83,80,0.07)",
-          "belowLineFillColorGrowingBottom": "rgba(201,162,39,0)",
-          "belowLineFillColorFallingBottom": "rgba(239,83,80,0)",
-          "symbolActiveColor": "rgba(201,162,39,0.1)",
-          "tabs": [
-            {
-              "title": "Commodities",
-              "symbols": [
-                {"s": "TVC:GOLD",        "d": "Gold"},
-                {"s": "TVC:SILVER",      "d": "Silver"},
-                {"s": "COMEX:HG1!",      "d": "Copper"},
-                {"s": "TVC:USOIL",       "d": "Oil (WTI)"},
-                {"s": "TVC:NATURALGAS",  "d": "Natural Gas"},
-                {"s": "TVC:PLATINUM",    "d": "Platinum"}
-              ],
-              "originalTitle": "Commodities"
-            },
-            {
-              "title": "US Stocks",
-              "symbols": [
-                {"s": "FOREXCOM:SPXUSD", "d": "S&P 500"},
-                {"s": "FOREXCOM:NSXUSD", "d": "Nasdaq 100"},
-                {"s": "FOREXCOM:DJI",    "d": "Dow Jones 30"},
-                {"s": "TVC:RUT",         "d": "Russell 2000"},
-                {"s": "NASDAQ:TSLA",     "d": "Tesla"},
-                {"s": "NASDAQ:AAPL",     "d": "Apple"},
-                {"s": "NASDAQ:AMZN",     "d": "Amazon"},
-                {"s": "NASDAQ:META",     "d": "Meta"}
-              ],
-              "originalTitle": "US Stocks"
-            },
-            {
-              "title": "Crypto",
-              "symbols": [
-                {"s": "BINANCE:BTCUSDT", "d": "Bitcoin"},
-                {"s": "BINANCE:ETHUSDT", "d": "Ethereum"},
-                {"s": "BINANCE:XRPUSDT", "d": "XRP"},
-                {"s": "BINANCE:SOLUSDT", "d": "Solana"},
-                {"s": "BINANCE:BNBUSDT", "d": "BNB"},
-                {"s": "BINANCE:DOGEUSDT","d": "Dogecoin"},
-                {"s": "BINANCE:LTCUSDT", "d": "Litecoin"},
-                {"s": "BINANCE:ADAUSDT", "d": "Cardano"}
-              ],
-              "originalTitle": "Crypto"
-            },
-            {
-              "title": "Currencies",
-              "symbols": [
-                {"s": "FX:EURUSD", "d": "EUR / USD"},
-                {"s": "FX:USDJPY", "d": "USD / JPY"},
-                {"s": "FX:GBPUSD", "d": "GBP / USD"},
-                {"s": "FX:AUDUSD", "d": "AUD / USD"}
-              ],
-              "originalTitle": "Currencies"
-            }
-          ]
-        }
-        </script>
-      </div>
+    <div class="market-controls">
+      <div class="cat-tabs" id="cat-tabs"></div>
+      <div class="symbol-grid" id="symbol-grid"></div>
+    </div>
+    <div class="chart-wrap">
+      <div id="tv-chart-container"></div>
     </div>
   </div>
 
@@ -333,6 +284,134 @@
       });
     }
     initTicker();
+
+    // ── MARKET CHARTS ──
+    const CATEGORIES = [
+      {
+        id: 'commodities', label: 'Commodities',
+        symbols: [
+          { s: 'TVC:GOLD',       n: 'Gold'        },
+          { s: 'TVC:SILVER',     n: 'Silver'      },
+          { s: 'COMEX:HG1!',     n: 'Copper'      },
+          { s: 'TVC:USOIL',      n: 'Oil (WTI)'   },
+          { s: 'TVC:NATURALGAS', n: 'Natural Gas'  },
+          { s: 'TVC:PLATINUM',   n: 'Platinum'     },
+        ]
+      },
+      {
+        id: 'stocks', label: 'US Stocks',
+        symbols: [
+          { s: 'FOREXCOM:SPXUSD', n: 'S&P 500'     },
+          { s: 'FOREXCOM:NSXUSD', n: 'Nasdaq 100'  },
+          { s: 'FOREXCOM:DJI',    n: 'Dow Jones'   },
+          { s: 'TVC:RUT',         n: 'Russell 2000' },
+          { s: 'NASDAQ:TSLA',     n: 'Tesla'        },
+          { s: 'NASDAQ:AAPL',     n: 'Apple'        },
+          { s: 'NASDAQ:AMZN',     n: 'Amazon'       },
+          { s: 'NASDAQ:META',     n: 'Meta'         },
+        ]
+      },
+      {
+        id: 'crypto', label: 'Crypto',
+        symbols: [
+          { s: 'BINANCE:BTCUSDT',  n: 'Bitcoin'  },
+          { s: 'BINANCE:ETHUSDT',  n: 'Ethereum' },
+          { s: 'BINANCE:XRPUSDT',  n: 'XRP'      },
+          { s: 'BINANCE:SOLUSDT',  n: 'Solana'   },
+          { s: 'BINANCE:BNBUSDT',  n: 'BNB'      },
+          { s: 'BINANCE:DOGEUSDT', n: 'Dogecoin' },
+          { s: 'BINANCE:LTCUSDT',  n: 'Litecoin' },
+          { s: 'BINANCE:ADAUSDT',  n: 'Cardano'  },
+        ]
+      },
+      {
+        id: 'currencies', label: 'Currencies',
+        symbols: [
+          { s: 'FX:EURUSD', n: 'EUR/USD' },
+          { s: 'FX:USDJPY', n: 'USD/JPY' },
+          { s: 'FX:GBPUSD', n: 'GBP/USD' },
+          { s: 'FX:AUDUSD', n: 'AUD/USD' },
+          { s: 'FX:USDCHF', n: 'USD/CHF' },
+          { s: 'FX:USDCAD', n: 'USD/CAD' },
+        ]
+      },
+    ];
+
+    let activeCat = 0;
+    let activeSym = 0;
+
+    function renderCatTabs() {
+      const el = document.getElementById('cat-tabs');
+      el.innerHTML = CATEGORIES.map((c, i) =>
+        `<button class="cat-btn${i === activeCat ? ' active' : ''}" onclick="setCategory(${i})">${c.label}</button>`
+      ).join('');
+    }
+
+    function renderSymbolGrid() {
+      const el = document.getElementById('symbol-grid');
+      const syms = CATEGORIES[activeCat].symbols;
+      el.innerHTML = syms.map((sym, i) =>
+        `<button class="sym-btn${i === activeSym ? ' active' : ''}" onclick="setSymbol(${i})">
+          ${sym.s.split(':').pop().replace('1!','')}<span class="sym-name">${sym.n}</span>
+        </button>`
+      ).join('');
+    }
+
+    function renderChart(symbol) {
+      const container = document.getElementById('tv-chart-container');
+      container.innerHTML = '';
+      const wrapper = document.createElement('div');
+      wrapper.className = 'tradingview-widget-container';
+      wrapper.style.cssText = 'height:100%;width:100%;';
+      const inner = document.createElement('div');
+      inner.className = 'tradingview-widget-container__widget';
+      inner.style.cssText = 'height:calc(100% - 32px);width:100%;';
+      wrapper.appendChild(inner);
+      container.appendChild(wrapper);
+
+      const script = document.createElement('script');
+      script.type = 'text/javascript';
+      script.src = 'https://s3.tradingview.com/external-embedding/embed-widget-advanced-chart.js';
+      script.async = true;
+      script.innerHTML = JSON.stringify({
+        autosize: true,
+        symbol: symbol,
+        interval: 'D',
+        timezone: 'Etc/UTC',
+        theme: 'dark',
+        style: '1',
+        locale: 'en',
+        backgroundColor: 'rgba(20,28,36,0)',
+        gridColor: 'rgba(90,110,122,0.1)',
+        hide_top_toolbar: false,
+        hide_legend: false,
+        hide_side_toolbar: false,
+        allow_symbol_change: true,
+        save_image: false,
+        calendar: false,
+        support_host: 'https://www.tradingview.com',
+      });
+      wrapper.appendChild(script);
+    }
+
+    function setCategory(idx) {
+      activeCat = idx;
+      activeSym = 0;
+      renderCatTabs();
+      renderSymbolGrid();
+      renderChart(CATEGORIES[activeCat].symbols[0].s);
+    }
+
+    function setSymbol(idx) {
+      activeSym = idx;
+      renderSymbolGrid();
+      renderChart(CATEGORIES[activeCat].symbols[idx].s);
+    }
+
+    // init
+    renderCatTabs();
+    renderSymbolGrid();
+    renderChart(CATEGORIES[0].symbols[0].s);
   </script>
 </body>
 </html>
