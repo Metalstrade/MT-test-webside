@@ -1948,10 +1948,12 @@ return '$' + price.toLocaleString('en-US', {maximumFractionDigits:2});
       const res = await fetch(
         'https://xurgxkrnmutmocqbjffw.supabase.co/functions/v1/clever-responder'
       );
-      if (res.ok) items = await res.json();
+      if (res.ok) {
+        const all = await res.json();
+        updateHeroCards(all);
+        items = TICKER_SYMBOLS.map(x => all.find(d => d.label === x.label) || { label: x.label, pct: null, price: null });
+      }
     } catch {}
-
-    updateHeroCards(items);
 
     function buildHTML(arr) {
       return arr.map(item => {
