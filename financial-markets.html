@@ -64,15 +64,21 @@
     /* TICKER */
     #ticker-bar {
       position: fixed; top: 72px; left: 0; right: 0; z-index: 98;
-      height: 46px; background: rgba(9,13,19,0.97);
-      border-bottom: 1px solid rgba(201,162,39,0.14); overflow: hidden;
+      height: 34px; background: rgba(9,13,19,0.97);
+      border-bottom: 1px solid rgba(201,162,39,0.14);
+      overflow: hidden; display: flex; align-items: center;
     }
-    #ticker-bar .tradingview-widget-container { height: 46px; }
+    #ticker-track { display: flex; align-items: center; white-space: nowrap; will-change: transform; }
+    .t-item { display: inline-flex; align-items: center; gap: 7px; padding: 0 24px; }
+    .t-sym { font-family:'Inter',sans-serif; font-size:10px; font-weight:600; letter-spacing:0.12em; text-transform:uppercase; color:var(--muted); }
+    .t-pct { font-family:'Inter',sans-serif; font-size:10px; font-weight:700; letter-spacing:0.06em; }
+    .t-pct.up { color:#4CAF50; } .t-pct.down { color:#EF5350; } .t-pct.flat { color:#8FA3B1; }
+    .t-dot { color:rgba(201,162,39,0.25); font-size:7px; padding: 0 4px; }
 
     /* PAGE CONTENT */
     .page-wrap {
       position: relative; z-index: 1;
-      padding-top: 118px; /* nav + ticker */
+      padding-top: 106px; /* nav 72 + ticker 34 */
       min-height: 100vh;
     }
 
@@ -140,33 +146,9 @@
 
   <!-- TICKER -->
   <div id="ticker-bar">
-    <div class="tradingview-widget-container" style="height:46px;">
-      <div class="tradingview-widget-container__widget"></div>
-      <script type="text/javascript" src="https://s3.tradingview.com/external-embedding/embed-widget-ticker-tape.js" async>
-      {
-        "symbols": [
-          {"proName":"TVC:GOLD","title":"AU"},
-          {"proName":"TVC:SILVER","title":"AG"},
-          {"proName":"COMEX:HG1!","title":"CU"},
-          {"proName":"TVC:USOIL","title":"OIL"},
-          {"proName":"BINANCE:BTCUSDT","title":"BTC"},
-          {"proName":"FOREXCOM:SPXUSD","title":"S&P"},
-          {"proName":"FOREXCOM:NSXUSD","title":"NDQ"},
-          {"proName":"FX:EURUSD","title":"EUR/USD"},
-          {"proName":"NASDAQ:TSLA","title":"TSLA"},
-          {"proName":"NASDAQ:AAPL","title":"AAPL"},
-          {"proName":"NASDAQ:AMZN","title":"AMZN"},
-          {"proName":"NASDAQ:META","title":"META"},
-          {"proName":"BINANCE:ETHUSDT","title":"ETH"},
-          {"proName":"BINANCE:SOLUSDT","title":"SOL"}
-        ],
-        "showSymbolLogo": false,
-        "colorTheme": "dark",
-        "isTransparent": true,
-        "displayMode": "compact",
-        "locale": "en"
-      }
-      </script>
+    <div id="ticker-track">
+      <span class="t-item"><span class="t-sym">AU</span><span class="t-pct flat">—</span></span>
+      <span class="t-dot">◆</span>
     </div>
   </div>
 
@@ -289,6 +271,68 @@
 
     // init language
     setLang(localStorage.getItem('lang') || 'en');
+
+    // ── TICKER ──
+    const TICKER_SYMBOLS = [
+      { s:'GC=F',    label:'AU'      },
+      { s:'SI=F',    label:'AG'      },
+      { s:'HG=F',    label:'CU'      },
+      { s:'CL=F',    label:'OIL'     },
+      { s:'BTC-USD', label:'BTC'     },
+      { s:'^GSPC',   label:'S&P'     },
+      { s:'^IXIC',   label:'NDQ'     },
+      { s:'EURUSD=X',label:'EUR/USD' },
+    ];
+
+    async function initTicker() {
+      const track = document.getElementById('ticker-track');
+      if (!track) return;
+      let items = TICKER_SYMBOLS.map(x => ({ label: x.label, pct: null, price: null }));
+      try {
+        const res = await fetch('https://xurgxkrnmutmocqbjffw.supabase.co/functions/v1/clever-responder');
+        if (res.ok) {
+          const all = await res.json();
+          items = TICKER_SYMBOLS.map(x => all.find(d => d.label === x.label) || { label: x.label, pct: null, price: null });
+        }
+      } catch {}
+
+      function buildHTML(arr) {
+        return arr.map(item => {
+          const p = item.pct, has = p != null;
+          const cls = !has ? 'flat' : p > 0 ? 'up' : p < 0 ? 'down' : 'flat';
+          const str = has ? `${p > 0 ? '+' : ''}${p.toFixed(2)}%` : '—';
+          return `<span class="t-item"><span class="t-sym">${item.label}</span><span class="t-pct ${cls}">${str}</span></span><span class="t-dot">◆</span>`;
+        }).join('');
+      }
+
+      const html = buildHTML(items);
+      const probe = document.createElement('span');
+      probe.style.cssText = 'position:absolute;visibility:hidden;white-space:nowrap;pointer-events:none';
+      probe.innerHTML = html;
+      document.body.appendChild(probe);
+      const copyWidth = probe.offsetWidth || 1;
+      document.body.removeChild(probe);
+      const copies = Math.max(3, Math.ceil(window.innerWidth * 3 / copyWidth) + 1);
+      track.innerHTML = html.repeat(copies);
+
+      requestAnimationFrame(() => {
+        const speed = 60;
+        let x = 0, paused = false, last = null;
+        track.addEventListener('mouseenter', () => { paused = true; });
+        track.addEventListener('mouseleave', () => { paused = false; });
+        function step(ts) {
+          if (last !== null && !paused) {
+            x -= speed * (ts - last) / 1000;
+            if (x <= -copyWidth) x += copyWidth;
+            track.style.transform = `translateX(${x}px)`;
+          }
+          last = ts;
+          requestAnimationFrame(step);
+        }
+        requestAnimationFrame(step);
+      });
+    }
+    initTicker();
   </script>
 </body>
 </html>
