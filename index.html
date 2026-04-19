@@ -1603,9 +1603,11 @@
         Register
       </button>
 
-      <p style="margin:0; font-size:11px; color:var(--muted); text-align:center; font-family:'Inter',sans-serif; line-height:1.6;" data-i18n-html="reg_terms_full">
-        By registering you agree to our <a href="#" style="color:var(--gold); text-decoration:none;">terms of service</a> and <a href="#" style="color:var(--gold); text-decoration:none;">privacy policy</a>.
-      </p>
+      <label style="display:flex; align-items:flex-start; gap:10px; cursor:pointer;">
+        <input type="checkbox" id="reg-terms-check" style="margin-top:2px; accent-color:var(--gold); width:15px; height:15px; flex-shrink:0; cursor:pointer;" />
+        <span style="font-size:12px; color:var(--muted); font-family:'Inter',sans-serif; line-height:1.6;" data-i18n-html="reg_terms_label">I agree with the <button type="button" onclick="openTermsModal(event)" style="background:none;border:none;padding:0;cursor:pointer;font-size:12px;color:var(--gold);font-family:&#39;Inter&#39;,sans-serif;text-decoration:underline;">Terms of Use</button></span>
+      </label>
+      <p id="reg-terms-error" style="display:none; margin:0; font-size:12px; color:#E57373; font-family:'Inter',sans-serif;" data-i18n="reg_terms_error">You must accept the Terms of Use to continue.</p>
     </form>
 
     <!-- Success state (hidden) -->
@@ -1645,6 +1647,55 @@
       <p id="reset-pw-error" style="display:none; margin:8px 0 0; font-size:12px; color:#E57373; font-family:'Inter',sans-serif;"></p>
       <p id="reset-pw-success" style="display:none; margin:12px 0 0; font-size:12px; color:#4CAF50; font-family:'Inter',sans-serif;" data-i18n="reset_pw_success">Password updated! You can now sign in.</p>
       <button onclick="submitNewPassword()" id="reset-pw-btn" style="width:100%; margin-top:20px; padding:14px; background:var(--gold); border:none; border-radius:8px; color:#0A0D12; font-size:13px; font-weight:700; font-family:'Inter',sans-serif; letter-spacing:0.06em; cursor:pointer;" data-i18n="reset_pw_btn">Save New Password</button>
+    </div>
+  </div>
+</div>
+
+<!-- ── TERMS OF USE MODAL ── -->
+<div id="terms-modal" style="display:none; position:fixed; inset:0; z-index:10000; background:rgba(5,8,12,0.9); backdrop-filter:blur(8px); align-items:center; justify-content:center; padding:24px;">
+  <div style="background:var(--ink-2); border:1px solid rgba(201,162,39,0.18); border-radius:16px; width:100%; max-width:680px; max-height:85vh; display:flex; flex-direction:column; position:relative;">
+    <div style="padding:36px 40px 20px; border-bottom:1px solid rgba(143,163,177,0.1); display:flex; justify-content:space-between; align-items:center; flex-shrink:0;">
+      <h2 style="margin:0; font-family:'Cormorant Garamond',serif; font-size:26px; font-weight:600; color:#F0F4F7;" data-i18n="terms_title">Terms of Use</h2>
+      <button onclick="closeTermsModal()" style="background:none; border:none; cursor:pointer; color:var(--muted); font-size:20px; line-height:1; padding:4px;">✕</button>
+    </div>
+    <div style="padding:28px 40px 36px; overflow-y:auto; font-family:'Inter',sans-serif; font-size:13px; color:#8FA3B1; line-height:1.8;">
+
+      <p style="color:#C9A227; font-size:11px; letter-spacing:0.1em; text-transform:uppercase; margin:0 0 20px;">Metals Trading Platform — Terms of Use</p>
+
+      <h3 style="color:#F0F4F7; font-size:14px; font-weight:600; margin:0 0 8px;">1. Acceptance of Terms</h3>
+      <p style="margin:0 0 20px;">By accessing or using the Metals Trading platform ("Platform"), you confirm that you have read, understood, and agree to be bound by these Terms of Use. If you do not agree to these terms, you must not use the Platform. We reserve the right to update these terms at any time; continued use of the Platform constitutes acceptance of any revisions.</p>
+
+      <h3 style="color:#F0F4F7; font-size:14px; font-weight:600; margin:0 0 8px;">2. Eligibility</h3>
+      <p style="margin:0 0 20px;">You must be at least 18 years of age and have the legal capacity to enter into binding contracts in your jurisdiction. Access to the Platform may be restricted in certain countries due to regulatory requirements. It is your responsibility to ensure compliance with the laws of your jurisdiction before using the Platform.</p>
+
+      <h3 style="color:#F0F4F7; font-size:14px; font-weight:600; margin:0 0 8px;">3. Account Registration</h3>
+      <p style="margin:0 0 20px;">You agree to provide accurate, current, and complete information during registration and to keep your account credentials confidential. You are solely responsible for all activity that occurs under your account. You must notify us immediately of any unauthorized use of your account. We reserve the right to suspend or terminate accounts that violate these terms.</p>
+
+      <h3 style="color:#F0F4F7; font-size:14px; font-weight:600; margin:0 0 8px;">4. Risk Disclosure</h3>
+      <p style="margin:0 0 20px;">Trading in metals, commodities, and financial instruments involves substantial risk of loss. Prices can be highly volatile and may be influenced by macroeconomic events, geopolitical developments, supply and demand dynamics, and market sentiment. You may lose some or all of your invested capital. Past performance is not indicative of future results. The Platform does not provide investment advice; all trading decisions are made solely at your discretion and risk.</p>
+
+      <h3 style="color:#F0F4F7; font-size:14px; font-weight:600; margin:0 0 8px;">5. Platform Use</h3>
+      <p style="margin:0 0 20px;">You agree to use the Platform only for lawful purposes and in accordance with these terms. You must not: (a) attempt to gain unauthorized access to any part of the Platform; (b) transmit any malicious software or code; (c) use automated tools to scrape, harvest, or extract data; (d) engage in market manipulation or fraudulent activity; (e) use the Platform for money laundering or any other illegal financial activity.</p>
+
+      <h3 style="color:#F0F4F7; font-size:14px; font-weight:600; margin:0 0 8px;">6. Intellectual Property</h3>
+      <p style="margin:0 0 20px;">All content on the Platform — including but not limited to text, graphics, logos, data feeds, and software — is the exclusive property of Metals Trading or its licensors and is protected by applicable intellectual property laws. You may not reproduce, distribute, or create derivative works from any content without prior written consent.</p>
+
+      <h3 style="color:#F0F4F7; font-size:14px; font-weight:600; margin:0 0 8px;">7. Limitation of Liability</h3>
+      <p style="margin:0 0 20px;">To the maximum extent permitted by law, Metals Trading and its officers, directors, employees, and agents shall not be liable for any direct, indirect, incidental, special, consequential, or punitive damages arising from your use of, or inability to use, the Platform or the information contained herein, including losses arising from trading decisions made based on Platform data.</p>
+
+      <h3 style="color:#F0F4F7; font-size:14px; font-weight:600; margin:0 0 8px;">8. Privacy</h3>
+      <p style="margin:0 0 20px;">Your use of the Platform is also governed by our Privacy Policy, which is incorporated into these Terms by reference. We collect and process personal data in accordance with applicable data protection laws, including the General Data Protection Regulation (GDPR) where applicable. By using the Platform, you consent to such processing.</p>
+
+      <h3 style="color:#F0F4F7; font-size:14px; font-weight:600; margin:0 0 8px;">9. Termination</h3>
+      <p style="margin:0 0 20px;">We reserve the right to suspend or terminate your access to the Platform at any time, with or without notice, for any reason, including but not limited to breach of these Terms. Upon termination, all rights granted to you under these Terms will immediately cease.</p>
+
+      <h3 style="color:#F0F4F7; font-size:14px; font-weight:600; margin:0 0 8px;">10. Governing Law</h3>
+      <p style="margin:0 0 28px;">These Terms shall be governed by and construed in accordance with the laws of the Republic of Slovenia, without regard to its conflict of law provisions. Any disputes arising under these Terms shall be subject to the exclusive jurisdiction of the competent courts of Ljubljana, Slovenia.</p>
+
+      <p style="font-size:11px; color:#4A5A6A; margin:0;">Last updated: April 2026 · Metals Trading d.o.o.</p>
+    </div>
+    <div style="padding:16px 40px 28px; flex-shrink:0; display:flex; justify-content:flex-end;">
+      <button onclick="acceptTermsAndClose()" style="padding:12px 32px; background:var(--gold); border:none; border-radius:8px; color:#0A0D12; font-size:13px; font-weight:700; font-family:'Inter',sans-serif; letter-spacing:0.06em; cursor:pointer;" data-i18n="terms_accept">I Accept</button>
     </div>
   </div>
 </div>
@@ -1786,6 +1837,13 @@
     btn.style.opacity = '0.6';
     btn.textContent = lang === 'sl' ? 'Pošiljam...' : 'Submitting...';
 
+    if (!document.getElementById('reg-terms-check').checked) {
+      document.getElementById('reg-terms-error').style.display = 'block';
+      btn.disabled = false; btn.style.opacity = '1'; btn.textContent = i18n[lang].reg_submit;
+      return;
+    }
+    document.getElementById('reg-terms-error').style.display = 'none';
+
     const fd = new FormData(document.getElementById('reg-form'));
     const { data, error } = await sb.auth.signUp({
       email: fd.get('email'),
@@ -1834,6 +1892,19 @@
   }
 
   // ── PASSWORD RESET ──
+  function openTermsModal(e) {
+    if (e) e.preventDefault();
+    document.getElementById('terms-modal').style.display = 'flex';
+  }
+  function closeTermsModal() {
+    document.getElementById('terms-modal').style.display = 'none';
+  }
+  function acceptTermsAndClose() {
+    document.getElementById('reg-terms-check').checked = true;
+    document.getElementById('reg-terms-error').style.display = 'none';
+    closeTermsModal();
+  }
+
   function openResetFromSignin() {
     const email = document.getElementById('signin-email') ? document.getElementById('signin-email').value : '';
     closeSignInModal();
@@ -2213,6 +2284,9 @@ const i18n = {
     signin_error_invalid:'Incorrect email or password.', signin_error_unconfirmed:'Please confirm your email first.',
     reg_error_duplicate:'This email address is already registered.', reg_error_generic:'An error occurred. Please try again.',
     dd_markets:'Marketplace', dd_settings:'Settings', dd_register:'Register', dd_signin:'Sign In', dd_logout:'Log Out',
+    terms_title:'Terms of Use', terms_accept:'I Accept',
+    reg_terms_label:'I agree with the <button type="button" onclick="openTermsModal(event)" style="background:none;border:none;padding:0;cursor:pointer;font-size:12px;color:var(--gold);font-family:\'Inter\',sans-serif;text-decoration:underline;">Terms of Use</button>',
+    reg_terms_error:'You must accept the Terms of Use to continue.',
     signin_forgot:'Forgot your password?',
     reg_forgot_q:'Forgot your password?', reg_forgot_btn:'Reset it',
     reset_title:'Reset Password', reset_sub:"Enter your email and we'll send you a reset link.",
@@ -2292,6 +2366,9 @@ const i18n = {
     signin_error_invalid:'Napačen e-poštni naslov ali geslo.', signin_error_unconfirmed:'Najprej potrdite e-pošto.',
     reg_error_duplicate:'Ta e-poštni naslov je že registriran.', reg_error_generic:'Prišlo je do napake. Poskusite znova.',
     dd_markets:'Marketplace', dd_settings:'Nastavitve', dd_register:'Registracija', dd_signin:'Prijava', dd_logout:'Odjava',
+    terms_title:'Pogoji uporabe', terms_accept:'Sprejemam',
+    reg_terms_label:'Strinjam se s <button type="button" onclick="openTermsModal(event)" style="background:none;border:none;padding:0;cursor:pointer;font-size:12px;color:var(--gold);font-family:\'Inter\',sans-serif;text-decoration:underline;">Pogoji uporabe</button>',
+    reg_terms_error:'Za nadaljevanje morate sprejeti pogoje uporabe.',
     signin_forgot:'Ste pozabili geslo?',
     reg_forgot_q:'Ste pozabili geslo?', reg_forgot_btn:'Ponastavi ga',
     reset_title:'Ponastavitev gesla', reset_sub:'Vnesite e-pošto in poslali vam bomo povezavo za ponastavitev.',
