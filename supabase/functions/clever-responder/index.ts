@@ -5,7 +5,8 @@ const SYMBOLS = [
   { s: 'CL=F',    label: 'OIL'   },
   { s: 'BTC-USD', label: 'BTC'   },
   { s: '^GSPC',   label: 'S&P'   },
-  { s: '^IXIC',   label: 'NDQ'   },
+  { s: '^IXIC',    label: 'NDQ'     },
+  { s: 'EURUSD=X', label: 'EUR/USD' },
 ];
 
 const CORS = {
