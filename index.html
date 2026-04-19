@@ -1593,6 +1593,11 @@
       </div>
 
       <p id="reg-submit-error" style="display:none; margin:0; font-size:12px; color:#E57373; text-align:center; font-family:'Inter',sans-serif;"></p>
+      <input type="hidden" id="reg-forgot-email" />
+      <div id="reg-forgot-wrap" style="display:none; text-align:center; margin-top:4px;">
+        <span style="font-size:12px; color:var(--muted); font-family:'Inter',sans-serif;" data-i18n="reg_forgot_q">Forgot your password?</span>
+        <button type="button" onclick="sendPasswordReset()" style="margin-left:6px; background:none; border:none; cursor:pointer; font-size:12px; font-family:'Inter',sans-serif; color:var(--gold); text-decoration:underline; padding:0;" data-i18n="reg_forgot_btn">Reset it</button>
+      </div>
 
       <button type="submit" id="reg-submit-btn" class="btn-primary" style="width:100%; justify-content:center; margin-top:8px; padding:15px 32px; font-size:13px;" data-i18n="reg_submit">
         Register
@@ -1609,6 +1614,37 @@
       <h3 style="font-family:'Cormorant Garamond',serif; font-size:24px; color:var(--gold); margin:0 0 8px;" data-i18n="reg_success_title">Check your email!</h3>
       <p id="reg-success-msg" style="color:var(--muted); font-size:14px; font-family:'Inter',sans-serif; margin:0 0 24px; line-height:1.6;"></p>
       <button onclick="closeRegModal()" class="btn-primary" style="justify-content:center;" data-i18n="modal_close">Close</button>
+    </div>
+  </div>
+</div>
+
+<!-- ── RESET PASSWORD MODAL ── -->
+<div id="reset-modal" style="display:none; position:fixed; inset:0; z-index:9999; background:rgba(5,8,12,0.85); backdrop-filter:blur(8px); align-items:center; justify-content:center; padding:24px;">
+  <div style="background:var(--ink-2); border:1px solid rgba(201,162,39,0.18); border-radius:16px; padding:48px 40px; width:100%; max-width:440px; position:relative;">
+    <button onclick="closeResetModal()" style="position:absolute; top:20px; right:20px; background:none; border:none; cursor:pointer; color:var(--muted); font-size:20px; line-height:1;">✕</button>
+
+    <!-- Step 1: enter email to receive reset link -->
+    <div id="reset-step-email">
+      <h2 style="font-family:'Cormorant Garamond',serif; font-size:28px; font-weight:600; color:#F0F4F7; margin:0 0 8px;" data-i18n="reset_title">Reset Password</h2>
+      <p style="font-size:13px; color:var(--muted); font-family:'Inter',sans-serif; margin:0 0 28px; line-height:1.6;" data-i18n="reset_sub">Enter your email and we'll send you a reset link.</p>
+      <label style="display:block; font-size:11px; letter-spacing:0.08em; text-transform:uppercase; color:var(--muted); margin-bottom:6px; font-family:'Inter',sans-serif;" data-i18n="reg_email">Email</label>
+      <input id="reset-email-input" type="email" placeholder="you@example.com" style="width:100%; box-sizing:border-box; background:var(--ink-3); border:1px solid rgba(143,163,177,0.2); border-radius:8px; padding:12px 14px; color:#F0F4F7; font-size:14px; font-family:'Inter',sans-serif; outline:none;" />
+      <p id="reset-email-error" style="display:none; margin:8px 0 0; font-size:12px; color:#E57373; font-family:'Inter',sans-serif;"></p>
+      <p id="reset-email-sent" style="display:none; margin:12px 0 0; font-size:12px; color:#4CAF50; font-family:'Inter',sans-serif;" data-i18n="reset_sent">Reset link sent! Check your email.</p>
+      <button onclick="submitResetEmail()" style="width:100%; margin-top:20px; padding:14px; background:var(--gold); border:none; border-radius:8px; color:#0A0D12; font-size:13px; font-weight:700; font-family:'Inter',sans-serif; letter-spacing:0.06em; cursor:pointer;" data-i18n="reset_send_btn">Send Reset Link</button>
+    </div>
+
+    <!-- Step 2: set new password (shown after recovery redirect) -->
+    <div id="reset-step-newpw" style="display:none;">
+      <h2 style="font-family:'Cormorant Garamond',serif; font-size:28px; font-weight:600; color:#F0F4F7; margin:0 0 8px;" data-i18n="reset_newpw_title">Set New Password</h2>
+      <p style="font-size:13px; color:var(--muted); font-family:'Inter',sans-serif; margin:0 0 28px; line-height:1.6;" data-i18n="reset_newpw_sub">Enter your new password twice to confirm.</p>
+      <label style="display:block; font-size:11px; letter-spacing:0.08em; text-transform:uppercase; color:var(--muted); margin-bottom:6px; font-family:'Inter',sans-serif;" data-i18n="reset_newpw_label">New Password</label>
+      <input id="reset-pw1" type="password" placeholder="min. 8 characters" style="width:100%; box-sizing:border-box; background:var(--ink-3); border:1px solid rgba(143,163,177,0.2); border-radius:8px; padding:12px 14px; color:#F0F4F7; font-size:14px; font-family:'Inter',sans-serif; outline:none; margin-bottom:14px;" />
+      <label style="display:block; font-size:11px; letter-spacing:0.08em; text-transform:uppercase; color:var(--muted); margin-bottom:6px; font-family:'Inter',sans-serif;" data-i18n="reset_confirm_label">Confirm Password</label>
+      <input id="reset-pw2" type="password" placeholder="repeat password" style="width:100%; box-sizing:border-box; background:var(--ink-3); border:1px solid rgba(143,163,177,0.2); border-radius:8px; padding:12px 14px; color:#F0F4F7; font-size:14px; font-family:'Inter',sans-serif; outline:none;" />
+      <p id="reset-pw-error" style="display:none; margin:8px 0 0; font-size:12px; color:#E57373; font-family:'Inter',sans-serif;"></p>
+      <p id="reset-pw-success" style="display:none; margin:12px 0 0; font-size:12px; color:#4CAF50; font-family:'Inter',sans-serif;" data-i18n="reset_pw_success">Password updated! You can now sign in.</p>
+      <button onclick="submitNewPassword()" id="reset-pw-btn" style="width:100%; margin-top:20px; padding:14px; background:var(--gold); border:none; border-radius:8px; color:#0A0D12; font-size:13px; font-weight:700; font-family:'Inter',sans-serif; letter-spacing:0.06em; cursor:pointer;" data-i18n="reset_pw_btn">Save New Password</button>
     </div>
   </div>
 </div>
@@ -1766,10 +1802,11 @@
     btn.textContent = i18n[lang].reg_submit;
 
     if (error) {
-      errEl.textContent = error.message.includes('already')
-        ? i18n[lang].reg_error_duplicate
-        : i18n[lang].reg_error_generic;
+      const isDuplicate = error.message.toLowerCase().includes('already') || error.message.includes('unique');
+      errEl.textContent = isDuplicate ? i18n[lang].reg_error_duplicate : i18n[lang].reg_error_generic;
       errEl.style.display = 'block';
+      document.getElementById('reg-forgot-wrap').style.display = isDuplicate ? 'block' : 'none';
+      if (isDuplicate) document.getElementById('reg-forgot-email').value = fd.get('email');
       return;
     }
 
@@ -1782,6 +1819,72 @@
     document.getElementById('reg-form').style.display = 'none';
     document.getElementById('reg-success').style.display = 'block';
   }
+
+  // ── PASSWORD RESET ──
+  function openResetModal(email) {
+    document.getElementById('reset-modal').style.display = 'flex';
+    document.body.style.overflow = 'hidden';
+    document.getElementById('reset-step-email').style.display = 'block';
+    document.getElementById('reset-step-newpw').style.display = 'none';
+    document.getElementById('reset-email-error').style.display = 'none';
+    document.getElementById('reset-email-sent').style.display = 'none';
+    if (email) document.getElementById('reset-email-input').value = email;
+  }
+  function closeResetModal() {
+    document.getElementById('reset-modal').style.display = 'none';
+    document.body.style.overflow = '';
+  }
+  function sendPasswordReset() {
+    closeRegModal();
+    openResetModal(document.getElementById('reg-forgot-email').value);
+  }
+  async function submitResetEmail() {
+    const lang = localStorage.getItem('lang') || 'en';
+    const email = document.getElementById('reset-email-input').value.trim();
+    const errEl = document.getElementById('reset-email-error');
+    const sentEl = document.getElementById('reset-email-sent');
+    errEl.style.display = 'none';
+    sentEl.style.display = 'none';
+    if (!email) { errEl.textContent = lang === 'sl' ? 'Vnesite e-pošto.' : 'Please enter your email.'; errEl.style.display = 'block'; return; }
+    const { error } = await sb.auth.resetPasswordForEmail(email, {
+      redirectTo: window.location.origin + window.location.pathname + '#type=recovery',
+    });
+    if (error) { errEl.textContent = error.message; errEl.style.display = 'block'; return; }
+    sentEl.style.display = 'block';
+  }
+  async function submitNewPassword() {
+    const lang = localStorage.getItem('lang') || 'en';
+    const pw1 = document.getElementById('reset-pw1').value;
+    const pw2 = document.getElementById('reset-pw2').value;
+    const errEl = document.getElementById('reset-pw-error');
+    const successEl = document.getElementById('reset-pw-success');
+    const btn = document.getElementById('reset-pw-btn');
+    errEl.style.display = 'none';
+    successEl.style.display = 'none';
+    if (pw1.length < 8) { errEl.textContent = lang === 'sl' ? 'Geslo mora imeti vsaj 8 znakov.' : 'Password must be at least 8 characters.'; errEl.style.display = 'block'; return; }
+    if (pw1 !== pw2) { errEl.textContent = lang === 'sl' ? 'Gesli se ne ujemata.' : 'Passwords do not match.'; errEl.style.display = 'block'; return; }
+    btn.disabled = true; btn.style.opacity = '0.6';
+    const { error } = await sb.auth.updateUser({ password: pw1 });
+    btn.disabled = false; btn.style.opacity = '1';
+    if (error) { errEl.textContent = error.message; errEl.style.display = 'block'; return; }
+    successEl.style.display = 'block';
+    setTimeout(() => { closeResetModal(); }, 2500);
+  }
+
+  // detect recovery redirect
+  (function() {
+    const hash = window.location.hash;
+    if (hash.includes('type=recovery') || hash.includes('access_token')) {
+      sb.auth.onAuthStateChange((event) => {
+        if (event === 'PASSWORD_RECOVERY') {
+          document.getElementById('reset-step-email').style.display = 'none';
+          document.getElementById('reset-step-newpw').style.display = 'block';
+          document.getElementById('reset-modal').style.display = 'flex';
+          document.body.style.overflow = 'hidden';
+        }
+      });
+    }
+  })();
 
   function openSignInModal() {
     const m = document.getElementById('signin-modal');
@@ -2091,6 +2194,12 @@ const i18n = {
     signin_error_invalid:'Incorrect email or password.', signin_error_unconfirmed:'Please confirm your email first.',
     reg_error_duplicate:'This email address is already registered.', reg_error_generic:'An error occurred. Please try again.',
     dd_markets:'Marketplace', dd_settings:'Settings', dd_register:'Register', dd_signin:'Sign In', dd_logout:'Log Out',
+    reg_forgot_q:'Forgot your password?', reg_forgot_btn:'Reset it',
+    reset_title:'Reset Password', reset_sub:"Enter your email and we'll send you a reset link.",
+    reset_send_btn:'Send Reset Link', reset_sent:'Reset link sent! Check your email.',
+    reset_newpw_title:'Set New Password', reset_newpw_sub:'Enter your new password twice to confirm.',
+    reset_newpw_label:'New Password', reset_confirm_label:'Confirm Password',
+    reset_pw_btn:'Save New Password', reset_pw_success:'Password updated! You can now sign in.',
     reg_success_title:'Check your email!',
     reg_password:'Password', reg_password_ph:'min. 8 characters',
   },
@@ -2163,6 +2272,12 @@ const i18n = {
     signin_error_invalid:'Napačen e-poštni naslov ali geslo.', signin_error_unconfirmed:'Najprej potrdite e-pošto.',
     reg_error_duplicate:'Ta e-poštni naslov je že registriran.', reg_error_generic:'Prišlo je do napake. Poskusite znova.',
     dd_markets:'Marketplace', dd_settings:'Nastavitve', dd_register:'Registracija', dd_signin:'Prijava', dd_logout:'Odjava',
+    reg_forgot_q:'Ste pozabili geslo?', reg_forgot_btn:'Ponastavi ga',
+    reset_title:'Ponastavitev gesla', reset_sub:'Vnesite e-pošto in poslali vam bomo povezavo za ponastavitev.',
+    reset_send_btn:'Pošlji povezavo', reset_sent:'Povezava poslana! Preverite e-pošto.',
+    reset_newpw_title:'Novo geslo', reset_newpw_sub:'Dvakrat vnesite novo geslo za potrditev.',
+    reset_newpw_label:'Novo geslo', reset_confirm_label:'Ponovite geslo',
+    reset_pw_btn:'Shrani novo geslo', reset_pw_success:'Geslo posodobljeno! Sedaj se lahko prijavite.',
     reg_success_title:'Preverite e-pošto!',
     reg_password:'Geslo', reg_password_ph:'najmanj 8 znakov',
   }
