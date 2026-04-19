@@ -1110,23 +1110,23 @@
         <div class="metals-ticker">
           <div class="ticker-card gold-card">
             <div class="ticker-metal">Gold (XAU)</div>
-            <div class="ticker-price">$2,341.80</div>
-            <div class="ticker-change up">▲ +0.82%</div>
+            <div class="ticker-price" id="hprice-AU">—</div>
+            <div class="ticker-change flat" id="hpct-AU">—</div>
           </div>
           <div class="ticker-card silver-card">
             <div class="ticker-metal">Silver (XAG)</div>
-            <div class="ticker-price">$27.45</div>
-            <div class="ticker-change up">▲ +1.14%</div>
+            <div class="ticker-price" id="hprice-AG">—</div>
+            <div class="ticker-change flat" id="hpct-AG">—</div>
           </div>
           <div class="ticker-card steel-card">
             <div class="ticker-metal">Steel (HRC)</div>
-            <div class="ticker-price">$684.00</div>
-            <div class="ticker-change down">▼ −0.29%</div>
+            <div class="ticker-price" id="hprice-STEEL">—</div>
+            <div class="ticker-change flat" id="hpct-STEEL">—</div>
           </div>
           <div class="ticker-card copper-card">
             <div class="ticker-metal">Copper (HG)</div>
-            <div class="ticker-price">$4.21</div>
-            <div class="ticker-change up">▲ +0.47%</div>
+            <div class="ticker-price" id="hprice-CU">—</div>
+            <div class="ticker-change flat" id="hpct-CU">—</div>
           </div>
         </div>
       </div>
@@ -1919,17 +1919,45 @@
     { s:'^IXIC', label:'NDQ'  },
   ];
 
+  function formatHeroPrice(label, price) {
+    if (price == null) return '—';
+    if (label === 'AU')    return '$' + price.toLocaleString('en-US', {minimumFractionDigits:2, maximumFractionDigits:2});
+    if (label === 'AG')    return '$' + price.toFixed(2);
+    if (label === 'CU')    return '$' + price.toFixed(4);
+    if (label === 'STEEL') return '$' + Math.round(price).toLocaleString('en-US');
+    return '$' + price.toLocaleString('en-US', {maximumFractionDigits:2});
+  }
+
+  function updateHeroCards(data) {
+    ['AU','AG','CU','STEEL'].forEach(lbl => {
+      const item = data.find(d => d.label === lbl);
+      if (!item) return;
+      const priceEl = document.getElementById('hprice-' + lbl);
+      const pctEl   = document.getElementById('hpct-'   + lbl);
+      if (priceEl) priceEl.textContent = formatHeroPrice(lbl, item.price);
+      if (pctEl) {
+        const p = item.pct;
+        if (p == null) { pctEl.textContent = '—'; pctEl.className = 'ticker-change flat'; return; }
+        const sign = p > 0 ? '▲ +' : p < 0 ? '▼ ' : '';
+        pctEl.textContent = `${sign}${p.toFixed(2)}%`;
+        pctEl.className = 'ticker-change ' + (p > 0 ? 'up' : p < 0 ? 'down' : 'flat');
+      }
+    });
+  }
+
   async function initTicker() {
     const track = document.getElementById('ticker-track');
     if (!track) return;
 
-    let items = TICKER_SYMBOLS.map(x => ({ label: x.label, pct: null }));
+    let items = TICKER_SYMBOLS.map(x => ({ label: x.label, pct: null, price: null }));
     try {
       const res = await fetch(
         'https://xurgxkrnmutmocqbjffw.supabase.co/functions/v1/clever-responder'
       );
       if (res.ok) items = await res.json();
     } catch {}
+
+    updateHeroCards(items);
 
     function buildHTML(arr) {
       return arr.map(item => {

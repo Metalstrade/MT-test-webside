@@ -1,11 +1,12 @@
 const SYMBOLS = [
-  { s: 'GC=F',  label: 'AU'  },
-  { s: 'SI=F',  label: 'AG'  },
-  { s: 'HG=F',  label: 'CU'  },
-  { s: 'CL=F',  label: 'OIL' },
-  { s: 'BTC-USD', label: 'BTC' },
-  { s: '^GSPC', label: 'S&P' },
-  { s: '^IXIC', label: 'NDQ' },
+  { s: 'GC=F',    label: 'AU'    },
+  { s: 'SI=F',    label: 'AG'    },
+  { s: 'HG=F',    label: 'CU'    },
+  { s: 'CL=F',    label: 'OIL'   },
+  { s: 'BTC-USD', label: 'BTC'   },
+  { s: '^GSPC',   label: 'S&P'   },
+  { s: '^IXIC',   label: 'NDQ'   },
+  { s: 'TT=F',    label: 'STEEL' },
 ];
 
 const CORS = {
@@ -28,12 +29,16 @@ Deno.serve(async (req) => {
         });
         const json = await res.json();
         const meta = json?.chart?.result?.[0]?.meta;
-        const price = meta?.regularMarketPrice;
-        const prev  = meta?.chartPreviousClose ?? meta?.previousClose;
+        const price = meta?.regularMarketPrice ?? null;
+        const prev  = meta?.chartPreviousClose ?? meta?.previousClose ?? null;
         const pct   = (price && prev) ? ((price - prev) / prev) * 100 : null;
-        return { label, pct: pct !== null ? Math.round(pct * 100) / 100 : null };
+        return {
+          label,
+          price: price !== null ? Math.round(price * 100) / 100 : null,
+          pct:   pct   !== null ? Math.round(pct   * 100) / 100 : null,
+        };
       } catch {
-        return { label, pct: null };
+        return { label, price: null, pct: null };
       }
     })
   );
