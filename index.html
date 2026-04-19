@@ -1966,11 +1966,19 @@ return '$' + price.toLocaleString('en-US', {maximumFractionDigits:2});
     }
 
     const html = buildHTML(items);
-    track.innerHTML = html + html;
 
-    // wait for layout then start JS-driven scroll
+    // measure one copy width, then fill at least 3× viewport so loop is always seamless
+    const probe = document.createElement('span');
+    probe.style.cssText = 'position:absolute;visibility:hidden;white-space:nowrap;pointer-events:none';
+    probe.innerHTML = html;
+    document.body.appendChild(probe);
+    const copyWidth = probe.offsetWidth || 1;
+    document.body.removeChild(probe);
+    const copies = Math.max(3, Math.ceil(window.innerWidth * 3 / copyWidth) + 1);
+    track.innerHTML = html.repeat(copies);
+
+    // JS-driven scroll — resets at exactly one copy width for seamless loop
     requestAnimationFrame(() => {
-      const half = track.scrollWidth / 2;
       const speed = 60; // px per second
       let x = 0;
       let paused = false;
@@ -1980,7 +1988,7 @@ return '$' + price.toLocaleString('en-US', {maximumFractionDigits:2});
       function step(ts) {
         if (last !== null && !paused) {
           x -= speed * (ts - last) / 1000;
-          if (x <= -half) x += half;
+          if (x <= -copyWidth) x += copyWidth;
           track.style.transform = `translateX(${x}px)`;
         }
         last = ts;
