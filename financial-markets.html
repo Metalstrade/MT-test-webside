@@ -101,54 +101,40 @@
     }
     .page-header p { font-size: 14px; color: var(--muted); max-width: 560px; }
 
-    /* CONTROLS */
-    .market-controls { padding: 24px 48px 0; }
-    .cat-tabs { display: flex; gap: 4px; margin-bottom: 20px; flex-wrap: wrap; }
-    .cat-btn {
-      padding: 9px 22px; border: 1px solid rgba(143,163,177,0.18);
-      border-radius: 4px; background: transparent; cursor: pointer;
-      font-family: 'Inter', sans-serif; font-size: 12px; font-weight: 600;
-      letter-spacing: 0.07em; text-transform: uppercase; color: var(--muted);
-      transition: all 0.2s ease;
+    /* MAIN LAYOUT */
+    .markets-layout {
+      display: flex; gap: 16px;
+      padding: 24px 48px 48px;
+      align-items: flex-start;
     }
-    .cat-btn:hover { border-color: rgba(201,162,39,0.4); color: var(--gold-lt); }
-    .cat-btn.active { background: rgba(201,162,39,0.1); border-color: var(--gold); color: var(--gold-lt); }
 
-    .symbol-grid { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 20px; }
-    .sym-btn {
-      display: flex; flex-direction: column; align-items: flex-start;
-      padding: 10px 14px; min-width: 110px;
-      border: 1px solid rgba(143,163,177,0.15);
-      border-radius: 8px; background: var(--ink-2); cursor: pointer;
-      font-family: 'Inter', sans-serif; text-align: left;
-      transition: all 0.18s ease;
-    }
-    .sym-btn:hover { border-color: rgba(201,162,39,0.35); background: rgba(201,162,39,0.04); }
-    .sym-btn.active { background: rgba(201,162,39,0.09); border-color: var(--gold); }
-    .sym-btn-top { display: flex; align-items: center; justify-content: space-between; width: 100%; margin-bottom: 5px; gap: 8px; }
-    .sym-ticker { font-size: 11px; font-weight: 700; letter-spacing: 0.07em; color: #C0D0D8; }
-    .sym-btn.active .sym-ticker { color: var(--gold-lt); }
-    .sym-pct { font-size: 10px; font-weight: 700; letter-spacing: 0.04em; }
-    .sym-pct.up { color: #4CAF50; } .sym-pct.down { color: #EF5350; } .sym-pct.flat { color: var(--muted); }
-    .sym-btn-bot { display: flex; align-items: baseline; justify-content: space-between; width: 100%; gap: 6px; }
-    .sym-name { font-size: 10px; color: var(--muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 60px; }
-    .sym-price { font-size: 12px; font-weight: 600; color: #8FA3B1; white-space: nowrap; }
-
-    /* CHART */
-    .chart-wrap { padding: 0 48px 48px; }
-    #tv-chart-container {
+    /* LEFT: Market Overview */
+    .overview-panel {
+      flex: 0 0 380px; min-width: 0;
       border-radius: 10px; overflow: hidden;
       border: 1px solid rgba(201,162,39,0.12);
-      background: var(--ink-2); height: 560px;
+      background: var(--ink-2); height: 600px;
     }
-    #tv-chart-container iframe { display: block; }
+    .overview-panel .tradingview-widget-container,
+    .overview-panel .tradingview-widget-container__widget { height: 100%; width: 100%; }
 
+    /* RIGHT: Advanced Chart */
+    .chart-panel {
+      flex: 1 1 0; min-width: 0;
+      border-radius: 10px; overflow: hidden;
+      border: 1px solid rgba(201,162,39,0.12);
+      background: var(--ink-2); height: 600px;
+    }
+    #tv-chart-container { height: 100%; width: 100%; }
+
+    @media (max-width: 1024px) {
+      .markets-layout { flex-direction: column; padding: 16px 20px 40px; }
+      .overview-panel { flex: none; width: 100%; height: 500px; }
+      .chart-panel { flex: none; width: 100%; height: 460px; }
+    }
     @media (max-width: 768px) {
       nav { padding: 0 20px; }
       .page-header { padding: 28px 20px 20px; }
-      .market-controls { padding: 16px 20px 0; }
-      .chart-wrap { padding: 0 20px 40px; }
-      #tv-chart-container { height: 420px; }
     }
   </style>
 </head>
@@ -193,12 +179,95 @@
       <p data-i18n="markets_sub_fm">Real-time prices and charts powered by TradingView. Select a category, then click any asset to view its chart.</p>
     </div>
 
-    <div class="market-controls">
-      <div class="cat-tabs" id="cat-tabs"></div>
-      <div class="symbol-grid" id="symbol-grid"></div>
-    </div>
-    <div class="chart-wrap">
-      <div id="tv-chart-container"></div>
+    <div class="markets-layout">
+      <!-- LEFT: Market Overview with real-time prices -->
+      <div class="overview-panel">
+        <div class="tradingview-widget-container" style="height:100%;width:100%;">
+          <div class="tradingview-widget-container__widget" style="height:100%;width:100%;"></div>
+          <script type="text/javascript" src="https://s3.tradingview.com/external-embedding/embed-widget-market-overview.js" async>
+          {
+            "colorTheme": "dark",
+            "dateRange": "1D",
+            "showChart": true,
+            "locale": "en",
+            "largeChartUrl": "",
+            "isTransparent": true,
+            "showSymbolLogo": true,
+            "showFloatingTooltip": false,
+            "width": "100%",
+            "height": "100%",
+            "plotLineColorGrowing": "rgba(201,162,39,1)",
+            "plotLineColorFalling": "rgba(239,83,80,1)",
+            "gridLineColor": "rgba(90,110,122,0.1)",
+            "scaleFontColor": "rgba(107,128,144,1)",
+            "belowLineFillColorGrowing": "rgba(201,162,39,0.07)",
+            "belowLineFillColorFalling": "rgba(239,83,80,0.07)",
+            "belowLineFillColorGrowingBottom": "rgba(201,162,39,0)",
+            "belowLineFillColorFallingBottom": "rgba(239,83,80,0)",
+            "symbolActiveColor": "rgba(201,162,39,0.1)",
+            "tabs": [
+              {
+                "title": "Commodities",
+                "symbols": [
+                  {"s": "TVC:GOLD",        "d": "Gold"},
+                  {"s": "TVC:SILVER",      "d": "Silver"},
+                  {"s": "COMEX:HG1!",      "d": "Copper"},
+                  {"s": "TVC:USOIL",       "d": "Oil (WTI)"},
+                  {"s": "TVC:NATURALGAS",  "d": "Natural Gas"},
+                  {"s": "TVC:PLATINUM",    "d": "Platinum"}
+                ],
+                "originalTitle": "Commodities"
+              },
+              {
+                "title": "US Stocks",
+                "symbols": [
+                  {"s": "FOREXCOM:SPXUSD", "d": "S&P 500"},
+                  {"s": "FOREXCOM:NSXUSD", "d": "Nasdaq 100"},
+                  {"s": "FOREXCOM:DJI",    "d": "Dow Jones 30"},
+                  {"s": "TVC:RUT",         "d": "Russell 2000"},
+                  {"s": "NASDAQ:TSLA",     "d": "Tesla"},
+                  {"s": "NASDAQ:AAPL",     "d": "Apple"},
+                  {"s": "NASDAQ:AMZN",     "d": "Amazon"},
+                  {"s": "NASDAQ:META",     "d": "Meta"}
+                ],
+                "originalTitle": "US Stocks"
+              },
+              {
+                "title": "Crypto",
+                "symbols": [
+                  {"s": "BINANCE:BTCUSDT", "d": "Bitcoin"},
+                  {"s": "BINANCE:ETHUSDT", "d": "Ethereum"},
+                  {"s": "BINANCE:XRPUSDT", "d": "XRP"},
+                  {"s": "BINANCE:SOLUSDT", "d": "Solana"},
+                  {"s": "BINANCE:BNBUSDT", "d": "BNB"},
+                  {"s": "BINANCE:DOGEUSDT","d": "Dogecoin"},
+                  {"s": "BINANCE:LTCUSDT", "d": "Litecoin"},
+                  {"s": "BINANCE:ADAUSDT", "d": "Cardano"}
+                ],
+                "originalTitle": "Crypto"
+              },
+              {
+                "title": "Currencies",
+                "symbols": [
+                  {"s": "FX:EURUSD", "d": "EUR / USD"},
+                  {"s": "FX:USDJPY", "d": "USD / JPY"},
+                  {"s": "FX:GBPUSD", "d": "GBP / USD"},
+                  {"s": "FX:AUDUSD", "d": "AUD / USD"},
+                  {"s": "FX:USDCHF", "d": "USD / CHF"},
+                  {"s": "FX:USDCAD", "d": "USD / CAD"}
+                ],
+                "originalTitle": "Currencies"
+              }
+            ]
+          }
+          </script>
+        </div>
+      </div>
+
+      <!-- RIGHT: Advanced Chart with price scale -->
+      <div class="chart-panel">
+        <div id="tv-chart-container"></div>
+      </div>
     </div>
   </div>
 
@@ -293,111 +362,7 @@
     }
     initTicker();
 
-    // ── MARKET CHARTS ──
-    const CATEGORIES = [
-      {
-        id: 'commodities', label: 'Commodities',
-        symbols: [
-          { s: 'TVC:GOLD',       n: 'Gold',        lbl: 'AU'     },
-          { s: 'TVC:SILVER',     n: 'Silver',      lbl: 'AG'     },
-          { s: 'COMEX:HG1!',     n: 'Copper',      lbl: 'CU'     },
-          { s: 'TVC:USOIL',      n: 'Oil (WTI)',   lbl: 'OIL'    },
-          { s: 'TVC:NATURALGAS', n: 'Natural Gas', lbl: 'NATGAS' },
-          { s: 'TVC:PLATINUM',   n: 'Platinum',    lbl: 'PLAT'   },
-        ]
-      },
-      {
-        id: 'stocks', label: 'US Stocks',
-        symbols: [
-          { s: 'FOREXCOM:SPXUSD', n: 'S&P 500',      lbl: 'S&P'  },
-          { s: 'FOREXCOM:NSXUSD', n: 'Nasdaq 100',   lbl: 'NDQ'  },
-          { s: 'FOREXCOM:DJI',    n: 'Dow Jones',    lbl: 'DJI'  },
-          { s: 'TVC:RUT',         n: 'Russell 2000', lbl: 'RUT'  },
-          { s: 'NASDAQ:TSLA',     n: 'Tesla',        lbl: 'TSLA' },
-          { s: 'NASDAQ:AAPL',     n: 'Apple',        lbl: 'AAPL' },
-          { s: 'NASDAQ:AMZN',     n: 'Amazon',       lbl: 'AMZN' },
-          { s: 'NASDAQ:META',     n: 'Meta',         lbl: 'META' },
-        ]
-      },
-      {
-        id: 'crypto', label: 'Crypto',
-        symbols: [
-          { s: 'BINANCE:BTCUSDT',  n: 'Bitcoin',  lbl: 'BTC'  },
-          { s: 'BINANCE:ETHUSDT',  n: 'Ethereum', lbl: 'ETH'  },
-          { s: 'BINANCE:XRPUSDT',  n: 'XRP',      lbl: 'XRP'  },
-          { s: 'BINANCE:SOLUSDT',  n: 'Solana',   lbl: 'SOL'  },
-          { s: 'BINANCE:BNBUSDT',  n: 'BNB',      lbl: 'BNB'  },
-          { s: 'BINANCE:DOGEUSDT', n: 'Dogecoin', lbl: 'DOGE' },
-          { s: 'BINANCE:LTCUSDT',  n: 'Litecoin', lbl: 'LTC'  },
-          { s: 'BINANCE:ADAUSDT',  n: 'Cardano',  lbl: 'ADA'  },
-        ]
-      },
-      {
-        id: 'currencies', label: 'Currencies',
-        symbols: [
-          { s: 'FX:EURUSD', n: 'EUR/USD', lbl: 'EUR/USD' },
-          { s: 'FX:USDJPY', n: 'USD/JPY', lbl: 'USD/JPY' },
-          { s: 'FX:GBPUSD', n: 'GBP/USD', lbl: 'GBP/USD' },
-          { s: 'FX:AUDUSD', n: 'AUD/USD', lbl: 'AUD/USD' },
-          { s: 'FX:USDCHF', n: 'USD/CHF', lbl: 'USD/CHF' },
-          { s: 'FX:USDCAD', n: 'USD/CAD', lbl: 'USD/CAD' },
-        ]
-      },
-    ];
-
-    let activeCat = 0;
-    let activeSym = 0;
-    let liveData = {};
-
-    async function fetchLiveData() {
-      try {
-        const res = await fetch('https://xurgxkrnmutmocqbjffw.supabase.co/functions/v1/clever-responder');
-        if (res.ok) {
-          const arr = await res.json();
-          arr.forEach(d => { liveData[d.label] = d; });
-        }
-      } catch {}
-    }
-
-    function formatPrice(price, lbl) {
-      if (price == null) return '—';
-      if (lbl === 'DOGE' || lbl === 'ADA' || lbl === 'XRP') return price.toFixed(4);
-      if (price < 1) return price.toFixed(5);
-      if (price < 10) return price.toFixed(3);
-      if (price < 1000) return price.toFixed(2);
-      return price.toLocaleString('en-US', { maximumFractionDigits: 0 });
-    }
-
-    function renderCatTabs() {
-      const el = document.getElementById('cat-tabs');
-      el.innerHTML = CATEGORIES.map((c, i) =>
-        `<button class="cat-btn${i === activeCat ? ' active' : ''}" onclick="setCategory(${i})">${c.label}</button>`
-      ).join('');
-    }
-
-    function renderSymbolGrid() {
-      const el = document.getElementById('symbol-grid');
-      const syms = CATEGORIES[activeCat].symbols;
-      el.innerHTML = syms.map((sym, i) => {
-        const d = liveData[sym.lbl];
-        const price = d?.price ?? null;
-        const pct   = d?.pct   ?? null;
-        const pctCls = pct == null ? 'flat' : pct > 0 ? 'up' : pct < 0 ? 'down' : 'flat';
-        const pctStr = pct == null ? '—' : `${pct > 0 ? '+' : ''}${pct.toFixed(2)}%`;
-        const priceStr = formatPrice(price, sym.lbl);
-        return `<button class="sym-btn${i === activeSym ? ' active' : ''}" onclick="setSymbol(${i})">
-          <div class="sym-btn-top">
-            <span class="sym-ticker">${sym.lbl}</span>
-            <span class="sym-pct ${pctCls}">${pctStr}</span>
-          </div>
-          <div class="sym-btn-bot">
-            <span class="sym-name">${sym.n}</span>
-            <span class="sym-price">${priceStr}</span>
-          </div>
-        </button>`;
-      }).join('');
-    }
-
+    // ── ADVANCED CHART (right panel) ──
     function renderChart(symbol) {
       const container = document.getElementById('tv-chart-container');
       container.innerHTML = '';
@@ -409,7 +374,6 @@
       inner.style.cssText = 'height:calc(100% - 32px);width:100%;';
       wrapper.appendChild(inner);
       container.appendChild(wrapper);
-
       const script = document.createElement('script');
       script.type = 'text/javascript';
       script.src = 'https://s3.tradingview.com/external-embedding/embed-widget-advanced-chart.js';
@@ -435,26 +399,7 @@
       wrapper.appendChild(script);
     }
 
-    function setCategory(idx) {
-      activeCat = idx;
-      activeSym = 0;
-      renderCatTabs();
-      renderSymbolGrid();
-      renderChart(CATEGORIES[activeCat].symbols[0].s);
-    }
-
-    function setSymbol(idx) {
-      activeSym = idx;
-      renderSymbolGrid();
-      renderChart(CATEGORIES[activeCat].symbols[idx].s);
-    }
-
-    // init — fetch live data then render
-    fetchLiveData().then(() => {
-      renderCatTabs();
-      renderSymbolGrid();
-      renderChart(CATEGORIES[0].symbols[0].s);
-    });
+    renderChart('TVC:GOLD');
   </script>
 </body>
 </html>
