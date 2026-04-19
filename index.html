@@ -1805,12 +1805,21 @@
     btn.style.opacity = '1';
     btn.textContent = i18n[lang].reg_submit;
 
-    if (error) {
-      const isDuplicate = error.message.toLowerCase().includes('already') || error.message.includes('unique');
-      errEl.textContent = isDuplicate ? i18n[lang].reg_error_duplicate : i18n[lang].reg_error_generic;
+    // Supabase email enumeration protection: duplicate email returns no error but empty identities
+    const isDuplicate = (error && (error.message.toLowerCase().includes('already') || error.message.includes('unique')))
+      || (!error && data.user && Array.isArray(data.user.identities) && data.user.identities.length === 0);
+
+    if (isDuplicate) {
+      errEl.textContent = i18n[lang].reg_error_duplicate;
       errEl.style.display = 'block';
-      document.getElementById('reg-forgot-wrap').style.display = isDuplicate ? 'block' : 'none';
-      if (isDuplicate) document.getElementById('reg-forgot-email').value = fd.get('email');
+      document.getElementById('reg-forgot-wrap').style.display = 'block';
+      document.getElementById('reg-forgot-email').value = fd.get('email');
+      return;
+    }
+
+    if (error) {
+      errEl.textContent = i18n[lang].reg_error_generic;
+      errEl.style.display = 'block';
       return;
     }
 
