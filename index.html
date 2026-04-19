@@ -1118,12 +1118,7 @@
             <div class="ticker-price" id="hprice-AG">—</div>
             <div class="ticker-change flat" id="hpct-AG">—</div>
           </div>
-          <div class="ticker-card steel-card">
-            <div class="ticker-metal">Steel (HRC)</div>
-            <div class="ticker-price" id="hprice-STEEL">—</div>
-            <div class="ticker-change flat" id="hpct-STEEL">—</div>
-          </div>
-          <div class="ticker-card copper-card">
+<div class="ticker-card copper-card">
             <div class="ticker-metal">Copper (HG)</div>
             <div class="ticker-price" id="hprice-CU">—</div>
             <div class="ticker-change flat" id="hpct-CU">—</div>
@@ -1924,12 +1919,11 @@
     if (label === 'AU')    return '$' + price.toLocaleString('en-US', {minimumFractionDigits:2, maximumFractionDigits:2});
     if (label === 'AG')    return '$' + price.toFixed(2);
     if (label === 'CU')    return '$' + price.toFixed(4);
-    if (label === 'STEEL') return '$' + Math.round(price).toLocaleString('en-US');
-    return '$' + price.toLocaleString('en-US', {maximumFractionDigits:2});
+return '$' + price.toLocaleString('en-US', {maximumFractionDigits:2});
   }
 
   function updateHeroCards(data) {
-    ['AU','AG','CU','STEEL'].forEach(lbl => {
+    ['AU','AG','CU'].forEach(lbl => {
       const item = data.find(d => d.label === lbl);
       if (!item) return;
       const priceEl = document.getElementById('hprice-' + lbl);

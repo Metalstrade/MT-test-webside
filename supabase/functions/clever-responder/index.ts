@@ -6,7 +6,6 @@ const SYMBOLS = [
   { s: 'BTC-USD', label: 'BTC'   },
   { s: '^GSPC',   label: 'S&P'   },
   { s: '^IXIC',   label: 'NDQ'   },
-  { s: 'TT=F',    label: 'STEEL' },
 ];
 
 const CORS = {
