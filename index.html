@@ -225,7 +225,7 @@
       z-index: 1;
       max-width: 1280px;
       margin: 0 auto;
-      padding: 148px 48px 80px;
+      padding: 158px 48px 80px;
       display: grid;
       grid-template-columns: 1fr 1fr;
       gap: 80px;
@@ -929,12 +929,23 @@
     /* ── TICKER BAR ── */
     #ticker-bar {
       position: fixed; top: 72px; left: 0; right: 0; z-index: 98;
-      height: 46px;
+      height: 34px;
       background: rgba(9,13,19,0.97);
       border-bottom: 1px solid rgba(201,162,39,0.14);
       overflow: hidden;
+      display: flex; align-items: center;
     }
-    #ticker-bar .tradingview-widget-container { height: 46px; }
+    #ticker-track {
+      display: flex; align-items: center; white-space: nowrap;
+      will-change: transform;
+    }
+    .t-item { display: inline-flex; align-items: center; gap: 7px; padding: 0 24px; }
+    .t-sym { font-family:'Inter',sans-serif; font-size:10px; font-weight:600; letter-spacing:0.12em; text-transform:uppercase; color:var(--muted); }
+    .t-pct { font-family:'Inter',sans-serif; font-size:10px; font-weight:700; letter-spacing:0.06em; }
+    .t-pct.up   { color:#4CAF50; }
+    .t-pct.down { color:#EF5350; }
+    .t-pct.flat { color:#8FA3B1; }
+    .t-dot { color:rgba(201,162,39,0.25); font-size:7px; padding: 0 4px; }
 
     /* ── HAMBURGER DROPDOWN ── */
     .nav-dropdown { position: relative; margin-left: 12px; }
@@ -979,7 +990,7 @@
       nav { padding: 0 24px; }
       .nav-links, .nav-cta { display: none; }
       .section-inner { padding: 0 24px; }
-      .hero-inner { padding: 130px 24px 60px; }
+      .hero-inner { padding: 136px 24px 60px; }
       .metals-grid { grid-template-columns: 1fr; }
       .process-grid { grid-template-columns: 1fr; }
       .form-row { grid-template-columns: 1fr; }
@@ -1052,27 +1063,9 @@
 
   <!-- ── TICKER BAR ── -->
   <div id="ticker-bar">
-    <div class="tradingview-widget-container" style="height:34px;">
-      <div class="tradingview-widget-container__widget"></div>
-      <script type="text/javascript" src="https://s3.tradingview.com/external-embedding/embed-widget-ticker-tape.js" async>
-      {
-        "symbols": [
-          {"proName":"TVC:GOLD","title":"AU"},
-          {"proName":"TVC:SILVER","title":"AG"},
-          {"proName":"COMEX:HG1!","title":"CU"},
-          {"proName":"TVC:USOIL","title":"OIL"},
-          {"proName":"BINANCE:BTCUSDT","title":"BTC"},
-          {"proName":"FOREXCOM:SPXUSD","title":"S&P"},
-          {"proName":"FOREXCOM:NSXUSD","title":"NDQ"},
-          {"proName":"FX:EURUSD","title":"EUR/USD"}
-        ],
-        "showSymbolLogo": false,
-        "colorTheme": "dark",
-        "isTransparent": true,
-        "displayMode": "compact",
-        "locale": "en"
-      }
-      </script>
+    <div id="ticker-track">
+      <span class="t-item"><span class="t-sym">AU</span><span class="t-pct flat">—</span></span>
+      <span class="t-dot">◆</span>
     </div>
   </div>
 
