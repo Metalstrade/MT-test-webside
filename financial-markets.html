@@ -116,15 +116,23 @@
 
     .symbol-grid { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 20px; }
     .sym-btn {
-      padding: 7px 16px; border: 1px solid rgba(143,163,177,0.15);
-      border-radius: 100px; background: var(--ink-2); cursor: pointer;
-      font-family: 'Inter', sans-serif; font-size: 11px; font-weight: 600;
-      letter-spacing: 0.05em; color: var(--muted);
+      display: flex; flex-direction: column; align-items: flex-start;
+      padding: 10px 14px; min-width: 110px;
+      border: 1px solid rgba(143,163,177,0.15);
+      border-radius: 8px; background: var(--ink-2); cursor: pointer;
+      font-family: 'Inter', sans-serif; text-align: left;
       transition: all 0.18s ease;
     }
-    .sym-btn:hover { border-color: rgba(201,162,39,0.35); color: #C0D0D8; }
-    .sym-btn.active { background: rgba(201,162,39,0.12); border-color: var(--gold); color: var(--gold-lt); }
-    .sym-btn .sym-name { font-weight: 400; opacity: 0.7; margin-left: 4px; font-size: 10px; }
+    .sym-btn:hover { border-color: rgba(201,162,39,0.35); background: rgba(201,162,39,0.04); }
+    .sym-btn.active { background: rgba(201,162,39,0.09); border-color: var(--gold); }
+    .sym-btn-top { display: flex; align-items: center; justify-content: space-between; width: 100%; margin-bottom: 5px; gap: 8px; }
+    .sym-ticker { font-size: 11px; font-weight: 700; letter-spacing: 0.07em; color: #C0D0D8; }
+    .sym-btn.active .sym-ticker { color: var(--gold-lt); }
+    .sym-pct { font-size: 10px; font-weight: 700; letter-spacing: 0.04em; }
+    .sym-pct.up { color: #4CAF50; } .sym-pct.down { color: #EF5350; } .sym-pct.flat { color: var(--muted); }
+    .sym-btn-bot { display: flex; align-items: baseline; justify-content: space-between; width: 100%; gap: 6px; }
+    .sym-name { font-size: 10px; color: var(--muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 60px; }
+    .sym-price { font-size: 12px; font-weight: 600; color: #8FA3B1; white-space: nowrap; }
 
     /* CHART */
     .chart-wrap { padding: 0 48px 48px; }
@@ -290,55 +298,75 @@
       {
         id: 'commodities', label: 'Commodities',
         symbols: [
-          { s: 'TVC:GOLD',       n: 'Gold'        },
-          { s: 'TVC:SILVER',     n: 'Silver'      },
-          { s: 'COMEX:HG1!',     n: 'Copper'      },
-          { s: 'TVC:USOIL',      n: 'Oil (WTI)'   },
-          { s: 'TVC:NATURALGAS', n: 'Natural Gas'  },
-          { s: 'TVC:PLATINUM',   n: 'Platinum'     },
+          { s: 'TVC:GOLD',       n: 'Gold',        lbl: 'AU'     },
+          { s: 'TVC:SILVER',     n: 'Silver',      lbl: 'AG'     },
+          { s: 'COMEX:HG1!',     n: 'Copper',      lbl: 'CU'     },
+          { s: 'TVC:USOIL',      n: 'Oil (WTI)',   lbl: 'OIL'    },
+          { s: 'TVC:NATURALGAS', n: 'Natural Gas', lbl: 'NATGAS' },
+          { s: 'TVC:PLATINUM',   n: 'Platinum',    lbl: 'PLAT'   },
         ]
       },
       {
         id: 'stocks', label: 'US Stocks',
         symbols: [
-          { s: 'FOREXCOM:SPXUSD', n: 'S&P 500'     },
-          { s: 'FOREXCOM:NSXUSD', n: 'Nasdaq 100'  },
-          { s: 'FOREXCOM:DJI',    n: 'Dow Jones'   },
-          { s: 'TVC:RUT',         n: 'Russell 2000' },
-          { s: 'NASDAQ:TSLA',     n: 'Tesla'        },
-          { s: 'NASDAQ:AAPL',     n: 'Apple'        },
-          { s: 'NASDAQ:AMZN',     n: 'Amazon'       },
-          { s: 'NASDAQ:META',     n: 'Meta'         },
+          { s: 'FOREXCOM:SPXUSD', n: 'S&P 500',      lbl: 'S&P'  },
+          { s: 'FOREXCOM:NSXUSD', n: 'Nasdaq 100',   lbl: 'NDQ'  },
+          { s: 'FOREXCOM:DJI',    n: 'Dow Jones',    lbl: 'DJI'  },
+          { s: 'TVC:RUT',         n: 'Russell 2000', lbl: 'RUT'  },
+          { s: 'NASDAQ:TSLA',     n: 'Tesla',        lbl: 'TSLA' },
+          { s: 'NASDAQ:AAPL',     n: 'Apple',        lbl: 'AAPL' },
+          { s: 'NASDAQ:AMZN',     n: 'Amazon',       lbl: 'AMZN' },
+          { s: 'NASDAQ:META',     n: 'Meta',         lbl: 'META' },
         ]
       },
       {
         id: 'crypto', label: 'Crypto',
         symbols: [
-          { s: 'BINANCE:BTCUSDT',  n: 'Bitcoin'  },
-          { s: 'BINANCE:ETHUSDT',  n: 'Ethereum' },
-          { s: 'BINANCE:XRPUSDT',  n: 'XRP'      },
-          { s: 'BINANCE:SOLUSDT',  n: 'Solana'   },
-          { s: 'BINANCE:BNBUSDT',  n: 'BNB'      },
-          { s: 'BINANCE:DOGEUSDT', n: 'Dogecoin' },
-          { s: 'BINANCE:LTCUSDT',  n: 'Litecoin' },
-          { s: 'BINANCE:ADAUSDT',  n: 'Cardano'  },
+          { s: 'BINANCE:BTCUSDT',  n: 'Bitcoin',  lbl: 'BTC'  },
+          { s: 'BINANCE:ETHUSDT',  n: 'Ethereum', lbl: 'ETH'  },
+          { s: 'BINANCE:XRPUSDT',  n: 'XRP',      lbl: 'XRP'  },
+          { s: 'BINANCE:SOLUSDT',  n: 'Solana',   lbl: 'SOL'  },
+          { s: 'BINANCE:BNBUSDT',  n: 'BNB',      lbl: 'BNB'  },
+          { s: 'BINANCE:DOGEUSDT', n: 'Dogecoin', lbl: 'DOGE' },
+          { s: 'BINANCE:LTCUSDT',  n: 'Litecoin', lbl: 'LTC'  },
+          { s: 'BINANCE:ADAUSDT',  n: 'Cardano',  lbl: 'ADA'  },
         ]
       },
       {
         id: 'currencies', label: 'Currencies',
         symbols: [
-          { s: 'FX:EURUSD', n: 'EUR/USD' },
-          { s: 'FX:USDJPY', n: 'USD/JPY' },
-          { s: 'FX:GBPUSD', n: 'GBP/USD' },
-          { s: 'FX:AUDUSD', n: 'AUD/USD' },
-          { s: 'FX:USDCHF', n: 'USD/CHF' },
-          { s: 'FX:USDCAD', n: 'USD/CAD' },
+          { s: 'FX:EURUSD', n: 'EUR/USD', lbl: 'EUR/USD' },
+          { s: 'FX:USDJPY', n: 'USD/JPY', lbl: 'USD/JPY' },
+          { s: 'FX:GBPUSD', n: 'GBP/USD', lbl: 'GBP/USD' },
+          { s: 'FX:AUDUSD', n: 'AUD/USD', lbl: 'AUD/USD' },
+          { s: 'FX:USDCHF', n: 'USD/CHF', lbl: 'USD/CHF' },
+          { s: 'FX:USDCAD', n: 'USD/CAD', lbl: 'USD/CAD' },
         ]
       },
     ];
 
     let activeCat = 0;
     let activeSym = 0;
+    let liveData = {};
+
+    async function fetchLiveData() {
+      try {
+        const res = await fetch('https://xurgxkrnmutmocqbjffw.supabase.co/functions/v1/clever-responder');
+        if (res.ok) {
+          const arr = await res.json();
+          arr.forEach(d => { liveData[d.label] = d; });
+        }
+      } catch {}
+    }
+
+    function formatPrice(price, lbl) {
+      if (price == null) return '—';
+      if (lbl === 'DOGE' || lbl === 'ADA' || lbl === 'XRP') return price.toFixed(4);
+      if (price < 1) return price.toFixed(5);
+      if (price < 10) return price.toFixed(3);
+      if (price < 1000) return price.toFixed(2);
+      return price.toLocaleString('en-US', { maximumFractionDigits: 0 });
+    }
 
     function renderCatTabs() {
       const el = document.getElementById('cat-tabs');
@@ -350,11 +378,24 @@
     function renderSymbolGrid() {
       const el = document.getElementById('symbol-grid');
       const syms = CATEGORIES[activeCat].symbols;
-      el.innerHTML = syms.map((sym, i) =>
-        `<button class="sym-btn${i === activeSym ? ' active' : ''}" onclick="setSymbol(${i})">
-          ${sym.s.split(':').pop().replace('1!','')}<span class="sym-name">${sym.n}</span>
-        </button>`
-      ).join('');
+      el.innerHTML = syms.map((sym, i) => {
+        const d = liveData[sym.lbl];
+        const price = d?.price ?? null;
+        const pct   = d?.pct   ?? null;
+        const pctCls = pct == null ? 'flat' : pct > 0 ? 'up' : pct < 0 ? 'down' : 'flat';
+        const pctStr = pct == null ? '—' : `${pct > 0 ? '+' : ''}${pct.toFixed(2)}%`;
+        const priceStr = formatPrice(price, sym.lbl);
+        return `<button class="sym-btn${i === activeSym ? ' active' : ''}" onclick="setSymbol(${i})">
+          <div class="sym-btn-top">
+            <span class="sym-ticker">${sym.lbl}</span>
+            <span class="sym-pct ${pctCls}">${pctStr}</span>
+          </div>
+          <div class="sym-btn-bot">
+            <span class="sym-name">${sym.n}</span>
+            <span class="sym-price">${priceStr}</span>
+          </div>
+        </button>`;
+      }).join('');
     }
 
     function renderChart(symbol) {
@@ -408,10 +449,12 @@
       renderChart(CATEGORIES[activeCat].symbols[idx].s);
     }
 
-    // init
-    renderCatTabs();
-    renderSymbolGrid();
-    renderChart(CATEGORIES[0].symbols[0].s);
+    // init — fetch live data then render
+    fetchLiveData().then(() => {
+      renderCatTabs();
+      renderSymbolGrid();
+      renderChart(CATEGORIES[0].symbols[0].s);
+    });
   </script>
 </body>
 </html>

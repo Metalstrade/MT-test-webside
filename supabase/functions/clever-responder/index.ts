@@ -1,12 +1,36 @@
 const SYMBOLS = [
-  { s: 'GC=F',    label: 'AU'    },
-  { s: 'SI=F',    label: 'AG'    },
-  { s: 'HG=F',    label: 'CU'    },
-  { s: 'CL=F',    label: 'OIL'   },
-  { s: 'BTC-USD', label: 'BTC'   },
-  { s: '^GSPC',   label: 'S&P'   },
-  { s: '^IXIC',    label: 'NDQ'     },
-  { s: 'EURUSD=X', label: 'EUR/USD' },
+  // Commodities
+  { s: 'GC=F',      label: 'AU'      },
+  { s: 'SI=F',      label: 'AG'      },
+  { s: 'HG=F',      label: 'CU'      },
+  { s: 'CL=F',      label: 'OIL'     },
+  { s: 'NG=F',      label: 'NATGAS'  },
+  { s: 'PL=F',      label: 'PLAT'    },
+  // US Stocks / Indices
+  { s: '^GSPC',     label: 'S&P'     },
+  { s: '^IXIC',     label: 'NDQ'     },
+  { s: '^DJI',      label: 'DJI'     },
+  { s: '^RUT',      label: 'RUT'     },
+  { s: 'TSLA',      label: 'TSLA'    },
+  { s: 'AAPL',      label: 'AAPL'    },
+  { s: 'AMZN',      label: 'AMZN'    },
+  { s: 'META',      label: 'META'    },
+  // Crypto
+  { s: 'BTC-USD',   label: 'BTC'     },
+  { s: 'ETH-USD',   label: 'ETH'     },
+  { s: 'XRP-USD',   label: 'XRP'     },
+  { s: 'SOL-USD',   label: 'SOL'     },
+  { s: 'BNB-USD',   label: 'BNB'     },
+  { s: 'DOGE-USD',  label: 'DOGE'    },
+  { s: 'LTC-USD',   label: 'LTC'     },
+  { s: 'ADA-USD',   label: 'ADA'     },
+  // Currencies
+  { s: 'EURUSD=X',  label: 'EUR/USD' },
+  { s: 'USDJPY=X',  label: 'USD/JPY' },
+  { s: 'GBPUSD=X',  label: 'GBP/USD' },
+  { s: 'AUDUSD=X',  label: 'AUD/USD' },
+  { s: 'USDCHF=X',  label: 'USD/CHF' },
+  { s: 'USDCAD=X',  label: 'USD/CAD' },
 ];
 
 const CORS = {
