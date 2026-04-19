@@ -1685,7 +1685,7 @@
     <form id="signin-form" onsubmit="submitSignInForm(event)" style="display:flex; flex-direction:column; gap:16px;">
       <div>
         <label style="display:block; font-size:11px; letter-spacing:0.08em; text-transform:uppercase; color:var(--muted); margin-bottom:6px; font-family:'Inter',sans-serif;" data-i18n="signin_email">Email Address</label>
-        <input type="email" name="email" required data-i18n-placeholder="signin_email_ph" placeholder="james@example.com" style="
+        <input id="signin-email" type="email" name="email" required data-i18n-placeholder="signin_email_ph" placeholder="james@example.com" style="
           width:100%; padding:11px 14px;
           background:var(--ink-3); border:1px solid rgba(143,163,177,0.2);
           border-radius:3px; color:#E8EEF2; font-family:'Inter',sans-serif; font-size:14px;
@@ -1723,6 +1723,10 @@
       <button type="submit" id="signin-submit-btn" class="btn-primary" style="width:100%; justify-content:center; margin-top:8px; padding:15px 32px; font-size:13px;" data-i18n="signin_submit">
         Sign In
       </button>
+
+      <p style="margin:12px 0 0; text-align:center; font-family:'Inter',sans-serif;">
+        <button type="button" onclick="openResetFromSignin()" style="background:none; border:none; cursor:pointer; font-size:12px; color:var(--muted); font-family:'Inter',sans-serif; text-decoration:underline; padding:0;" data-i18n="signin_forgot">Forgot your password?</button>
+      </p>
     </form>
 
     <!-- Success state (hidden) -->
@@ -1821,6 +1825,12 @@
   }
 
   // ── PASSWORD RESET ──
+  function openResetFromSignin() {
+    const email = document.getElementById('signin-email') ? document.getElementById('signin-email').value : '';
+    closeSignInModal();
+    openResetModal(email);
+  }
+
   function openResetModal(email) {
     document.getElementById('reset-modal').style.display = 'flex';
     document.body.style.overflow = 'hidden';
@@ -2194,6 +2204,7 @@ const i18n = {
     signin_error_invalid:'Incorrect email or password.', signin_error_unconfirmed:'Please confirm your email first.',
     reg_error_duplicate:'This email address is already registered.', reg_error_generic:'An error occurred. Please try again.',
     dd_markets:'Marketplace', dd_settings:'Settings', dd_register:'Register', dd_signin:'Sign In', dd_logout:'Log Out',
+    signin_forgot:'Forgot your password?',
     reg_forgot_q:'Forgot your password?', reg_forgot_btn:'Reset it',
     reset_title:'Reset Password', reset_sub:"Enter your email and we'll send you a reset link.",
     reset_send_btn:'Send Reset Link', reset_sent:'Reset link sent! Check your email.',
@@ -2272,6 +2283,7 @@ const i18n = {
     signin_error_invalid:'Napačen e-poštni naslov ali geslo.', signin_error_unconfirmed:'Najprej potrdite e-pošto.',
     reg_error_duplicate:'Ta e-poštni naslov je že registriran.', reg_error_generic:'Prišlo je do napake. Poskusite znova.',
     dd_markets:'Marketplace', dd_settings:'Nastavitve', dd_register:'Registracija', dd_signin:'Prijava', dd_logout:'Odjava',
+    signin_forgot:'Ste pozabili geslo?',
     reg_forgot_q:'Ste pozabili geslo?', reg_forgot_btn:'Ponastavi ga',
     reset_title:'Ponastavitev gesla', reset_sub:'Vnesite e-pošto in poslali vam bomo povezavo za ponastavitev.',
     reset_send_btn:'Pošlji povezavo', reset_sent:'Povezava poslana! Preverite e-pošto.',
