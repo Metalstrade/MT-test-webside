@@ -124,8 +124,31 @@
       border-radius: 10px; overflow: hidden;
       border: 1px solid rgba(201,162,39,0.12);
       background: var(--ink-2); height: 600px;
+      display: flex; align-items: center; justify-content: center;
     }
     #tv-chart-container { height: 100%; width: 100%; }
+
+    /* Chart placeholder */
+    .chart-placeholder {
+      display: flex; flex-direction: column; align-items: center;
+      justify-content: center; gap: 20px; padding: 40px;
+      text-align: center;
+    }
+    .chart-placeholder svg { opacity: 0.18; }
+    .chart-placeholder p {
+      font-size: 14px; color: var(--muted); line-height: 1.6;
+      max-width: 260px;
+    }
+    .chart-open-btn {
+      display: inline-flex; align-items: center; gap: 9px;
+      padding: 11px 26px; border-radius: 5px; cursor: pointer;
+      background: rgba(201,162,39,0.1); border: 1px solid rgba(201,162,39,0.35);
+      font-family: 'Inter', sans-serif; font-size: 12px; font-weight: 600;
+      letter-spacing: 0.07em; text-transform: uppercase; color: var(--gold-lt);
+      transition: background 0.2s, border-color 0.2s;
+    }
+    .chart-open-btn:hover { background: rgba(201,162,39,0.18); border-color: var(--gold); }
+    .chart-open-btn:active { background: rgba(201,162,39,0.25); }
 
     @media (max-width: 1024px) {
       .markets-layout { flex-direction: column; padding: 16px 20px 40px; }
@@ -269,8 +292,23 @@
       </div>
 
       <!-- RIGHT: Advanced Chart with price scale -->
-      <div class="chart-panel">
-        <div id="tv-chart-container"></div>
+      <div class="chart-panel" id="chart-panel">
+        <div class="chart-placeholder" id="chart-placeholder">
+          <svg width="56" height="56" viewBox="0 0 56 56" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <rect x="1" y="1" width="54" height="54" rx="9" stroke="#C9A227" stroke-width="1.5"/>
+            <polyline points="10,40 20,26 28,32 36,18 46,22" stroke="#C9A227" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+            <line x1="10" y1="44" x2="46" y2="44" stroke="#C9A227" stroke-width="1.2" stroke-linecap="round"/>
+            <line x1="10" y1="12" x2="10" y2="44" stroke="#C9A227" stroke-width="1.2" stroke-linecap="round"/>
+          </svg>
+          <p data-i18n="chart_prompt">Ali želite uporabljati napredni graf?</p>
+          <button class="chart-open-btn" onclick="openAdvancedChart()">
+            <svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+              <polyline points="1,15 6,9 10,12 15,5"/><polyline points="10,5 15,5 15,10"/>
+            </svg>
+            <span data-i18n="chart_btn">Odpri napredni graf</span>
+          </button>
+        </div>
+        <div id="tv-chart-container" style="display:none;height:100%;width:100%;"></div>
       </div>
     </div>
   </div>
@@ -282,12 +320,16 @@
         markets_eyebrow_fm: 'Live Markets',
         markets_h1_fm: 'Financial Markets',
         markets_sub_fm: 'Real-time prices and charts powered by TradingView. Select a category, then click any asset to view its chart.',
+        chart_prompt: 'Would you like to use the advanced chart?',
+        chart_btn: 'Open advanced chart',
       },
       sl: {
         back_home: 'Nazaj na začetek',
         markets_eyebrow_fm: 'Živi trgi',
         markets_h1_fm: 'Finančni trgi',
         markets_sub_fm: 'Cene in grafi v realnem času, ki jih zagotavlja TradingView. Izberite kategorijo in kliknite na asset za ogled grafa.',
+        chart_prompt: 'Ali želite uporabljati napredni graf?',
+        chart_btn: 'Odpri napredni graf',
       }
     };
 
@@ -367,6 +409,18 @@
     initTicker();
 
     // ── ADVANCED CHART (right panel) ──
+    function openAdvancedChart() {
+      document.getElementById('chart-placeholder').style.display = 'none';
+      const container = document.getElementById('tv-chart-container');
+      container.style.display = 'block';
+      document.getElementById('chart-panel').style.alignItems = 'stretch';
+      document.getElementById('chart-panel').style.justifyContent = 'stretch';
+      renderChart('TVC:GOLD');
+      chartOpen = true;
+    }
+
+    let chartOpen = false;
+
     function renderChart(symbol) {
       const container = document.getElementById('tv-chart-container');
       container.innerHTML = '';
