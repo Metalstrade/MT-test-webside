@@ -594,6 +594,12 @@
 
     renderChart('TVC:GOLD');
 
+    // ── FAVORITES STRIP: only visible when ?favs=1 ──
+    if (!new URLSearchParams(window.location.search).has('favs')) {
+      const strip = document.querySelector('.fav-strip');
+      if (strip) strip.style.display = 'none';
+    }
+
     // ── FAVORITES ──
     const FAV_SYMBOLS = [
       { label:'AU',      name:'Zlato'          }, { label:'AG',      name:'Srebro'         },
