@@ -8,6 +8,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;500;600;700&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet" />
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
 
   <style>
     :root {
@@ -596,6 +597,251 @@
       nav { padding: 0 20px; }
       .page-header { padding: 12px 20px; }
     }
+
+    /* ── FAB ── */
+    .fab-post {
+      position: fixed; bottom: 32px; right: 32px; z-index: 200;
+      width: 56px; height: 56px; border-radius: 50%;
+      background: linear-gradient(135deg, var(--gold-lt), var(--gold), var(--gold-dk));
+      border: none; cursor: pointer;
+      font-size: 28px; color: var(--ink); font-weight: 300; line-height: 1;
+      box-shadow: 0 4px 20px rgba(201,162,39,0.45), 0 8px 40px rgba(201,162,39,0.2);
+      transition: transform 0.25s cubic-bezier(0.34,1.56,0.64,1), box-shadow 0.2s ease;
+      display: flex; align-items: center; justify-content: center;
+    }
+    .fab-post:hover { transform: scale(1.1); box-shadow: 0 6px 28px rgba(201,162,39,0.55), 0 12px 48px rgba(201,162,39,0.28); }
+    .fab-post:active { transform: scale(0.96); }
+
+    /* ── MODAL OVERLAY ── */
+    .modal-overlay {
+      position: fixed; inset: 0; z-index: 300;
+      background: rgba(13,17,23,0.85);
+      backdrop-filter: blur(6px);
+      display: flex; align-items: center; justify-content: center;
+      padding: 20px;
+      opacity: 0; pointer-events: none;
+      transition: opacity 0.25s ease;
+    }
+    .modal-overlay.open { opacity: 1; pointer-events: all; }
+
+    .modal-box {
+      background: var(--ink-2);
+      border: 1px solid rgba(201,162,39,0.2);
+      border-radius: 8px;
+      box-shadow: 0 20px 80px rgba(0,0,0,0.6), 0 0 0 1px rgba(201,162,39,0.08);
+      width: 100%; max-width: 560px;
+      max-height: 90vh; overflow-y: auto;
+      position: relative;
+      transform: translateY(12px);
+      transition: transform 0.25s cubic-bezier(0.34,1.56,0.64,1);
+    }
+    .modal-overlay.open .modal-box { transform: translateY(0); }
+
+    .modal-hdr {
+      padding: 24px 28px 16px;
+      border-bottom: 1px solid rgba(143,163,177,0.08);
+      display: flex; align-items: center; justify-content: space-between;
+    }
+    .modal-hdr h2 { font-size: 22px; margin: 0; color: #E8EEF2; }
+    .modal-close {
+      background: none; border: none; cursor: pointer;
+      color: var(--muted); font-size: 22px; line-height: 1; padding: 4px 8px;
+      transition: color 0.15s ease;
+    }
+    .modal-close:hover { color: #E8EEF2; }
+
+    /* ── AUTH PROMPT ── */
+    .auth-prompt-body {
+      padding: 28px;
+    }
+    .auth-prompt-body p { color: var(--muted); font-size: 14px; margin: 0 0 24px; line-height: 1.6; }
+    .auth-prompt-btns { display: flex; gap: 12px; flex-wrap: wrap; }
+    .btn-outline {
+      display: inline-flex; align-items: center; gap: 8px;
+      padding: 11px 24px;
+      background: transparent;
+      color: var(--gold); border: 1px solid rgba(201,162,39,0.4);
+      border-radius: 2px; cursor: pointer;
+      font-family: 'Inter', sans-serif; font-size: 12px; font-weight: 600;
+      letter-spacing: 0.08em; text-transform: uppercase;
+      text-decoration: none;
+      transition: background 0.2s ease, color 0.2s ease;
+    }
+    .btn-outline:hover { background: rgba(201,162,39,0.1); color: var(--gold-lt); }
+
+    /* ── WIZARD ── */
+    .wizard-box { max-width: 640px; }
+    .wizard-steps-bar {
+      display: flex; align-items: center; gap: 0;
+      padding: 0 28px 0;
+      margin-bottom: 0;
+    }
+    .wizard-step-dot {
+      display: flex; flex-direction: column; align-items: center; gap: 6px;
+      flex: 1;
+    }
+    .wizard-step-dot .dot {
+      width: 28px; height: 28px; border-radius: 50%;
+      border: 2px solid rgba(143,163,177,0.2);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 11px; font-weight: 700; color: var(--muted);
+      transition: border-color 0.2s, background 0.2s, color 0.2s;
+    }
+    .wizard-step-dot.active .dot { border-color: var(--gold); background: rgba(201,162,39,0.15); color: var(--gold-lt); }
+    .wizard-step-dot.done .dot { border-color: var(--gold-dk); background: var(--gold-dk); color: var(--ink); }
+    .wizard-step-dot .dot-label { font-size: 9px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--muted); }
+    .wizard-step-dot.active .dot-label { color: var(--gold); }
+    .wizard-step-line { flex: 1; height: 1px; background: rgba(143,163,177,0.15); margin-top: -14px; }
+
+    .wizard-body { padding: 24px 28px; }
+    .wizard-body-title {
+      font-size: 13px; letter-spacing: 0.1em; text-transform: uppercase;
+      color: var(--muted); margin-bottom: 16px; font-weight: 500;
+    }
+
+    /* Step 1: category cards */
+    .category-cards { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+    .category-card {
+      padding: 20px 16px; border: 1px solid rgba(143,163,177,0.15);
+      border-radius: 6px; cursor: pointer; text-align: center;
+      background: var(--ink-3);
+      transition: border-color 0.2s ease, background 0.2s ease, transform 0.2s cubic-bezier(0.34,1.56,0.64,1);
+    }
+    .category-card:hover { border-color: rgba(201,162,39,0.35); background: rgba(201,162,39,0.05); transform: translateY(-2px); }
+    .category-card.selected { border-color: var(--gold); background: rgba(201,162,39,0.1); }
+    .category-card-icon { font-size: 28px; margin-bottom: 8px; }
+    .category-card-name { font-size: 13px; font-weight: 600; color: #E8EEF2; }
+    .category-card-sub { font-size: 10px; color: var(--muted); margin-top: 3px; letter-spacing: 0.04em; }
+
+    /* Step 2: wizard tree */
+    .wiz-tree { max-height: 340px; overflow-y: auto; border: 1px solid rgba(143,163,177,0.1); border-radius: 4px; background: var(--ink-3); }
+    .wiz-tree-item {
+      padding: 8px 12px 8px 16px;
+      font-size: 12px; color: var(--muted); cursor: pointer;
+      display: flex; align-items: center; gap: 6px;
+      border-bottom: 1px solid rgba(143,163,177,0.05);
+      transition: background 0.15s, color 0.15s;
+    }
+    .wiz-tree-item:last-child { border-bottom: none; }
+    .wiz-tree-item:hover { background: rgba(255,255,255,0.03); color: var(--silver-lt); }
+    .wiz-tree-item.selected { background: rgba(201,162,39,0.1); color: var(--gold-lt); }
+    .wiz-tree-item.branch { font-weight: 600; color: var(--silver-lt); background: rgba(0,0,0,0.15); font-size: 11px; letter-spacing: 0.04em; }
+    .wiz-tree-item.branch:hover { background: rgba(255,255,255,0.04); }
+    .wiz-tree-item.selected-material { background: rgba(201,162,39,0.12); color: var(--gold-lt); font-weight: 600; }
+    .wiz-tree-indent-1 { padding-left: 28px; }
+    .wiz-tree-indent-2 { padding-left: 44px; }
+    .wiz-tree-indent-3 { padding-left: 60px; }
+    .wiz-tree-chev { width: 10px; height: 10px; flex-shrink: 0; transition: transform 0.15s ease; }
+    .wiz-tree-item.open > .wiz-tree-chev { transform: rotate(90deg); }
+
+    /* Step 3: form */
+    .wiz-field { margin-bottom: 16px; }
+    .wiz-field label { display: block; font-size: 11px; letter-spacing: 0.08em; text-transform: uppercase; color: var(--muted); margin-bottom: 6px; font-weight: 500; }
+    .wiz-input {
+      width: 100%; padding: 10px 14px;
+      background: var(--ink-3); border: 1px solid rgba(143,163,177,0.15);
+      border-radius: 3px; color: #E8EEF2;
+      font-family: 'Inter', sans-serif; font-size: 13px; outline: none;
+      transition: border-color 0.2s ease;
+    }
+    .wiz-input:focus { border-color: rgba(201,162,39,0.5); }
+    .wiz-input::placeholder { color: var(--muted); }
+    .wiz-row { display: grid; grid-template-columns: 1fr auto; gap: 8px; }
+    .wiz-unit-select {
+      padding: 10px 12px;
+      background: var(--ink-3); border: 1px solid rgba(143,163,177,0.15);
+      border-radius: 3px; color: #E8EEF2;
+      font-family: 'Inter', sans-serif; font-size: 13px; outline: none;
+      cursor: pointer;
+    }
+    .wiz-textarea {
+      width: 100%; padding: 10px 14px;
+      background: var(--ink-3); border: 1px solid rgba(143,163,177,0.15);
+      border-radius: 3px; color: #E8EEF2;
+      font-family: 'Inter', sans-serif; font-size: 13px; outline: none;
+      resize: vertical; min-height: 80px; line-height: 1.5;
+      transition: border-color 0.2s ease;
+    }
+    .wiz-textarea:focus { border-color: rgba(201,162,39,0.5); }
+    .wiz-selected-material {
+      padding: 10px 14px; background: rgba(201,162,39,0.08);
+      border: 1px solid rgba(201,162,39,0.25); border-radius: 3px;
+      font-size: 13px; color: var(--gold-lt); margin-bottom: 16px;
+    }
+
+    /* Step 4: images */
+    .wiz-image-slots { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; }
+    .wiz-image-slot {
+      aspect-ratio: 1; border: 2px dashed rgba(143,163,177,0.2);
+      border-radius: 6px; cursor: pointer; position: relative; overflow: hidden;
+      background: var(--ink-3);
+      display: flex; align-items: center; justify-content: center;
+      transition: border-color 0.2s ease;
+    }
+    .wiz-image-slot:hover { border-color: rgba(201,162,39,0.4); }
+    .wiz-image-slot.filled { border-style: solid; border-color: rgba(201,162,39,0.3); }
+    .wiz-image-slot img { width: 100%; height: 100%; object-fit: cover; }
+    .wiz-image-slot .slot-remove {
+      position: absolute; top: 6px; right: 6px; z-index: 2;
+      width: 22px; height: 22px; border-radius: 50%;
+      background: rgba(13,17,23,0.8); border: 1px solid rgba(255,255,255,0.2);
+      color: #fff; font-size: 14px; cursor: pointer;
+      display: flex; align-items: center; justify-content: center;
+      transition: background 0.15s;
+    }
+    .wiz-image-slot .slot-remove:hover { background: rgba(240,100,90,0.7); }
+    .wiz-slot-placeholder { display: flex; flex-direction: column; align-items: center; gap: 6px; }
+    .wiz-slot-placeholder svg { color: var(--muted); }
+    .wiz-slot-placeholder span { font-size: 10px; color: var(--muted); letter-spacing: 0.04em; }
+
+    /* Wizard footer */
+    .wizard-footer {
+      padding: 16px 28px 24px;
+      border-top: 1px solid rgba(143,163,177,0.08);
+      display: flex; align-items: center; justify-content: space-between;
+      gap: 12px;
+    }
+    .wiz-progress { font-size: 11px; color: var(--muted); }
+    .wizard-footer-btns { display: flex; gap: 10px; }
+    .btn-wiz-back {
+      padding: 10px 20px; background: transparent;
+      border: 1px solid rgba(143,163,177,0.2); border-radius: 2px;
+      color: var(--muted); font-family: 'Inter', sans-serif;
+      font-size: 12px; font-weight: 600; letter-spacing: 0.06em; text-transform: uppercase;
+      cursor: pointer; transition: color 0.2s, border-color 0.2s;
+    }
+    .btn-wiz-back:hover { color: var(--silver-lt); border-color: rgba(143,163,177,0.4); }
+    .btn-wiz-next {
+      padding: 10px 24px;
+      background: linear-gradient(135deg, var(--gold-lt), var(--gold), var(--gold-dk));
+      border: none; border-radius: 2px;
+      color: var(--ink); font-family: 'Inter', sans-serif;
+      font-size: 12px; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase;
+      cursor: pointer; box-shadow: 0 2px 8px rgba(201,162,39,0.3);
+      transition: transform 0.2s cubic-bezier(0.34,1.56,0.64,1), box-shadow 0.2s ease;
+    }
+    .btn-wiz-next:hover { transform: translateY(-1px); box-shadow: 0 4px 16px rgba(201,162,39,0.4); }
+    .btn-wiz-next:disabled { opacity: 0.4; cursor: not-allowed; transform: none; }
+    .wiz-error { font-size: 12px; color: #f0645a; margin-top: 8px; }
+
+    /* Listing owner controls */
+    .listing-owner-bar {
+      display: flex; gap: 6px; padding: 8px 16px;
+      border-top: 1px solid rgba(143,163,177,0.08);
+    }
+    .btn-edit-listing, .btn-delete-listing {
+      flex: 1; padding: 6px 10px; border-radius: 2px;
+      font-size: 10px; font-weight: 600; letter-spacing: 0.06em; text-transform: uppercase;
+      cursor: pointer; font-family: 'Inter', sans-serif;
+      transition: background 0.15s, color 0.15s;
+    }
+    .btn-edit-listing { background: rgba(201,162,39,0.1); border: 1px solid rgba(201,162,39,0.25); color: var(--gold); }
+    .btn-edit-listing:hover { background: rgba(201,162,39,0.2); }
+    .btn-delete-listing { background: rgba(240,100,90,0.08); border: 1px solid rgba(240,100,90,0.2); color: #f0645a; }
+    .btn-delete-listing:hover { background: rgba(240,100,90,0.15); }
+
+    /* DB listing image */
+    .listing-card-img img.listing-img { width: 100%; height: 100%; object-fit: cover; }
   </style>
 </head>
 <body>
@@ -3119,6 +3365,176 @@ initMetalAccordion();
 updateFilters();
 </script>
 
+<!-- ── FAB POST BUTTON ── -->
+<button class="fab-post" id="fab-post" onclick="fabClick()" title="Dodaj oglas">+</button>
+
+<!-- ── AUTH PROMPT MODAL ── -->
+<div class="modal-overlay" id="auth-prompt-overlay" onclick="overlayClickClose(event,'auth-prompt-overlay')">
+  <div class="modal-box">
+    <div class="modal-hdr">
+      <h2>Prijava / Sign In</h2>
+      <button class="modal-close" onclick="closeOverlay('auth-prompt-overlay')">×</button>
+    </div>
+    <div class="auth-prompt-body">
+      <p>Za objavo oglasa se morate prijaviti. / To post a listing, please sign in to your account.</p>
+      <div class="auth-prompt-btns">
+        <a href="index.html#signin" class="btn-primary" style="text-decoration:none;">Prijavi se / Sign In</a>
+        <a href="index.html#register" class="btn-outline" style="text-decoration:none;">Registracija / Register</a>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ── POST WIZARD MODAL ── -->
+<div class="modal-overlay" id="wizard-overlay" onclick="overlayClickClose(event,'wizard-overlay')">
+  <div class="modal-box wizard-box">
+    <div class="modal-hdr">
+      <h2 id="wiz-title">Objavi oglas</h2>
+      <button class="modal-close" onclick="closeOverlay('wizard-overlay')">×</button>
+    </div>
+
+    <!-- Step indicators -->
+    <div style="padding:20px 28px 0;">
+      <div class="wizard-steps-bar">
+        <div class="wizard-step-dot" id="wdot-1">
+          <div class="dot">1</div>
+          <div class="dot-label">Kategorija</div>
+        </div>
+        <div class="wizard-step-line"></div>
+        <div class="wizard-step-dot" id="wdot-2">
+          <div class="dot">2</div>
+          <div class="dot-label">Material</div>
+        </div>
+        <div class="wizard-step-line"></div>
+        <div class="wizard-step-dot" id="wdot-3">
+          <div class="dot">3</div>
+          <div class="dot-label">Podrobnosti</div>
+        </div>
+        <div class="wizard-step-line"></div>
+        <div class="wizard-step-dot" id="wdot-4">
+          <div class="dot">4</div>
+          <div class="dot-label">Slike</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Step 1: Category -->
+    <div class="wizard-body" id="wiz-step-1">
+      <div class="wizard-body-title">Izberite področje materiala</div>
+      <div class="category-cards">
+        <div class="category-card" id="cat-nonferrous" onclick="selectWizCategory('nonferrous')">
+          <div class="category-card-icon">⚙️</div>
+          <div class="category-card-name">Neželezne kovine</div>
+          <div class="category-card-sub">Non-ferrous metals</div>
+        </div>
+        <div class="category-card" id="cat-ferrous" onclick="selectWizCategory('ferrous')">
+          <div class="category-card-icon">🔩</div>
+          <div class="category-card-name">Železne kovine</div>
+          <div class="category-card-sub">Ferrous metals</div>
+        </div>
+        <div class="category-card" id="cat-precious" onclick="selectWizCategory('precious')">
+          <div class="category-card-icon">✨</div>
+          <div class="category-card-name">Plemenite kovine</div>
+          <div class="category-card-sub">Precious metals</div>
+        </div>
+        <div class="category-card" id="cat-nonmetals" onclick="selectWizCategory('nonmetals')">
+          <div class="category-card-icon">🪨</div>
+          <div class="category-card-name">Nekovine</div>
+          <div class="category-card-sub">Non-metals</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Step 2: Material Tree -->
+    <div class="wizard-body" id="wiz-step-2" style="display:none;">
+      <div class="wizard-body-title">Izberite material</div>
+      <div id="wiz-tree-container" class="wiz-tree"></div>
+      <div class="wiz-error" id="wiz-tree-error" style="display:none;">Izberite material za nadaljevanje.</div>
+    </div>
+
+    <!-- Step 3: Details -->
+    <div class="wizard-body" id="wiz-step-3" style="display:none;">
+      <div id="wiz-selected-material-display" class="wiz-selected-material"></div>
+      <div class="wiz-field">
+        <label>Naziv oglasa</label>
+        <input class="wiz-input" type="text" id="wiz-name" placeholder="npr. Aluminij — 1 kg ingot" />
+      </div>
+      <div class="wiz-field">
+        <label>Teža</label>
+        <div class="wiz-row">
+          <input class="wiz-input" type="number" id="wiz-weight" placeholder="npr. 100" min="0" step="any" />
+          <select class="wiz-unit-select" id="wiz-weight-unit">
+            <option value="g">g</option>
+            <option value="kg" selected>kg</option>
+            <option value="t">t</option>
+            <option value="oz">oz</option>
+            <option value="lb">lb</option>
+          </select>
+        </div>
+      </div>
+      <div class="wiz-field">
+        <label>Cena (USD / enota)</label>
+        <input class="wiz-input" type="number" id="wiz-price" placeholder="npr. 2.50" min="0" step="any" />
+      </div>
+      <div class="wiz-field">
+        <label>Oblika / produkt</label>
+        <select class="wiz-input wiz-unit-select" id="wiz-shape" style="width:100%;">
+          <option value="">— Izberite obliko —</option>
+          <option value="bar">Palica / Ingot</option>
+          <option value="coin">Kovanec</option>
+          <option value="granule">Granule</option>
+          <option value="sheet">List / Folija</option>
+          <option value="jewelry">Nakit</option>
+          <option value="powder">Zrno / Prah</option>
+          <option value="industrial">Industrijsko</option>
+          <option value="other">Ostalo</option>
+        </select>
+      </div>
+      <div class="wiz-field">
+        <label>Opis (neobvezno)</label>
+        <textarea class="wiz-textarea" id="wiz-description" placeholder="Dodatne informacije o materialu, kakovosti, poreklu…"></textarea>
+      </div>
+      <div class="wiz-error" id="wiz-details-error" style="display:none;">Izpolnite naziv in ceno.</div>
+    </div>
+
+    <!-- Step 4: Images -->
+    <div class="wizard-body" id="wiz-step-4" style="display:none;">
+      <div class="wizard-body-title">Dodajte slike (do 3)</div>
+      <div class="wiz-image-slots">
+        <div class="wiz-image-slot" id="img-slot-0" onclick="triggerImageInput(0)">
+          <div class="wiz-slot-placeholder">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
+            <span>Dodaj sliko</span>
+          </div>
+        </div>
+        <div class="wiz-image-slot" id="img-slot-1" onclick="triggerImageInput(1)">
+          <div class="wiz-slot-placeholder">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
+            <span>Dodaj sliko</span>
+          </div>
+        </div>
+        <div class="wiz-image-slot" id="img-slot-2" onclick="triggerImageInput(2)">
+          <div class="wiz-slot-placeholder">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
+            <span>Dodaj sliko</span>
+          </div>
+        </div>
+      </div>
+      <input type="file" id="img-file-input" accept="image/*" style="display:none;" onchange="handleImageFile(event)" />
+      <div class="wiz-error" id="wiz-img-error" style="display:none;"></div>
+      <div style="font-size:11px; color:var(--muted); margin-top:12px;">Slike so neobvezne. Podprti formati: JPG, PNG, WebP (max 5 MB vsaka).</div>
+    </div>
+
+    <div class="wizard-footer">
+      <div class="wiz-progress" id="wiz-progress">Korak 1 od 4</div>
+      <div class="wizard-footer-btns">
+        <button class="btn-wiz-back" id="wiz-btn-back" onclick="wizBack()" style="display:none;">← Nazaj</button>
+        <button class="btn-wiz-next" id="wiz-btn-next" onclick="wizNext()">Naprej →</button>
+      </div>
+    </div>
+  </div>
+</div>
+
 <script>
 // ── i18n TRANSLATIONS (markets.html) ──
 const i18nM = {
@@ -3199,6 +3615,556 @@ function setLang(lang) {
   const lang = localStorage.getItem('lang') || 'sl';
   setLang(lang);
 })();
+</script>
+
+<script>
+// ── SUPABASE INIT ──
+const sbM = supabase.createClient(
+  'https://xurgxkrnmutmocqbjffw.supabase.co',
+  'sb_publishable_2YGXEXBZS2gXuw4j1ZL4_g_UHuRaoE3',
+  { auth: { detectSessionInUrl: true, persistSession: true, autoRefreshToken: true } }
+);
+
+let currentUser = null;
+let dbListings = [];
+let _imgSlotTarget = 0;
+
+sbM.auth.onAuthStateChange((_event, session) => {
+  currentUser = session ? session.user : null;
+  loadDbListings();
+});
+(async () => {
+  const { data: { session } } = await sbM.auth.getSession();
+  currentUser = session ? session.user : null;
+  loadDbListings();
+})();
+
+async function loadDbListings() {
+  try {
+    const { data, error } = await sbM.from('listings').select('*').order('created_at', { ascending: false });
+    if (error) { dbListings = []; }
+    else { dbListings = (data || []).map(dbToListing); }
+  } catch { dbListings = []; }
+  updateFilters();
+}
+
+function dbToListing(row) {
+  return {
+    id: 'db-' + row.id,
+    dbId: row.id,
+    user_id: row.user_id,
+    type: row.type,
+    material: row.material || '',
+    name: row.name,
+    sub: row.description || '',
+    shape: row.shape || 'other',
+    weight: row.weight ? (row.weight + ' ' + (row.weight_unit || 'kg')) : '',
+    purity: '—',
+    priceUsd: row.price_usd || 0,
+    priceEur: row.price_usd ? Math.round(row.price_usd * 0.92 * 100) / 100 : 0,
+    premiumPct: 0,
+    origin: '',
+    cert: { auth: false, serial: false, mint: false, assay: false },
+    images: row.images || [],
+    fromDb: true,
+    materialLabel: row.material_label || row.name,
+  };
+}
+
+// ── MODAL HELPERS ──
+function openOverlay(id) {
+  document.getElementById(id).classList.add('open');
+}
+function closeOverlay(id) {
+  document.getElementById(id).classList.remove('open');
+}
+function overlayClickClose(event, id) {
+  if (event.target === document.getElementById(id)) closeOverlay(id);
+}
+
+// ── FAB CLICK ──
+function fabClick() {
+  if (!currentUser) {
+    openOverlay('auth-prompt-overlay');
+  } else {
+    openWizard();
+  }
+}
+
+// ── WIZARD STATE ──
+const wiz = {
+  step: 1,
+  category: null,
+  treeNode: null,   // { label, matKey, treeId }
+  name: '',
+  weight: '',
+  weightUnit: 'kg',
+  priceUsd: '',
+  shape: '',
+  description: '',
+  imageFiles: [],
+  imagePreviews: [],
+};
+
+function openWizard() {
+  // reset
+  wiz.step = 1; wiz.category = null; wiz.treeNode = null;
+  wiz.name = ''; wiz.weight = ''; wiz.weightUnit = 'kg';
+  wiz.priceUsd = ''; wiz.shape = ''; wiz.description = '';
+  wiz.imageFiles = []; wiz.imagePreviews = [];
+  document.querySelectorAll('.category-card').forEach(c => c.classList.remove('selected'));
+  document.getElementById('wiz-tree-error').style.display = 'none';
+  document.getElementById('wiz-details-error').style.display = 'none';
+  document.getElementById('wiz-img-error').style.display = 'none';
+  resetImgSlots();
+  renderWizStep(1);
+  openOverlay('wizard-overlay');
+}
+
+function renderWizStep(n) {
+  wiz.step = n;
+  [1,2,3,4].forEach(i => {
+    document.getElementById('wiz-step-' + i).style.display = i === n ? '' : 'none';
+    const dot = document.getElementById('wdot-' + i);
+    dot.classList.remove('active','done');
+    if (i < n) dot.classList.add('done');
+    else if (i === n) dot.classList.add('active');
+  });
+  document.getElementById('wiz-progress').textContent = 'Korak ' + n + ' od 4';
+  document.getElementById('wiz-btn-back').style.display = n > 1 ? '' : 'none';
+  const nextBtn = document.getElementById('wiz-btn-next');
+  if (n === 4) { nextBtn.textContent = 'Objavi oglas ✓'; }
+  else { nextBtn.textContent = 'Naprej →'; }
+}
+
+function selectWizCategory(cat) {
+  wiz.category = cat;
+  document.querySelectorAll('.category-card').forEach(c => c.classList.remove('selected'));
+  document.getElementById('cat-' + cat).classList.add('selected');
+}
+
+function wizNext() {
+  if (wiz.step === 1) {
+    if (!wiz.category) return;
+    renderWizTree();
+    renderWizStep(2);
+  } else if (wiz.step === 2) {
+    if (!wiz.treeNode) {
+      document.getElementById('wiz-tree-error').style.display = '';
+      return;
+    }
+    document.getElementById('wiz-tree-error').style.display = 'none';
+    prefillDetails();
+    renderWizStep(3);
+  } else if (wiz.step === 3) {
+    const name = document.getElementById('wiz-name').value.trim();
+    const price = document.getElementById('wiz-price').value.trim();
+    if (!name || !price) {
+      document.getElementById('wiz-details-error').style.display = '';
+      return;
+    }
+    document.getElementById('wiz-details-error').style.display = 'none';
+    wiz.name = name;
+    wiz.weight = document.getElementById('wiz-weight').value.trim();
+    wiz.weightUnit = document.getElementById('wiz-weight-unit').value;
+    wiz.priceUsd = parseFloat(price);
+    wiz.shape = document.getElementById('wiz-shape').value;
+    wiz.description = document.getElementById('wiz-description').value.trim();
+    renderWizStep(4);
+  } else if (wiz.step === 4) {
+    submitListing();
+  }
+}
+
+function wizBack() {
+  if (wiz.step > 1) renderWizStep(wiz.step - 1);
+}
+
+function prefillDetails() {
+  const label = wiz.treeNode ? wiz.treeNode.label : '';
+  document.getElementById('wiz-selected-material-display').textContent = '📦 ' + label;
+  document.getElementById('wiz-name').value = label;
+  document.getElementById('wiz-weight').value = '';
+  document.getElementById('wiz-price').value = '';
+  document.getElementById('wiz-shape').value = '';
+  document.getElementById('wiz-description').value = '';
+}
+
+// ── WIZARD TREE ──
+function getWizTreeData() {
+  if (wiz.category === 'nonferrous') return TREE_DATA;
+  if (wiz.category === 'ferrous')    return FERROUS_TREE_DATA;
+  if (wiz.category === 'precious')   return PRECIOUS_TREE_DATA;
+  if (wiz.category === 'nonmetals')  return NONMETALS_TREE_DATA;
+  return [];
+}
+
+function renderWizTree() {
+  wiz.treeNode = null;
+  const container = document.getElementById('wiz-tree-container');
+  const data = getWizTreeData();
+  container.innerHTML = '';
+  const expanded = {};
+
+  function buildNode(node, depth) {
+    const hasChildren = node.children && node.children.length > 0;
+    const div = document.createElement('div');
+    div.className = 'wiz-tree-item' + (depth > 0 ? ' wiz-tree-indent-' + Math.min(depth, 3) : '') + (hasChildren ? ' branch' : '');
+    div.dataset.nodeId = node.id;
+
+    let chevHtml = '';
+    if (hasChildren) {
+      chevHtml = `<svg class="wiz-tree-chev" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M4 2l4 4-4 4"/></svg>`;
+    } else {
+      chevHtml = `<span style="width:10px;display:inline-block;flex-shrink:0;"></span>`;
+    }
+
+    div.innerHTML = `${chevHtml}<span>${node.label}</span>`;
+
+    const childrenWrapper = document.createElement('div');
+    childrenWrapper.style.display = 'none';
+    childrenWrapper.dataset.parentId = node.id;
+
+    div.addEventListener('click', (e) => {
+      e.stopPropagation();
+      if (hasChildren) {
+        const isOpen = childrenWrapper.style.display !== 'none';
+        childrenWrapper.style.display = isOpen ? 'none' : '';
+        div.classList.toggle('open', !isOpen);
+        const chev = div.querySelector('.wiz-tree-chev');
+        if (chev) chev.style.transform = isOpen ? '' : 'rotate(90deg)';
+      }
+      // Select this node regardless of whether it has children
+      selectWizNode(node, div);
+    });
+
+    container.appendChild(div);
+    if (hasChildren) {
+      node.children.forEach(child => buildNode(child, depth + 1));
+      container.appendChild(childrenWrapper);
+      // Move children into the wrapper — actually let's flatten them with visibility
+    }
+    return div;
+  }
+
+  // Flatten tree approach: render all items, use CSS indentation, toggle visibility
+  function renderFlat(nodes, depth) {
+    nodes.forEach(node => {
+      const hasChildren = node.children && node.children.length > 0;
+      const row = document.createElement('div');
+      row.className = 'wiz-tree-item' + (depth > 0 ? ' wiz-tree-indent-' + Math.min(depth, 3) : '') + (hasChildren ? ' branch' : '');
+      row.dataset.depth = depth;
+      row.dataset.nodeId = node.id;
+
+      const chevHtml = hasChildren
+        ? `<svg class="wiz-tree-chev" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" style="flex-shrink:0;width:10px;height:10px;transition:transform 0.15s;"><path d="M4 2l4 4-4 4"/></svg>`
+        : `<span style="width:10px;display:inline-block;flex-shrink:0;"></span>`;
+
+      row.innerHTML = chevHtml + `<span>${node.label}</span>`;
+      row.addEventListener('click', (e) => {
+        e.stopPropagation();
+        if (hasChildren) {
+          const isOpen = row._open;
+          row._open = !isOpen;
+          const chev = row.querySelector('.wiz-tree-chev');
+          if (chev) chev.style.transform = !isOpen ? 'rotate(90deg)' : '';
+          toggleWizSubtree(node.id, !isOpen);
+        }
+        selectWizNode(node, row);
+      });
+      row._nodeId = node.id;
+      row._parentId = node._parentId;
+      container.appendChild(row);
+
+      if (hasChildren) {
+        node.children.forEach(c => { c._parentId = node.id; });
+        renderFlat(node.children, depth + 1);
+      }
+    });
+  }
+
+  // Prepare parentId on each node
+  function assignParents(nodes, parentId) {
+    nodes.forEach(n => {
+      n._parentId = parentId;
+      if (n.children) assignParents(n.children, n.id);
+    });
+  }
+  assignParents(data, null);
+  renderFlat(data, 0);
+
+  // Initially collapse all children (depth > 0)
+  Array.from(container.children).forEach(row => {
+    if (parseInt(row.dataset.depth) > 0) row.style.display = 'none';
+  });
+}
+
+function toggleWizSubtree(parentId, show) {
+  const container = document.getElementById('wiz-tree-container');
+  Array.from(container.children).forEach(row => {
+    if (row._parentId === parentId) {
+      row.style.display = show ? '' : 'none';
+      if (!show && row._open) {
+        row._open = false;
+        const chev = row.querySelector('.wiz-tree-chev');
+        if (chev) chev.style.transform = '';
+        if (row.dataset.nodeId) toggleWizSubtree(row.dataset.nodeId, false);
+      }
+    }
+  });
+}
+
+function selectWizNode(node, rowEl) {
+  const container = document.getElementById('wiz-tree-container');
+  Array.from(container.children).forEach(r => r.classList.remove('selected'));
+  rowEl.classList.add('selected');
+  const matKey = node.matKey || (node._parentId ? null : null);
+  // Walk up to find matKey if leaf
+  const resolvedMatKey = node.matKey || findMatKey(node.id, getWizTreeData());
+  wiz.treeNode = { label: node.label, matKey: resolvedMatKey, treeId: node.id };
+  document.getElementById('wiz-tree-error').style.display = 'none';
+}
+
+function findMatKey(nodeId, nodes) {
+  for (const n of nodes) {
+    if (n.id === nodeId) return n.matKey || null;
+    if (n.children) {
+      const found = findMatKey(nodeId, n.children);
+      if (found !== undefined) return found;
+      // check if node is under this parent
+      if (containsId(n.children, nodeId)) return n.matKey || null;
+    }
+  }
+  return null;
+}
+
+function containsId(nodes, id) {
+  for (const n of nodes) {
+    if (n.id === id) return true;
+    if (n.children && containsId(n.children, id)) return true;
+  }
+  return false;
+}
+
+// ── IMAGE HANDLING ──
+function triggerImageInput(slotIndex) {
+  _imgSlotTarget = slotIndex;
+  document.getElementById('img-file-input').value = '';
+  document.getElementById('img-file-input').click();
+}
+
+function handleImageFile(event) {
+  const file = event.target.files[0];
+  if (!file) return;
+  if (file.size > 5 * 1024 * 1024) {
+    document.getElementById('wiz-img-error').textContent = 'Slika je prevelika (max 5 MB).';
+    document.getElementById('wiz-img-error').style.display = '';
+    return;
+  }
+  document.getElementById('wiz-img-error').style.display = 'none';
+  const reader = new FileReader();
+  reader.onload = (e) => {
+    wiz.imageFiles[_imgSlotTarget] = file;
+    wiz.imagePreviews[_imgSlotTarget] = e.target.result;
+    updateImgSlot(_imgSlotTarget);
+  };
+  reader.readAsDataURL(file);
+}
+
+function updateImgSlot(i) {
+  const slot = document.getElementById('img-slot-' + i);
+  const preview = wiz.imagePreviews[i];
+  if (preview) {
+    slot.classList.add('filled');
+    slot.innerHTML = `<img src="${preview}" style="width:100%;height:100%;object-fit:cover;" /><button class="slot-remove" onclick="removeImg(event,${i})">×</button>`;
+  } else {
+    slot.classList.remove('filled');
+    slot.innerHTML = `<div class="wiz-slot-placeholder"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg><span>Dodaj sliko</span></div>`;
+  }
+}
+
+function removeImg(event, i) {
+  event.stopPropagation();
+  wiz.imageFiles[i] = null;
+  wiz.imagePreviews[i] = null;
+  updateImgSlot(i);
+}
+
+function resetImgSlots() {
+  wiz.imageFiles = [null, null, null];
+  wiz.imagePreviews = [null, null, null];
+  [0,1,2].forEach(i => updateImgSlot(i));
+}
+
+// ── SUBMIT LISTING ──
+async function submitListing() {
+  const nextBtn = document.getElementById('wiz-btn-next');
+  nextBtn.disabled = true;
+  nextBtn.textContent = 'Objavljam…';
+
+  try {
+    const imageUrls = [];
+    for (let i = 0; i < 3; i++) {
+      const file = wiz.imageFiles[i];
+      if (!file) continue;
+      const ext = file.name.split('.').pop().toLowerCase();
+      const path = `${currentUser.id}/${Date.now()}-${i}.${ext}`;
+      const { data: upData, error: upErr } = await sbM.storage.from('listing-images').upload(path, file, { cacheControl: '3600', upsert: false });
+      if (upErr) continue;
+      const { data: urlData } = sbM.storage.from('listing-images').getPublicUrl(upData.path);
+      if (urlData?.publicUrl) imageUrls.push(urlData.publicUrl);
+    }
+
+    const payload = {
+      user_id: currentUser.id,
+      type: wiz.category,
+      material: wiz.treeNode?.matKey || null,
+      material_label: wiz.treeNode?.label || wiz.name,
+      name: wiz.name,
+      weight: wiz.weight ? parseFloat(wiz.weight) : null,
+      weight_unit: wiz.weightUnit,
+      price_usd: wiz.priceUsd || null,
+      shape: wiz.shape || null,
+      description: wiz.description || null,
+      images: imageUrls,
+    };
+
+    const { data, error } = await sbM.from('listings').insert([payload]).select().single();
+    if (error) throw error;
+
+    dbListings.unshift(dbToListing(data));
+    updateFilters();
+
+    closeOverlay('wizard-overlay');
+    // Switch type to show the new listing
+    setType(wiz.category);
+  } catch (err) {
+    document.getElementById('wiz-img-error').textContent = 'Napaka pri objavi: ' + (err.message || 'neznana napaka');
+    document.getElementById('wiz-img-error').style.display = '';
+    nextBtn.disabled = false;
+    nextBtn.textContent = 'Objavi oglas ✓';
+  }
+}
+
+// ── DELETE LISTING ──
+async function deleteListing(dbId, cardEl) {
+  if (!confirm('Res želite izbrisati ta oglas?')) return;
+  const { error } = await sbM.from('listings').delete().eq('id', dbId);
+  if (error) { alert('Napaka pri brisanju: ' + error.message); return; }
+  dbListings = dbListings.filter(l => l.dbId !== dbId);
+  updateFilters();
+}
+
+// ── PATCH getFiltered to include DB listings ──
+const _origGetFiltered = getFiltered;
+// Override getFiltered to merge DB listings
+getFiltered = function() {
+  const staticList = _origGetFiltered();
+  const dbFiltered = dbListings.filter(l => {
+    if (l.type !== state.type) return false;
+    if (state.search) {
+      const q = state.search.toLowerCase();
+      if (!(l.name && l.name.toLowerCase().includes(q)) &&
+          !(l.sub && l.sub.toLowerCase().includes(q)) &&
+          !(l.material && l.material.toLowerCase().includes(q)) &&
+          !(l.materialLabel && l.materialLabel.toLowerCase().includes(q))) return false;
+    }
+    return true;
+  });
+  return [...dbFiltered, ...staticList];
+};
+
+// ── PATCH renderListings to handle DB listings ──
+const _origRenderListings = renderListings;
+renderListings = function(list) {
+  const grid = document.getElementById('listings-grid');
+  document.getElementById('count-num').textContent = list.length;
+  if (!list.length) {
+    grid.innerHTML = `<div class="empty-state"><h3>Ni zadetkov</h3><p>Poskusite z drugačnimi filtri.</p></div>`;
+    return;
+  }
+  const cur = state.currency;
+  grid.innerHTML = list.map(l => {
+    if (!l.fromDb) {
+      // Static listing — use original rendering
+      const price = cur === 'usd' ? l.priceUsd : l.priceEur;
+      const sym   = cur === 'usd' ? '$' : '€';
+      const unit  = cur === 'usd' ? '/ oz' : '/ g';
+      const col   = materialColors[l.material] || '#C9A227';
+      const badgeClass = l.type === 'ferrous' ? 'badge-ferrous' : 'badge-nonferrous';
+      const badgeLabel = l.type === 'ferrous' ? 'Železno' : 'Neželezno';
+      return `
+      <div class="listing-card">
+        <div class="listing-card-img" style="background:linear-gradient(135deg, var(--ink-3) 0%, ${col}18 100%);">
+          <div class="listing-material-icon" style="color:${col}40;">${materialSymbols[l.material]||''}</div>
+          <div class="listing-card-img-overlay"></div>
+          <span class="listing-badge ${badgeClass}">${badgeLabel}</span>
+          <div class="listing-cert-icons">
+            ${[l.cert.auth,l.cert.serial,l.cert.mint,l.cert.assay].map(v=>`<div class="cert-dot${v?'':' missing'}"></div>`).join('')}
+          </div>
+        </div>
+        <div class="listing-card-body">
+          <div class="listing-card-name">${l.name}</div>
+          <div class="listing-card-sub">${l.sub} · ${l.origin}</div>
+          <div class="listing-card-meta">
+            <span class="listing-meta-tag">${l.shape === 'bar' ? 'Palica/Ingot' : l.shape === 'coin' ? 'Kovanec' : l.shape === 'granule' ? 'Granule' : l.shape === 'sheet' ? 'List/Folija' : l.shape === 'jewelry' ? 'Nakit' : 'Zrno/Prah'}</span>
+            <span class="listing-meta-tag">Čistost ${l.purity}%</span>
+            <span class="listing-meta-tag">${l.weight}</span>
+          </div>
+          <div class="listing-card-footer">
+            <div class="listing-price">
+              <div class="listing-price-main">${sym}${price.toLocaleString('sl-SI', {minimumFractionDigits: price < 10 ? 2 : 0})}</div>
+              <div class="listing-price-unit">Spot ${unit}</div>
+              <div class="listing-price-premium">+${l.premiumPct}% premija</div>
+            </div>
+            <button class="listing-contact-btn" onclick="event.stopPropagation(); openContact('${l.name.replace(/'/g,"\\'")}')">Povpraši</button>
+          </div>
+        </div>
+      </div>`;
+    }
+
+    // DB listing
+    const price = cur === 'usd' ? l.priceUsd : l.priceEur;
+    const sym   = cur === 'usd' ? '$' : '€';
+    const imgHtml = l.images && l.images[0]
+      ? `<img class="listing-img" src="${l.images[0]}" alt="${l.name}" />`
+      : `<div class="listing-material-icon" style="color:rgba(201,162,39,0.25);">${l.material || '⬡'}</div>`;
+    const isOwner = currentUser && currentUser.id === l.user_id;
+    const ownerBar = isOwner ? `
+      <div class="listing-owner-bar">
+        <button class="btn-delete-listing" onclick="event.stopPropagation(); deleteListing('${l.dbId}', this.closest('.listing-card'))">Izbriši</button>
+      </div>` : '';
+    const typeLabels = { ferrous:'Železno', nonferrous:'Neželezno', precious:'Plemenito', nonmetals:'Nekovina' };
+    const badgeClasses = { ferrous:'badge-ferrous', nonferrous:'badge-nonferrous', precious:'badge-nonferrous', nonmetals:'badge-ferrous' };
+    const weightDisplay = l.weight ? l.weight : '';
+    const shapeLabel = { bar:'Palica/Ingot', coin:'Kovanec', granule:'Granule', sheet:'List/Folija', jewelry:'Nakit', powder:'Zrno/Prah', industrial:'Industrijsko', other:'Ostalo' };
+    return `
+    <div class="listing-card">
+      <div class="listing-card-img" style="background:linear-gradient(135deg, var(--ink-3), #1e2a30);">
+        ${imgHtml}
+        <div class="listing-card-img-overlay"></div>
+        <span class="listing-badge ${badgeClasses[l.type]||'badge-nonferrous'}">${typeLabels[l.type]||l.type}</span>
+      </div>
+      <div class="listing-card-body">
+        <div class="listing-card-name">${l.name}</div>
+        <div class="listing-card-sub">${l.materialLabel || ''}${l.sub ? ' · ' + l.sub : ''}</div>
+        <div class="listing-card-meta">
+          ${l.shape ? `<span class="listing-meta-tag">${shapeLabel[l.shape]||l.shape}</span>` : ''}
+          ${weightDisplay ? `<span class="listing-meta-tag">${weightDisplay}</span>` : ''}
+          <span class="listing-meta-tag" style="color:rgba(72,199,142,0.8);">Oglas</span>
+        </div>
+        <div class="listing-card-footer">
+          <div class="listing-price">
+            <div class="listing-price-main">${price > 0 ? sym + price.toLocaleString('sl-SI', {minimumFractionDigits: price < 10 ? 2 : 0}) : '—'}</div>
+            <div class="listing-price-unit">${price > 0 ? 'cena / enota' : 'Cena na poizvedbo'}</div>
+          </div>
+          <button class="listing-contact-btn" onclick="event.stopPropagation(); openContact('${l.name.replace(/'/g,"\\'")}')">Povpraši</button>
+        </div>
+      </div>
+      ${ownerBar}
+    </div>`;
+  }).join('');
+};
 </script>
 
 </body>
