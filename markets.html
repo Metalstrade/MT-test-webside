@@ -650,24 +650,18 @@
     }
     .modal-close:hover { color: #E8EEF2; }
 
-    /* ── AUTH PROMPT ── */
-    .auth-prompt-body {
-      padding: 28px;
+    /* ── AUTH MODAL ── */
+    .auth-tabs { display: flex; gap: 0; }
+    .auth-tab {
+      padding: 8px 20px; background: none; border: none; cursor: pointer;
+      font-family: 'Inter', sans-serif; font-size: 13px; font-weight: 600;
+      color: var(--muted); border-bottom: 2px solid transparent;
+      transition: color 0.15s, border-color 0.15s;
+      letter-spacing: 0.03em;
     }
-    .auth-prompt-body p { color: var(--muted); font-size: 14px; margin: 0 0 24px; line-height: 1.6; }
-    .auth-prompt-btns { display: flex; gap: 12px; flex-wrap: wrap; }
-    .btn-outline {
-      display: inline-flex; align-items: center; gap: 8px;
-      padding: 11px 24px;
-      background: transparent;
-      color: var(--gold); border: 1px solid rgba(201,162,39,0.4);
-      border-radius: 2px; cursor: pointer;
-      font-family: 'Inter', sans-serif; font-size: 12px; font-weight: 600;
-      letter-spacing: 0.08em; text-transform: uppercase;
-      text-decoration: none;
-      transition: background 0.2s ease, color 0.2s ease;
-    }
-    .btn-outline:hover { background: rgba(201,162,39,0.1); color: var(--gold-lt); }
+    .auth-tab:hover { color: var(--silver-lt); }
+    .auth-tab.active { color: var(--gold-lt); border-bottom-color: var(--gold); }
+    .auth-prompt-body { padding: 20px 28px 28px; }
 
     /* ── WIZARD ── */
     .wizard-box { max-width: 640px; }
@@ -3368,19 +3362,78 @@ updateFilters();
 <!-- ── FAB POST BUTTON ── -->
 <button class="fab-post" id="fab-post" onclick="fabClick()" title="Dodaj oglas">+</button>
 
-<!-- ── AUTH PROMPT MODAL ── -->
+<!-- ── AUTH MODAL (sign in / register) ── -->
 <div class="modal-overlay" id="auth-prompt-overlay" onclick="overlayClickClose(event,'auth-prompt-overlay')">
-  <div class="modal-box">
+  <div class="modal-box" style="max-width:460px;">
     <div class="modal-hdr">
-      <h2>Prijava / Sign In</h2>
+      <div class="auth-tabs">
+        <button class="auth-tab active" id="auth-tab-signin" onclick="switchAuthTab('signin')">Prijava</button>
+        <button class="auth-tab" id="auth-tab-register" onclick="switchAuthTab('register')">Registracija</button>
+      </div>
       <button class="modal-close" onclick="closeOverlay('auth-prompt-overlay')">×</button>
     </div>
-    <div class="auth-prompt-body">
-      <p>Za objavo oglasa se morate prijaviti. / To post a listing, please sign in to your account.</p>
-      <div class="auth-prompt-btns">
-        <a href="index.html#signin" class="btn-primary" style="text-decoration:none;">Prijavi se / Sign In</a>
-        <a href="index.html#register" class="btn-outline" style="text-decoration:none;">Registracija / Register</a>
+
+    <!-- SIGN IN -->
+    <div id="auth-signin-panel" class="auth-prompt-body">
+      <form onsubmit="submitSignInM(event)">
+        <div class="wiz-field">
+          <label>E-pošta</label>
+          <input class="wiz-input" type="email" id="m-signin-email" placeholder="vaš@email.com" required autocomplete="email" />
+        </div>
+        <div class="wiz-field">
+          <label>Geslo</label>
+          <input class="wiz-input" type="password" id="m-signin-pw" placeholder="••••••••" required autocomplete="current-password" />
+        </div>
+        <div class="wiz-field">
+          <label id="m-signin-captcha-q" style="letter-spacing:0;">…</label>
+          <input class="wiz-input" type="number" id="m-signin-captcha-a" placeholder="Odgovor" required autocomplete="off" data-answer="" />
+        </div>
+        <div class="wiz-error" id="m-signin-error" style="display:none;margin-bottom:10px;"></div>
+        <button type="submit" class="btn-wiz-next" style="width:100%;" id="m-signin-btn">Prijavi se →</button>
+      </form>
+    </div>
+
+    <!-- REGISTER -->
+    <div id="auth-register-panel" class="auth-prompt-body" style="display:none;">
+      <div id="m-reg-success" style="display:none; padding:12px 0; text-align:center;">
+        <div style="font-size:32px; margin-bottom:12px;">✉️</div>
+        <p id="m-reg-success-msg" style="color:var(--silver-lt); font-size:14px; line-height:1.6;"></p>
       </div>
+      <form id="m-reg-form" onsubmit="submitRegM(event)">
+        <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px;">
+          <div class="wiz-field">
+            <label>Ime</label>
+            <input class="wiz-input" type="text" name="ime" placeholder="Janez" required />
+          </div>
+          <div class="wiz-field">
+            <label>Priimek</label>
+            <input class="wiz-input" type="text" name="priimek" placeholder="Novak" required />
+          </div>
+        </div>
+        <div class="wiz-field">
+          <label>E-pošta</label>
+          <input class="wiz-input" type="email" name="email" placeholder="vaš@email.com" required autocomplete="email" />
+        </div>
+        <div class="wiz-field">
+          <label>Telefon</label>
+          <input class="wiz-input" type="tel" name="telefon" placeholder="+386 41 123 456" />
+        </div>
+        <div class="wiz-field">
+          <label>Davčna številka</label>
+          <input class="wiz-input" type="text" name="davcna" placeholder="SI12345678" />
+        </div>
+        <div class="wiz-field">
+          <label>Geslo</label>
+          <input class="wiz-input" type="password" name="password" placeholder="Min. 8 znakov" required minlength="8" autocomplete="new-password" />
+        </div>
+        <div class="wiz-field">
+          <label id="m-reg-captcha-q" style="letter-spacing:0;">…</label>
+          <input class="wiz-input" type="number" id="m-reg-captcha-a" placeholder="Odgovor" required autocomplete="off" data-answer="" />
+        </div>
+        <div class="wiz-error" id="m-reg-captcha-error" style="display:none;margin-bottom:6px;">Napačen odgovor.</div>
+        <div class="wiz-error" id="m-reg-error" style="display:none;margin-bottom:10px;"></div>
+        <button type="submit" class="btn-wiz-next" style="width:100%;" id="m-reg-btn">Registriraj se →</button>
+      </form>
     </div>
   </div>
 </div>
@@ -3685,10 +3738,120 @@ function overlayClickClose(event, id) {
 // ── FAB CLICK ──
 function fabClick() {
   if (!currentUser) {
-    openOverlay('auth-prompt-overlay');
+    openAuthModal('signin');
   } else {
     openWizard();
   }
+}
+
+// ── AUTH MODAL ──
+function openAuthModal(tab) {
+  switchAuthTab(tab || 'signin');
+  openOverlay('auth-prompt-overlay');
+}
+
+function switchAuthTab(tab) {
+  document.getElementById('auth-signin-panel').style.display = tab === 'signin' ? '' : 'none';
+  document.getElementById('auth-register-panel').style.display = tab === 'register' ? '' : 'none';
+  document.getElementById('auth-tab-signin').classList.toggle('active', tab === 'signin');
+  document.getElementById('auth-tab-register').classList.toggle('active', tab === 'register');
+  if (tab === 'signin') generateAuthCaptcha('m-signin');
+  else generateAuthCaptcha('m-reg');
+}
+
+function generateAuthCaptcha(prefix) {
+  const a = Math.floor(Math.random() * 9) + 1;
+  const b = Math.floor(Math.random() * 9) + 1;
+  document.getElementById(prefix + '-captcha-q').textContent = a + ' + ' + b + ' = ?';
+  const ansEl = document.getElementById(prefix + '-captcha-a');
+  ansEl.dataset.answer = String(a + b);
+  ansEl.value = '';
+}
+
+async function submitSignInM(e) {
+  e.preventDefault();
+  const ansEl = document.getElementById('m-signin-captcha-a');
+  const errEl = document.getElementById('m-signin-error');
+  const btn   = document.getElementById('m-signin-btn');
+  errEl.style.display = 'none';
+
+  if (ansEl.value.trim() !== ansEl.dataset.answer) {
+    errEl.textContent = 'Napačen odgovor na captcha.';
+    errEl.style.display = '';
+    generateAuthCaptcha('m-signin');
+    return;
+  }
+
+  btn.disabled = true; btn.textContent = 'Prijavljam…';
+  const email = document.getElementById('m-signin-email').value.trim();
+  const pw    = document.getElementById('m-signin-pw').value;
+  const { data, error } = await sbM.auth.signInWithPassword({ email, password: pw });
+  btn.disabled = false; btn.textContent = 'Prijavi se →';
+
+  if (error) {
+    errEl.textContent = error.message.includes('confirm') || error.message.includes('Email not confirmed')
+      ? 'E-pošta še ni potrjena. Preverite inbox.'
+      : 'Napačen e-naslov ali geslo.';
+    errEl.style.display = '';
+    generateAuthCaptcha('m-signin');
+    return;
+  }
+
+  currentUser = data.user;
+  closeOverlay('auth-prompt-overlay');
+  openWizard();
+}
+
+async function submitRegM(e) {
+  e.preventDefault();
+  const ansEl  = document.getElementById('m-reg-captcha-a');
+  const capErr = document.getElementById('m-reg-captcha-error');
+  const errEl  = document.getElementById('m-reg-error');
+  const btn    = document.getElementById('m-reg-btn');
+  capErr.style.display = 'none';
+  errEl.style.display = 'none';
+
+  if (ansEl.value.trim() !== ansEl.dataset.answer) {
+    capErr.style.display = '';
+    generateAuthCaptcha('m-reg');
+    return;
+  }
+
+  btn.disabled = true; btn.textContent = 'Registriram…';
+  const fd = new FormData(document.getElementById('m-reg-form'));
+  const { data, error } = await sbM.auth.signUp({
+    email: fd.get('email'),
+    password: fd.get('password'),
+    options: {
+      emailRedirectTo: window.location.href,
+      data: {
+        first_name: fd.get('ime'),
+        last_name:  fd.get('priimek'),
+        phone:      fd.get('telefon'),
+        tax_number: fd.get('davcna'),
+      }
+    }
+  });
+  btn.disabled = false; btn.textContent = 'Registriraj se →';
+
+  const isDuplicate = (error && error.message.toLowerCase().includes('already'))
+    || (!error && data.user && Array.isArray(data.user.identities) && data.user.identities.length === 0);
+
+  if (isDuplicate) {
+    errEl.textContent = 'Ta e-naslov je že registriran. Prosim prijavite se.';
+    errEl.style.display = '';
+    return;
+  }
+  if (error) {
+    errEl.textContent = error.message;
+    errEl.style.display = '';
+    return;
+  }
+
+  document.getElementById('m-reg-form').style.display = 'none';
+  document.getElementById('m-reg-success-msg').textContent =
+    `Poslali smo potrditveni link na ${fd.get('email')}. Kliknite nanj, da aktivirate račun.`;
+  document.getElementById('m-reg-success').style.display = '';
 }
 
 // ── WIZARD STATE ──
