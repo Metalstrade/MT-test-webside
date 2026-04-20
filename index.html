@@ -316,10 +316,15 @@
       pointer-events: none;
     }
     .metals-ticker {
-      display: grid;
-      grid-template-columns: repeat(2, 1fr);
-      gap: 12px;
-      width: 100%;
+      display: none;
+    }
+    @media (max-width: 767px) {
+      .metals-ticker {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 12px;
+        width: 100%;
+      }
     }
     .ticker-card {
       background: linear-gradient(135deg, rgba(27,39,51,0.9) 0%, rgba(20,28,36,0.95) 100%);
@@ -2360,7 +2365,11 @@ return '$' + price.toLocaleString('en-US', {maximumFractionDigits:2});
   }
 
   async function loadDashFavs(user) {
-    const favs = JSON.parse(localStorage.getItem('myfavs_' + user.id) || '[]');
+    let favs = [];
+    try {
+      const { data } = await sb.from('user_favorites').select('symbols').eq('user_id', user.id).single();
+      favs = data?.symbols || [];
+    } catch {};
     const grid = document.getElementById('dash-favs-grid');
     const emptyMsg = document.getElementById('dash-empty-favs');
 

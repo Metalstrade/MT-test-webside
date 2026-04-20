@@ -624,25 +624,26 @@
       'sb_publishable_2YGXEXBZS2gXuw4j1ZL4_g_UHuRaoE3'
     );
 
-    function getFavsFM() {
+    async function getFavsFM() {
       if (!fmUser) return [];
-      return JSON.parse(localStorage.getItem('myfavs_' + fmUser.id) || '[]');
+      const { data } = await sbFM.from('user_favorites').select('symbols').eq('user_id', fmUser.id).single();
+      return data?.symbols || [];
     }
-    function saveFavsFM(arr) {
+    async function saveFavsFM(symbols) {
       if (!fmUser) return;
-      localStorage.setItem('myfavs_' + fmUser.id, JSON.stringify(arr));
+      await sbFM.from('user_favorites').upsert({ user_id: fmUser.id, symbols }, { onConflict: 'user_id' });
     }
-    function toggleFavFM(label) {
+    async function toggleFavFM(label) {
       if (!fmUser) return;
-      let favs = getFavsFM();
+      let favs = await getFavsFM();
       const idx = favs.indexOf(label);
       if (idx >= 0) { favs.splice(idx, 1); }
       else { if (favs.length >= 10) return; favs.push(label); }
-      saveFavsFM(favs);
-      renderFavChipsFM();
+      await saveFavsFM(favs);
+      renderFavChipsFM(favs);
     }
-    function renderFavChipsFM() {
-      const favs = getFavsVM();
+    async function renderFavChipsFM(favsArg) {
+      const favs = favsArg !== undefined ? favsArg : await getFavsFM();
       const isMax = favs.length >= 10;
       document.getElementById('fm-fav-count').textContent = favs.length + ' / 10';
       const hint = document.getElementById('fm-fav-hint');
@@ -658,7 +659,6 @@
         </button>`;
       }).join('');
     }
-    function getFavsVM() { return fmUser ? JSON.parse(localStorage.getItem('myfavs_' + fmUser.id) || '[]') : []; }
 
     sbFM.auth.getSession().then(({ data: { session } }) => {
       fmUser = session?.user || null;
