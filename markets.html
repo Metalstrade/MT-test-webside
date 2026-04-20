@@ -3681,6 +3681,7 @@ const sbM = supabase.createClient(
 let currentUser = null;
 let dbListings = [];
 let _imgSlotTarget = 0;
+let _editListingId = null;
 
 sbM.auth.onAuthStateChange((_event, session) => {
   currentUser = session ? session.user : null;
@@ -3689,7 +3690,12 @@ sbM.auth.onAuthStateChange((_event, session) => {
 (async () => {
   const { data: { session } } = await sbM.auth.getSession();
   currentUser = session ? session.user : null;
-  loadDbListings();
+  await loadDbListings();
+  // Check for edit mode from URL
+  const editId = new URLSearchParams(window.location.search).get('edit');
+  if (editId && currentUser) {
+    openEditListing(editId);
+  }
 })();
 
 async function loadDbListings() {
@@ -4179,7 +4185,6 @@ async function submitListing() {
     }
 
     const payload = {
-      user_id: currentUser.id,
       type: wiz.category,
       material: wiz.treeNode?.matKey || null,
       material_label: wiz.treeNode?.label || wiz.name,
@@ -4189,24 +4194,98 @@ async function submitListing() {
       price_usd: wiz.priceUsd || null,
       shape: wiz.shape || null,
       description: wiz.description || null,
-      images: imageUrls,
+      images: imageUrls.length ? imageUrls : undefined,
     };
 
-    const { data, error } = await sbM.from('listings').insert([payload]).select().single();
+    let data, error;
+    if (_editListingId) {
+      // UPDATE existing
+      const res = await sbM.from('listings').update(payload).eq('id', _editListingId).select().single();
+      data = res.data; error = res.error;
+      if (!error) {
+        dbListings = dbListings.map(l => l.dbId === _editListingId ? dbToListing(data) : l);
+        _editListingId = null;
+      }
+    } else {
+      // INSERT new
+      payload.user_id = currentUser.id;
+      const res = await sbM.from('listings').insert([payload]).select().single();
+      data = res.data; error = res.error;
+      if (!error) dbListings.unshift(dbToListing(data));
+    }
     if (error) throw error;
 
-    dbListings.unshift(dbToListing(data));
     updateFilters();
-
+    document.getElementById('wiz-title').textContent = 'Objavi oglas';
     closeOverlay('wizard-overlay');
-    // Switch type to show the new listing
     setType(wiz.category);
+    // Remove edit param from URL
+    if (window.history.replaceState) {
+      window.history.replaceState({}, '', window.location.pathname);
+    }
   } catch (err) {
     document.getElementById('wiz-img-error').textContent = 'Napaka pri objavi: ' + (err.message || 'neznana napaka');
     document.getElementById('wiz-img-error').style.display = '';
     nextBtn.disabled = false;
     nextBtn.textContent = 'Objavi oglas ✓';
   }
+}
+
+// ── EDIT LISTING (open wizard pre-filled) ──
+async function openEditListing(dbId) {
+  const { data, error } = await sbM.from('listings').select('*').eq('id', dbId).single();
+  if (error || !data) return;
+  _editListingId = dbId;
+
+  // Reset wizard state with existing values
+  wiz.step = 1;
+  wiz.category = data.type;
+  wiz.treeNode = data.material ? { label: data.material_label, matKey: data.material, treeId: null } : null;
+  wiz.name = data.name;
+  wiz.weight = data.weight ? String(data.weight) : '';
+  wiz.weightUnit = data.weight_unit || 'kg';
+  wiz.priceUsd = data.price_usd ? String(data.price_usd) : '';
+  wiz.shape = data.shape || '';
+  wiz.description = data.description || '';
+  wiz.imageFiles = [null, null, null];
+  wiz.imagePreviews = [null, null, null];
+
+  document.getElementById('wiz-title').textContent = 'Uredi oglas';
+  document.querySelectorAll('.category-card').forEach(c => c.classList.remove('selected'));
+  const catEl = document.getElementById('cat-' + data.type);
+  if (catEl) catEl.classList.add('selected');
+
+  resetImgSlots();
+  // Show existing images as previews (from URLs)
+  if (data.images && data.images.length) {
+    data.images.forEach((url, i) => {
+      if (i >= 3) return;
+      wiz.imagePreviews[i] = url;
+      const slot = document.getElementById('img-slot-' + i);
+      if (slot) {
+        slot.classList.add('filled');
+        slot.innerHTML = `<img src="${url}" style="width:100%;height:100%;object-fit:cover;" /><button class="slot-remove" onclick="removeImg(event,${i})">×</button>`;
+      }
+    });
+  }
+
+  renderWizStep(1);
+  // Auto-advance to details step if material already set
+  if (wiz.category && wiz.treeNode) {
+    prefillDetailsEdit();
+    renderWizStep(3);
+  }
+  openOverlay('wizard-overlay');
+}
+
+function prefillDetailsEdit() {
+  document.getElementById('wiz-selected-material-display').textContent = '📦 ' + (wiz.treeNode?.label || '');
+  document.getElementById('wiz-name').value = wiz.name;
+  document.getElementById('wiz-weight').value = wiz.weight;
+  document.getElementById('wiz-weight-unit').value = wiz.weightUnit;
+  document.getElementById('wiz-price').value = wiz.priceUsd;
+  document.getElementById('wiz-shape').value = wiz.shape;
+  document.getElementById('wiz-description').value = wiz.description;
 }
 
 // ── DELETE LISTING ──
