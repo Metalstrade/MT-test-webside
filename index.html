@@ -318,6 +318,19 @@
     .metals-ticker {
       display: none;
     }
+    .hero-logo-tagline {
+      text-align: center;
+      font-size: 12px;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: rgba(201,162,39,0.65);
+      margin: 8px 0 0;
+      font-family: 'Inter', sans-serif;
+      font-weight: 400;
+    }
+    @media (max-width: 767px) {
+      .hero-logo-tagline { display: none; }
+    }
     @media (max-width: 767px) {
       .metals-ticker {
         display: grid;
@@ -1209,6 +1222,7 @@
           <div class="hero-logo-glow"></div>
           <img src="brand_assets/LOGO.png" alt="Metals Trading" />
         </div>
+        <p class="hero-logo-tagline" data-i18n="hero_logo_tagline">Trade the Finest Metals with Confidence</p>
         <div class="metals-ticker">
           <div class="ticker-card gold-card">
             <div class="ticker-metal">Gold (XAU)</div>
@@ -2469,6 +2483,7 @@ const i18n = {
   en: {
     nav_metals:'Metals', nav_about:'About', nav_process:'Process', nav_contact:'Contact', nav_cta:'Start Trading', nav_signin:'Sign In', nav_signed_in:'Signed In',
     hero_eyebrow:'Global Metals Exchange',
+    hero_logo_tagline:'Trade the Finest Metals with Confidence',
     hero_h1:'Trade the <span class="gradient-gold">Finest Metals</span> with Confidence',
     hero_sub:'Access live spot pricing, institutional-grade execution, and expert market intelligence across Gold, Silver, Steel, and Copper markets.',
     hero_open_account:'Open an Account', hero_explore:'Explore Markets',
@@ -2551,6 +2566,7 @@ const i18n = {
   sl: {
     nav_metals:'Kovine', nav_about:'O nas', nav_process:'Postopek', nav_contact:'Kontakt', nav_cta:'Začni trgovati', nav_signin:'Prijavi se', nav_signed_in:'Prijavljen',
     hero_eyebrow:'Globalna borza kovin',
+    hero_logo_tagline:'Trgujte z najboljšimi kovinami z zaupanjem',
     hero_h1:'Trgujte z <span class="gradient-gold">najboljšimi kovinami</span> sveta z zaupanjem',
     hero_sub:'Dostopajte do cen v živo, institucionalnega izvajanja poslov in strokovnih tržnih informacij za zlato, srebro, jeklo in baker.',
     hero_open_account:'Odprite račun', hero_explore:'Raziščite trge',
