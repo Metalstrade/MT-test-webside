@@ -1256,6 +1256,18 @@
     </div>
   </section>
 
+  <!-- ── FAV LISTINGS SECTION ── -->
+  <section id="fav-listings-section" style="display:none;">
+    <div class="section-inner">
+      <div class="section-eyebrow">Priljubljeni Oglasi</div>
+      <h2 class="section-title">Oglasi, ki jih Spremljate</h2>
+      <p class="section-sub">Oglasi, ki ste jih označili s srčkom na Marketplace strani.</p>
+      <div class="my-listings-grid" id="fav-listings-grid">
+        <p style="color:var(--muted); font-size:13px;" id="fav-listings-empty">Nimate še nobenih priljubljenih oglasov. Obiščite <a href="markets.html" style="color:var(--gold);">Marketplace</a> in označite oglase s srčkom.</p>
+      </div>
+    </div>
+  </section>
+
   <div class="divider"></div>
 
   <!-- ── METALS ── -->
@@ -2368,14 +2380,17 @@ return '$' + price.toLocaleString('en-US', {maximumFractionDigits:2});
     els.forEach(el => el.style.display = 'none');
     document.getElementById('dashboard-panel').style.display = 'block';
     document.getElementById('my-listings-section').style.display = 'block';
+    document.getElementById('fav-listings-section').style.display = 'block';
     loadDashFavs(user);
     loadMyListings(user);
+    loadFavListings(user);
   }
   function hidePersonalDashboard() {
     const els = document.querySelectorAll('.hero-eyebrow, .hero h1, .hero-sub, .hero-actions, .hero-stats');
     els.forEach(el => el.style.removeProperty('display'));
     document.getElementById('dashboard-panel').style.display = 'none';
     document.getElementById('my-listings-section').style.display = 'none';
+    document.getElementById('fav-listings-section').style.display = 'none';
   }
 
   async function loadDashFavs(user) {
@@ -2474,6 +2489,51 @@ return '$' + price.toLocaleString('en-US', {maximumFractionDigits:2});
 
   function editMyListing(id) {
     window.location.href = 'markets.html?edit=' + id;
+  }
+
+  async function loadFavListings(user) {
+    const key = 'listing_favs_' + user.id;
+    const ids = JSON.parse(localStorage.getItem(key) || '[]');
+    const grid = document.getElementById('fav-listings-grid');
+    const emptyMsg = document.getElementById('fav-listings-empty');
+
+    if (!ids.length) {
+      grid.innerHTML = '';
+      grid.appendChild(emptyMsg);
+      emptyMsg.style.display = '';
+      return;
+    }
+    emptyMsg.style.display = 'none';
+    grid.innerHTML = '<p style="color:var(--muted);font-size:13px;">Nalagam...</p>';
+
+    try {
+      const { data, error } = await sb.from('listings').select('*').in('id', ids);
+      if (error || !data || !data.length) {
+        grid.innerHTML = '';
+        grid.appendChild(emptyMsg);
+        emptyMsg.style.display = '';
+        return;
+      }
+      grid.innerHTML = data.map(row => {
+        const imgHtml = row.images && row.images[0]
+          ? `<img src="${row.images[0]}" style="width:100%;height:100%;object-fit:cover;" alt="${row.title||''}">`
+          : `<div style="width:100%;height:100%;display:flex;align-items:center;justify-content:center;font-size:28px;color:rgba(201,162,39,0.25);">⬡</div>`;
+        const price = row.price_usd;
+        const priceStr = price ? '$' + Number(price).toLocaleString('sl-SI', {minimumFractionDigits:0}) : 'Cena na poizvedbo';
+        return `<div class="my-listing-card" style="position:relative;">
+          <div class="my-listing-img" style="background:linear-gradient(135deg,#1a2530,#0e161e);">${imgHtml}</div>
+          <div class="my-listing-body">
+            <div class="my-listing-title">${row.name || 'Oglas'}</div>
+            <div class="my-listing-price">${priceStr}</div>
+            <a href="markets.html" class="btn-edit-my" style="text-decoration:none;">→ Oglej si na Marketplace</a>
+          </div>
+        </div>`;
+      }).join('');
+    } catch {
+      grid.innerHTML = '';
+      grid.appendChild(emptyMsg);
+      emptyMsg.style.display = '';
+    }
   }
 </script>
 
