@@ -1952,6 +1952,14 @@
 </div>
 
 <script>
+  // ── HTML ESCAPE HELPER ──
+  function esc(str) {
+    if (str == null) return '';
+    const d = document.createElement('div');
+    d.textContent = String(str);
+    return d.innerHTML;
+  }
+
   // ── SUPABASE ──
   const sb = supabase.createClient(
     'https://xurgxkrnmutmocqbjffw.supabase.co',
@@ -2456,19 +2464,19 @@ return '$' + price.toLocaleString('en-US', {maximumFractionDigits:2});
       const shapeLabel = { bar:'Palica/Ingot', coin:'Kovanec', granule:'Granule', sheet:'List/Folija', jewelry:'Nakit', powder:'Zrno/Prah', industrial:'Industrijsko', other:'Ostalo' };
       grid.innerHTML = data.map(row => {
         const imgHtml = row.images && row.images[0]
-          ? `<img src="${row.images[0]}" alt="${row.name}" />`
-          : `<div class="my-listing-img-ph">${row.material || '⬡'}</div>`;
+          ? `<img src="${esc(row.images[0])}" alt="${esc(row.name)}" />`
+          : `<div class="my-listing-img-ph">⬡</div>`;
         const weightStr = row.weight ? (row.weight + ' ' + (row.weight_unit || 'kg')) : '';
         const priceStr = row.price_usd ? ('$' + Number(row.price_usd).toLocaleString('en-US', {maximumFractionDigits:2})) : 'Cena na poizvedbo';
         return `
-        <div class="my-listing-card">
-          <button class="my-listing-del" onclick="deleteMyListing('${row.id}', this)" title="Izbriši">×</button>
+        <div class="my-listing-card" data-id="${esc(row.id)}">
+          <button class="my-listing-del" data-id="${esc(row.id)}" onclick="deleteMyListing(this.dataset.id, this)" title="Izbriši">×</button>
           <div class="my-listing-img">${imgHtml}</div>
           <div class="my-listing-body">
-            <div class="my-listing-name">${row.name}</div>
-            <div class="my-listing-meta">${row.material_label || ''}${weightStr ? ' · ' + weightStr : ''}${row.shape ? ' · ' + (shapeLabel[row.shape]||row.shape) : ''}</div>
-            <div class="my-listing-price">${priceStr}</div>
-            <button class="btn-edit-my" onclick="editMyListing('${row.id}')">✎ Uredi oglas</button>
+            <div class="my-listing-name">${esc(row.name)}</div>
+            <div class="my-listing-meta">${esc(row.material_label)}${weightStr ? ' · ' + esc(weightStr) : ''}${row.shape ? ' · ' + esc(shapeLabel[row.shape]||row.shape) : ''}</div>
+            <div class="my-listing-price">${esc(priceStr)}</div>
+            <button class="btn-edit-my" data-id="${esc(row.id)}" onclick="editMyListing(this.dataset.id)">✎ Uredi oglas</button>
           </div>
         </div>`;
       }).join('');
@@ -2478,7 +2486,7 @@ return '$' + price.toLocaleString('en-US', {maximumFractionDigits:2});
   async function deleteMyListing(id, btnEl) {
     if (!confirm('Res želite izbrisati ta oglas?')) return;
     const { error } = await sb.from('listings').delete().eq('id', id);
-    if (error) { alert('Napaka: ' + error.message); return; }
+    if (error) { alert('Napaka pri brisanju. Poskusite znova.'); return; }
     btnEl.closest('.my-listing-card').remove();
     // Show empty message if no more cards
     const grid = document.getElementById('my-listings-grid');
@@ -2518,15 +2526,15 @@ return '$' + price.toLocaleString('en-US', {maximumFractionDigits:2});
       }
       grid.innerHTML = data.map(row => {
         const imgHtml = row.images && row.images[0]
-          ? `<img src="${row.images[0]}" style="width:100%;height:100%;object-fit:cover;" alt="${row.title||''}">`
+          ? `<img src="${esc(row.images[0])}" style="width:100%;height:100%;object-fit:cover;" alt="${esc(row.name)}">`
           : `<div style="width:100%;height:100%;display:flex;align-items:center;justify-content:center;font-size:28px;color:rgba(201,162,39,0.25);">⬡</div>`;
         const price = row.price_usd;
         const priceStr = price ? '$' + Number(price).toLocaleString('sl-SI', {minimumFractionDigits:0}) : 'Cena na poizvedbo';
         return `<div class="my-listing-card" style="position:relative;">
           <div class="my-listing-img" style="background:linear-gradient(135deg,#1a2530,#0e161e);">${imgHtml}</div>
           <div class="my-listing-body">
-            <div class="my-listing-title">${row.name || 'Oglas'}</div>
-            <div class="my-listing-price">${priceStr}</div>
+            <div class="my-listing-title">${esc(row.name) || 'Oglas'}</div>
+            <div class="my-listing-price">${esc(priceStr)}</div>
             <a href="markets.html" class="btn-edit-my" style="text-decoration:none;">→ Oglej si na Marketplace</a>
           </div>
         </div>`;

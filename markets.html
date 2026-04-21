@@ -4177,11 +4177,14 @@ async function submitListing() {
   nextBtn.textContent = 'Objavljam…';
 
   try {
+    const ALLOWED_MIME = ['image/jpeg', 'image/png', 'image/webp', 'image/gif'];
     const imageUrls = [];
     for (let i = 0; i < 3; i++) {
       const file = wiz.imageFiles[i];
       if (!file) continue;
-      const ext = file.name.split('.').pop().toLowerCase();
+      if (!ALLOWED_MIME.includes(file.type)) { alert('Dovoljene so samo slike (JPG, PNG, WebP, GIF).'); continue; }
+      if (file.size > 5 * 1024 * 1024) { alert('Slika je prevelika. Največja dovoljena velikost je 5 MB.'); continue; }
+      const ext = { 'image/jpeg':'jpg', 'image/png':'png', 'image/webp':'webp', 'image/gif':'gif' }[file.type] || 'jpg';
       const path = `${currentUser.id}/${Date.now()}-${i}.${ext}`;
       const { data: upData, error: upErr } = await sbM.storage.from('listing-images').upload(path, file, { cacheControl: '3600', upsert: false });
       if (upErr) continue;
@@ -4204,8 +4207,8 @@ async function submitListing() {
 
     let data, error;
     if (_editListingId) {
-      // UPDATE existing
-      const res = await sbM.from('listings').update(payload).eq('id', _editListingId).select().single();
+      // UPDATE existing — filter by user_id to prevent IDOR
+      const res = await sbM.from('listings').update(payload).eq('id', _editListingId).eq('user_id', currentUser.id).select().single();
       data = res.data; error = res.error;
       if (!error) {
         dbListings = dbListings.map(l => l.dbId === _editListingId ? dbToListing(data) : l);
@@ -4240,6 +4243,7 @@ async function submitListing() {
 async function openEditListing(dbId) {
   const { data, error } = await sbM.from('listings').select('*').eq('id', dbId).single();
   if (error || !data) return;
+  if (!currentUser || data.user_id !== currentUser.id) return;
   _editListingId = dbId;
 
   // Reset wizard state with existing values
@@ -4295,11 +4299,20 @@ function prefillDetailsEdit() {
 
 // ── DELETE LISTING ──
 async function deleteListing(dbId, cardEl) {
+  if (!currentUser) return;
   if (!confirm('Res želite izbrisati ta oglas?')) return;
-  const { error } = await sbM.from('listings').delete().eq('id', dbId);
-  if (error) { alert('Napaka pri brisanju: ' + error.message); return; }
+  const { error } = await sbM.from('listings').delete().eq('id', dbId).eq('user_id', currentUser.id);
+  if (error) { alert('Napaka pri brisanju. Poskusite znova.'); return; }
   dbListings = dbListings.filter(l => l.dbId !== dbId);
   updateFilters();
+}
+
+// ── HTML ESCAPE HELPER ──
+function esc(str) {
+  if (str == null) return '';
+  const d = document.createElement('div');
+  d.textContent = String(str);
+  return d.innerHTML;
 }
 
 // ── LISTING FAVOURITES ──
@@ -4369,20 +4382,20 @@ renderListings = function(list) {
           </div>
         </div>
         <div class="listing-card-body">
-          <div class="listing-card-name">${l.name}</div>
-          <div class="listing-card-sub">${l.sub} · ${l.origin}</div>
+          <div class="listing-card-name">${esc(l.name)}</div>
+          <div class="listing-card-sub">${esc(l.sub)} · ${esc(l.origin)}</div>
           <div class="listing-card-meta">
             <span class="listing-meta-tag">${l.shape === 'bar' ? 'Palica/Ingot' : l.shape === 'coin' ? 'Kovanec' : l.shape === 'granule' ? 'Granule' : l.shape === 'sheet' ? 'List/Folija' : l.shape === 'jewelry' ? 'Nakit' : 'Zrno/Prah'}</span>
-            <span class="listing-meta-tag">Čistost ${l.purity}%</span>
-            <span class="listing-meta-tag">${l.weight}</span>
+            <span class="listing-meta-tag">Čistost ${esc(l.purity)}%</span>
+            <span class="listing-meta-tag">${esc(l.weight)}</span>
           </div>
           <div class="listing-card-footer">
             <div class="listing-price">
               <div class="listing-price-main">${sym}${price.toLocaleString('sl-SI', {minimumFractionDigits: price < 10 ? 2 : 0})}</div>
               <div class="listing-price-unit">Spot ${unit}</div>
-              <div class="listing-price-premium">+${l.premiumPct}% premija</div>
+              <div class="listing-price-premium">+${esc(l.premiumPct)}% premija</div>
             </div>
-            <button class="listing-contact-btn" onclick="event.stopPropagation(); openContact('${l.name.replace(/'/g,"\\'")}')">Povpraši</button>
+            <button class="listing-contact-btn" data-name="${esc(l.name)}" onclick="event.stopPropagation(); openContact(this.dataset.name)">Povpraši</button>
           </div>
         </div>
       </div>`;
@@ -4392,7 +4405,7 @@ renderListings = function(list) {
     const price = cur === 'usd' ? l.priceUsd : l.priceEur;
     const sym   = cur === 'usd' ? '$' : '€';
     const imgHtml = l.images && l.images[0]
-      ? `<img class="listing-img" src="${l.images[0]}" alt="${l.name}" />`
+      ? `<img class="listing-img" src="${esc(l.images[0])}" alt="${esc(l.name)}" />`
       : `<div class="listing-material-icon" style="color:rgba(201,162,39,0.25);">${l.material || '⬡'}</div>`;
     const isOwner = currentUser && currentUser.id === l.user_id;
     const ownerBar = isOwner ? `
@@ -4416,11 +4429,11 @@ renderListings = function(list) {
         ${favBtn}
       </div>
       <div class="listing-card-body">
-        <div class="listing-card-name">${l.name}</div>
-        <div class="listing-card-sub">${l.materialLabel || ''}${l.sub ? ' · ' + l.sub : ''}</div>
+        <div class="listing-card-name">${esc(l.name)}</div>
+        <div class="listing-card-sub">${esc(l.materialLabel)}${l.sub ? ' · ' + esc(l.sub) : ''}</div>
         <div class="listing-card-meta">
-          ${l.shape ? `<span class="listing-meta-tag">${shapeLabel[l.shape]||l.shape}</span>` : ''}
-          ${weightDisplay ? `<span class="listing-meta-tag">${weightDisplay}</span>` : ''}
+          ${l.shape ? `<span class="listing-meta-tag">${esc(shapeLabel[l.shape]||l.shape)}</span>` : ''}
+          ${weightDisplay ? `<span class="listing-meta-tag">${esc(weightDisplay)}</span>` : ''}
           <span class="listing-meta-tag" style="color:rgba(72,199,142,0.8);">Oglas</span>
         </div>
         <div class="listing-card-footer">
@@ -4428,7 +4441,7 @@ renderListings = function(list) {
             <div class="listing-price-main">${price > 0 ? sym + price.toLocaleString('sl-SI', {minimumFractionDigits: price < 10 ? 2 : 0}) : '—'}</div>
             <div class="listing-price-unit">${price > 0 ? 'cena / enota' : 'Cena na poizvedbo'}</div>
           </div>
-          <button class="listing-contact-btn" onclick="event.stopPropagation(); openContact('${l.name.replace(/'/g,"\\'")}')">Povpraši</button>
+          <button class="listing-contact-btn" data-name="${esc(l.name)}" onclick="event.stopPropagation(); openContact(this.dataset.name)">Povpraši</button>
         </div>
       </div>
       ${ownerBar}
