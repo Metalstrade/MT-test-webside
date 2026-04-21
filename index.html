@@ -1110,15 +1110,6 @@
       <li><a href="#process" data-i18n="nav_process">Process</a></li>
       <li><a href="#contact" data-i18n="nav_contact">Contact</a></li>
     </ul>
-    <div class="lang-switcher">
-      <button class="lang-btn active" data-lang="en" onclick="setLang('en')">
-        <span class="lang-flag">🇬🇧</span> EN
-      </button>
-      <div class="lang-divider"></div>
-      <button class="lang-btn" data-lang="sl" onclick="setLang('sl')">
-        <span class="lang-flag">🇸🇮</span> SLO
-      </button>
-    </div>
     <button id="nav-signin-btn" class="btn-outline nav-cta" onclick="openSignInModal()" data-i18n="nav_signin" style="margin-right:8px;">Sign In</button>
     <button id="nav-reg-btn" class="btn-primary nav-cta" onclick="openRegModal()" data-i18n="nav_cta">Start Trading</button>
 
@@ -1153,6 +1144,15 @@
           <svg width="15" height="15" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><path d="M6 14H3a1 1 0 01-1-1V3a1 1 0 011-1h3"/><polyline points="10,11 13,8 10,5"/><line x1="13" y1="8" x2="5" y2="8"/></svg>
           <span data-i18n="dd_logout">Log Out</span>
         </button>
+        <div class="dropdown-divider"></div>
+        <div style="display:flex;align-items:center;gap:4px;padding:6px 12px;">
+          <button class="lang-btn active" data-lang="en" onclick="setLang('en');closeDropdown()" style="flex:1;justify-content:center;">
+            <span class="lang-flag">🇬🇧</span> EN
+          </button>
+          <button class="lang-btn" data-lang="sl" onclick="setLang('sl');closeDropdown()" style="flex:1;justify-content:center;">
+            <span class="lang-flag">🇸🇮</span> SLO
+          </button>
+        </div>
       </div>
     </div>
   </nav>
