@@ -1518,28 +1518,28 @@
             </div>
           </div>
         </div>
-        <form>
+        <form id="contact-form" onsubmit="submitContactForm(event)">
           <div class="form-row">
             <div class="form-group">
               <label for="fname" data-i18n="form_fname">First Name</label>
-              <input type="text" id="fname" placeholder="James" data-i18n-placeholder="form_fname_ph" />
+              <input type="text" id="fname" name="first_name" placeholder="James" data-i18n-placeholder="form_fname_ph" required />
             </div>
             <div class="form-group">
               <label for="lname" data-i18n="form_lname">Last Name</label>
-              <input type="text" id="lname" placeholder="Morrow" data-i18n-placeholder="form_lname_ph" />
+              <input type="text" id="lname" name="last_name" placeholder="Morrow" data-i18n-placeholder="form_lname_ph" required />
             </div>
           </div>
           <div class="form-group">
-            <label for="email" data-i18n="form_email">Email Address</label>
-            <input type="email" id="email" placeholder="james@company.com" />
+            <label for="cemail" data-i18n="form_email">Email Address</label>
+            <input type="email" id="cemail" name="email" placeholder="james@company.com" required />
           </div>
           <div class="form-group">
             <label for="company" data-i18n="form_company">Company</label>
-            <input type="text" id="company" placeholder="Your organization" data-i18n-placeholder="form_company_ph" />
+            <input type="text" id="company" name="company" placeholder="Your organization" data-i18n-placeholder="form_company_ph" />
           </div>
           <div class="form-group">
             <label for="interest" data-i18n="form_interest">Metal of Interest</label>
-            <select id="interest">
+            <select id="interest" name="interest">
               <option value="" disabled selected data-i18n="form_interest_ph">Select a metal</option>
               <option>Gold (XAU)</option>
               <option>Silver (XAG)</option>
@@ -1550,9 +1550,15 @@
           </div>
           <div class="form-group">
             <label for="message" data-i18n="form_message">Message</label>
-            <textarea id="message" placeholder="Tell us about your trading needs or questions..." data-i18n-placeholder="form_message_ph"></textarea>
+            <textarea id="message" name="message" placeholder="Tell us about your trading needs or questions..." data-i18n-placeholder="form_message_ph" required></textarea>
           </div>
-          <button type="submit" class="btn-primary" style="width:100%; justify-content:center;">
+          <div id="contact-success" style="display:none; background:rgba(72,199,142,0.1); border:1px solid rgba(72,199,142,0.3); border-radius:4px; padding:14px 16px; color:rgba(72,199,142,0.9); font-size:13px; margin-bottom:12px;" data-i18n="form_success">
+            Your message has been sent. We'll get back to you shortly.
+          </div>
+          <div id="contact-error" style="display:none; background:rgba(229,115,115,0.1); border:1px solid rgba(229,115,115,0.3); border-radius:4px; padding:14px 16px; color:rgba(229,115,115,0.9); font-size:13px; margin-bottom:12px;" data-i18n="form_error">
+            Something went wrong. Please try again or email us directly.
+          </div>
+          <button type="submit" id="contact-submit-btn" class="btn-primary" style="width:100%; justify-content:center;">
             <span data-i18n="form_send">Send Message</span>
             <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 8h10M9 4l4 4-4 4"/></svg>
           </button>
@@ -2501,6 +2507,38 @@ return '$' + price.toLocaleString('en-US', {maximumFractionDigits:2});
     window.location.href = 'markets.html?edit=' + id;
   }
 
+  // ── CONTACT FORM ──
+  async function submitContactForm(e) {
+    e.preventDefault();
+    const btn = document.getElementById('contact-submit-btn');
+    const successEl = document.getElementById('contact-success');
+    const errorEl = document.getElementById('contact-error');
+    successEl.style.display = 'none';
+    errorEl.style.display = 'none';
+    btn.disabled = true;
+    btn.querySelector('span').textContent = '...';
+
+    const formData = new FormData(document.getElementById('contact-form'));
+    try {
+      const res = await fetch('https://formspree.io/f/REPLACE_WITH_FORM_ID', {
+        method: 'POST',
+        body: formData,
+        headers: { 'Accept': 'application/json' }
+      });
+      if (res.ok) {
+        successEl.style.display = 'block';
+        document.getElementById('contact-form').reset();
+      } else {
+        errorEl.style.display = 'block';
+      }
+    } catch {
+      errorEl.style.display = 'block';
+    }
+    btn.disabled = false;
+    const lang = localStorage.getItem('lang') || 'en';
+    btn.querySelector('span').textContent = i18n[lang]?.form_send || 'Send Message';
+  }
+
   async function loadFavListings(user) {
     const key = 'listing_favs_' + user.id;
     const ids = JSON.parse(localStorage.getItem(key) || '[]');
@@ -2596,6 +2634,8 @@ const i18n = {
     form_email:'Email Address', form_company:'Company', form_company_ph:'Your organization',
     form_interest:'Metal of Interest', form_interest_ph:'Select a metal', form_multi:'Multiple / Portfolio',
     form_message:'Message', form_message_ph:'Tell us about your trading needs or questions...', form_send:'Send Message',
+    form_success:'Your message has been sent. We\'ll get back to you shortly.',
+    form_error:'Something went wrong. Please try again or email us directly.',
     footer_brand_desc:'Global metals trading solutions for institutions, miners, refiners, and sophisticated investors. Precision execution. Unrivaled expertise.',
     footer_markets:'Markets', footer_gold_spot:'Gold Spot', footer_silver_spot:'Silver Spot', footer_steel_fut:'Steel Futures', footer_copper_fut:'Copper Futures', footer_options:'Options & Swaps',
     footer_company:'Company', footer_about:'About Us', footer_team:'Our Team', footer_careers:'Careers', footer_regulatory:'Regulatory', footer_news:'News',
@@ -2680,6 +2720,8 @@ const i18n = {
     form_email:'E-poštni naslov', form_company:'Podjetje', form_company_ph:'Vaša organizacija',
     form_interest:'Kovina v interesu', form_interest_ph:'Izberite kovino', form_multi:'Večkratno / Portfelj',
     form_message:'Sporočilo', form_message_ph:'Povejte nam o vaših potrebah glede trgovanja ali vprašanjih...', form_send:'Pošlji sporočilo',
+    form_success:'Vaše sporočilo je bilo poslano. Kmalu se vam oglasimo.',
+    form_error:'Prišlo je do napake. Poskusite znova ali nas kontaktirajte neposredno.',
     footer_brand_desc:'Globalne rešitve za trgovanje s kovinami za institucije, rudarje, rafinerije in izkušene vlagatelje. Natančno izvajanje. Neprimerljiva strokovnost.',
     footer_markets:'Trgi', footer_gold_spot:'Zlato spot', footer_silver_spot:'Srebro spot', footer_steel_fut:'Jeklo terminske pogodbe', footer_copper_fut:'Baker terminske pogodbe', footer_options:'Opcije in zamenjave',
     footer_company:'Podjetje', footer_about:'O nas', footer_team:'Naša ekipa', footer_careers:'Kariera', footer_regulatory:'Regulativa', footer_news:'Novice',
