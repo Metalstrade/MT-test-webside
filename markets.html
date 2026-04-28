@@ -837,6 +837,111 @@
     /* DB listing image */
     .listing-card-img img.listing-img { width: 100%; height: 100%; object-fit: cover; }
 
+    /* ── SALE TYPE SELECTOR (wizard) ── */
+    .sale-type-row { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+    .sale-type-btn {
+      display: flex; flex-direction: column; align-items: center; gap: 4px;
+      padding: 14px 10px; border-radius: 4px; cursor: pointer;
+      border: 1px solid rgba(143,163,177,0.15); background: var(--ink-3);
+      color: var(--muted); font-family: 'Inter', sans-serif;
+      transition: border-color 0.2s, background 0.2s, color 0.2s;
+    }
+    .sale-type-btn .st-icon { font-size: 22px; }
+    .sale-type-btn .st-label { font-size: 12px; font-weight: 600; letter-spacing: 0.05em; text-transform: uppercase; }
+    .sale-type-btn .st-sub { font-size: 10px; color: var(--muted); }
+    .sale-type-btn.active { border-color: rgba(201,162,39,0.5); background: rgba(201,162,39,0.07); color: var(--gold-lt); }
+    .sale-type-btn.active .st-sub { color: rgba(201,162,39,0.6); }
+
+    /* ── AUCTION BADGE & BID BAR ── */
+    .badge-auction { background: rgba(201,162,39,0.15); color: var(--gold-lt); border: 1px solid rgba(201,162,39,0.3); }
+    .badge-spot    { background: rgba(72,199,142,0.12); color: rgba(72,199,142,0.9); border: 1px solid rgba(72,199,142,0.25); }
+    .badge-ended   { background: rgba(143,163,177,0.1); color: var(--muted); border: 1px solid rgba(143,163,177,0.2); }
+    .auction-bar {
+      padding: 10px 14px; border-top: 1px solid rgba(143,163,177,0.08);
+      display: flex; align-items: center; justify-content: space-between; gap: 8px;
+      background: rgba(201,162,39,0.03);
+    }
+    .auction-bar-left { display: flex; flex-direction: column; gap: 2px; }
+    .auction-current-bid { font-size: 15px; font-weight: 600; color: var(--gold-lt); font-family: 'Cormorant Garamond', serif; }
+    .auction-no-bid { font-size: 12px; color: var(--muted); }
+    .auction-timer { font-size: 10px; color: var(--muted); letter-spacing: 0.04em; }
+    .auction-timer.urgent { color: #f0645a; }
+    .btn-bid {
+      padding: 7px 16px; border-radius: 2px; font-size: 11px; font-weight: 600;
+      letter-spacing: 0.06em; text-transform: uppercase; cursor: pointer;
+      background: rgba(201,162,39,0.12); border: 1px solid rgba(201,162,39,0.35);
+      color: var(--gold-lt); font-family: 'Inter', sans-serif;
+      transition: background 0.15s;
+      white-space: nowrap;
+    }
+    .btn-bid:hover { background: rgba(201,162,39,0.22); }
+    .btn-bid:disabled { opacity: 0.4; cursor: not-allowed; }
+    .btn-buy-spot {
+      padding: 7px 14px; border-radius: 2px; font-size: 11px; font-weight: 600;
+      letter-spacing: 0.06em; text-transform: uppercase; cursor: pointer;
+      background: rgba(72,199,142,0.1); border: 1px solid rgba(72,199,142,0.3);
+      color: rgba(72,199,142,0.9); font-family: 'Inter', sans-serif;
+      transition: background 0.15s; white-space: nowrap;
+    }
+    .btn-buy-spot:hover { background: rgba(72,199,142,0.18); }
+    .auction-ended-banner {
+      padding: 8px 14px; border-top: 1px solid rgba(143,163,177,0.08);
+      font-size: 11px; color: var(--muted); text-align: center; letter-spacing: 0.04em;
+    }
+    .auction-won-banner {
+      padding: 8px 14px; border-top: 1px solid rgba(201,162,39,0.2);
+      font-size: 11px; color: var(--gold-lt); text-align: center;
+      background: rgba(201,162,39,0.06); cursor: pointer;
+    }
+    .auction-won-banner:hover { background: rgba(201,162,39,0.1); }
+
+    /* ── BID MODAL ── */
+    .bid-modal-box {
+      background: var(--ink-2); border: 1px solid rgba(201,162,39,0.2);
+      border-radius: 6px; padding: 28px; max-width: 400px; width: 90%;
+      position: relative;
+    }
+    .bid-modal-title { font-family: 'Cormorant Garamond', serif; font-size: 22px; margin: 0 0 4px; }
+    .bid-modal-sub { font-size: 12px; color: var(--muted); margin: 0 0 20px; }
+    .bid-stat-row { display: flex; gap: 16px; margin-bottom: 20px; }
+    .bid-stat { flex: 1; background: var(--ink-3); border-radius: 3px; padding: 10px 12px; }
+    .bid-stat-lbl { font-size: 10px; color: var(--muted); letter-spacing: 0.06em; text-transform: uppercase; margin-bottom: 4px; }
+    .bid-stat-val { font-size: 16px; font-weight: 600; color: var(--gold-lt); font-family: 'Cormorant Garamond', serif; }
+    .bid-input-wrap { margin-bottom: 14px; }
+    .bid-input-wrap label { font-size: 11px; color: var(--muted); letter-spacing: 0.06em; text-transform: uppercase; display: block; margin-bottom: 6px; }
+    .bid-input { width: 100%; background: var(--ink-3); border: 1px solid rgba(143,163,177,0.2); border-radius: 3px; padding: 10px 12px; color: #E8EEF2; font-size: 15px; font-family: 'Inter', sans-serif; outline: none; }
+    .bid-input:focus { border-color: rgba(201,162,39,0.4); }
+    .bid-error { font-size: 12px; color: #f0645a; margin-bottom: 12px; display: none; }
+    .btn-submit-bid {
+      width: 100%; padding: 12px; border-radius: 3px; font-size: 12px; font-weight: 600;
+      letter-spacing: 0.08em; text-transform: uppercase; cursor: pointer;
+      background: linear-gradient(135deg, var(--gold-dk), var(--gold));
+      border: none; color: var(--ink); font-family: 'Inter', sans-serif;
+      transition: opacity 0.15s;
+    }
+    .btn-submit-bid:hover { opacity: 0.88; }
+    .btn-submit-bid:disabled { opacity: 0.4; cursor: not-allowed; }
+
+    /* ── PAYMENT MODAL ── */
+    .payment-modal-box {
+      background: var(--ink-2); border: 1px solid rgba(72,199,142,0.25);
+      border-radius: 6px; padding: 28px; max-width: 440px; width: 90%; position: relative;
+    }
+    .payment-modal-title { font-family: 'Cormorant Garamond', serif; font-size: 22px; margin: 0 0 4px; color: rgba(72,199,142,0.9); }
+    .payment-modal-sub { font-size: 12px; color: var(--muted); margin: 0 0 22px; }
+    .payment-row { display: flex; justify-content: space-between; align-items: center; padding: 10px 0; border-bottom: 1px solid rgba(143,163,177,0.08); font-size: 13px; }
+    .payment-row:last-of-type { border-bottom: none; }
+    .payment-label { color: var(--muted); font-size: 11px; letter-spacing: 0.05em; text-transform: uppercase; }
+    .payment-value { font-weight: 600; color: #E8EEF2; }
+    .payment-value.big { font-size: 20px; font-family: 'Cormorant Garamond', serif; color: var(--gold-lt); }
+    .payment-note { background: rgba(72,199,142,0.07); border: 1px solid rgba(72,199,142,0.15); border-radius: 3px; padding: 12px 14px; font-size: 12px; color: rgba(72,199,142,0.8); margin-top: 16px; line-height: 1.6; }
+    .btn-close-payment {
+      width: 100%; padding: 11px; border-radius: 3px; margin-top: 16px;
+      font-size: 11px; font-weight: 600; letter-spacing: 0.07em; text-transform: uppercase;
+      cursor: pointer; background: rgba(72,199,142,0.1); border: 1px solid rgba(72,199,142,0.25);
+      color: rgba(72,199,142,0.9); font-family: 'Inter', sans-serif;
+    }
+
     /* Listing heart / fav button */
     .listing-fav-btn {
       position: absolute; top: 8px; right: 8px; z-index: 10;
@@ -3552,6 +3657,39 @@ updateFilters();
         <label>Opis (neobvezno)</label>
         <textarea class="wiz-textarea" id="wiz-description" placeholder="Dodatne informacije o materialu, kakovosti, poreklu…"></textarea>
       </div>
+      <div class="wiz-field">
+        <label>Način prodaje</label>
+        <div class="sale-type-row">
+          <button type="button" class="sale-type-btn active" id="btn-sale-spot" onclick="setSaleType('spot')">
+            <span class="st-icon">💰</span>
+            <span class="st-label">Spot nakup</span>
+            <span class="st-sub">Fiksna cena</span>
+          </button>
+          <button type="button" class="sale-type-btn" id="btn-sale-auction" onclick="setSaleType('auction')">
+            <span class="st-icon">🔨</span>
+            <span class="st-label">Dražba</span>
+            <span class="st-sub">Najboljša ponudba</span>
+          </button>
+        </div>
+      </div>
+      <div id="wiz-auction-fields" style="display:none;">
+        <div class="wiz-field">
+          <label>Minimalna (rezervna) cena (USD)</label>
+          <input class="wiz-input" type="number" id="wiz-reserve-price" placeholder="npr. 100" min="0" step="any" />
+          <div style="font-size:11px;color:var(--muted);margin-top:4px;">Najnižja cena, pod katero blaga ne boste prodali.</div>
+        </div>
+        <div class="wiz-field">
+          <label>Trajanje dražbe</label>
+          <select class="wiz-input" id="wiz-auction-duration">
+            <option value="1">1 dan</option>
+            <option value="2">2 dni</option>
+            <option value="3">3 dni</option>
+            <option value="7" selected>1 teden</option>
+            <option value="14">14 dni</option>
+            <option value="30">1 mesec</option>
+          </select>
+        </div>
+      </div>
       <div class="wiz-error" id="wiz-details-error" style="display:none;">Izpolnite naziv in ceno.</div>
     </div>
 
@@ -3590,6 +3728,60 @@ updateFilters();
         <button class="btn-wiz-next" id="wiz-btn-next" onclick="wizNext()">Naprej →</button>
       </div>
     </div>
+  </div>
+</div>
+
+<!-- ── BID MODAL ── -->
+<div class="modal-overlay" id="bid-overlay" onclick="overlayClickClose(event,'bid-overlay')">
+  <div class="bid-modal-box">
+    <button class="modal-close" onclick="closeOverlay('bid-overlay')">×</button>
+    <h3 class="bid-modal-title">Oddajte ponudbo</h3>
+    <p class="bid-modal-sub" id="bid-listing-name">—</p>
+    <div class="bid-stat-row">
+      <div class="bid-stat">
+        <div class="bid-stat-lbl">Trenutna ponudba</div>
+        <div class="bid-stat-val" id="bid-current-val">—</div>
+      </div>
+      <div class="bid-stat">
+        <div class="bid-stat-lbl">Čas do konca</div>
+        <div class="bid-stat-val" id="bid-timer-val">—</div>
+      </div>
+    </div>
+    <div class="bid-input-wrap">
+      <label>Vaša ponudba (USD) — mora biti višja od trenutne</label>
+      <input class="bid-input" type="number" id="bid-amount-input" placeholder="npr. 1500" min="0" step="any" />
+    </div>
+    <div class="bid-error" id="bid-error"></div>
+    <button class="btn-submit-bid" id="bid-submit-btn" onclick="submitBid()">🔨 Oddaj ponudbo</button>
+  </div>
+</div>
+
+<!-- ── PAYMENT MODAL ── -->
+<div class="modal-overlay" id="payment-overlay" onclick="overlayClickClose(event,'payment-overlay')">
+  <div class="payment-modal-box">
+    <button class="modal-close" onclick="closeOverlay('payment-overlay')">×</button>
+    <h3 class="payment-modal-title">✓ Navodila za plačilo</h3>
+    <p class="payment-modal-sub" id="pay-listing-name">—</p>
+    <div class="payment-row">
+      <span class="payment-label">Znesek za plačilo</span>
+      <span class="payment-value big" id="pay-amount">—</span>
+    </div>
+    <div class="payment-row">
+      <span class="payment-label">Referenca / ID naročila</span>
+      <span class="payment-value" id="pay-ref">—</span>
+    </div>
+    <div class="payment-row">
+      <span class="payment-label">Rok plačila</span>
+      <span class="payment-value">5 delovnih dni</span>
+    </div>
+    <div class="payment-row">
+      <span class="payment-label">Način plačila</span>
+      <span class="payment-value">Bančno nakazilo</span>
+    </div>
+    <div class="payment-note">
+      Prodajalec vam bo v kratkem poslal podatke za bančno nakazilo (IBAN, BIC, naziv banke) na vaš e-poštni naslov. Prosimo, da plačilo izvedete v roku 5 delovnih dni od zaključka nakupa oziroma dražbe.
+    </div>
+    <button class="btn-close-payment" onclick="closeOverlay('payment-overlay')">Zapri</button>
   </div>
 </div>
 
@@ -3732,6 +3924,13 @@ function dbToListing(row) {
     images: row.images || [],
     fromDb: true,
     materialLabel: row.material_label || row.name,
+    saleType: row.sale_type || 'spot',
+    reservePrice: row.reserve_price || 0,
+    auctionEndAt: row.auction_end_at || null,
+    currentBid: row.current_bid || 0,
+    currentBidderId: row.current_bidder_id || null,
+    winnerId: row.winner_id || null,
+    winningBid: row.winning_bid || null,
   };
 }
 
@@ -3869,13 +4068,16 @@ async function submitRegM(e) {
 const wiz = {
   step: 1,
   category: null,
-  treeNode: null,   // { label, matKey, treeId }
+  treeNode: null,
   name: '',
   weight: '',
   weightUnit: 'kg',
   priceUsd: '',
   shape: '',
   description: '',
+  saleType: 'spot',
+  reservePrice: '',
+  auctionDuration: 7,
   imageFiles: [],
   imagePreviews: [],
 };
@@ -3885,14 +4087,24 @@ function openWizard() {
   wiz.step = 1; wiz.category = null; wiz.treeNode = null;
   wiz.name = ''; wiz.weight = ''; wiz.weightUnit = 'kg';
   wiz.priceUsd = ''; wiz.shape = ''; wiz.description = '';
+  wiz.saleType = 'spot'; wiz.reservePrice = ''; wiz.auctionDuration = 7;
   wiz.imageFiles = []; wiz.imagePreviews = [];
   document.querySelectorAll('.category-card').forEach(c => c.classList.remove('selected'));
   document.getElementById('wiz-tree-error').style.display = 'none';
   document.getElementById('wiz-details-error').style.display = 'none';
   document.getElementById('wiz-img-error').style.display = 'none';
+  setSaleType('spot');
   resetImgSlots();
   renderWizStep(1);
   openOverlay('wizard-overlay');
+}
+
+function setSaleType(type) {
+  wiz.saleType = type;
+  document.getElementById('btn-sale-spot').classList.toggle('active', type === 'spot');
+  document.getElementById('btn-sale-auction').classList.toggle('active', type === 'auction');
+  document.getElementById('wiz-auction-fields').style.display = type === 'auction' ? '' : 'none';
+  const priceLabel = document.querySelector('#wiz-step-3 label[for-price]') || document.querySelector('#wiz-step-3 .wiz-field:nth-child(3) label');
 }
 
 function renderWizStep(n) {
@@ -3933,11 +4145,15 @@ function wizNext() {
   } else if (wiz.step === 3) {
     const name = document.getElementById('wiz-name').value.trim();
     const price = document.getElementById('wiz-price').value.trim();
-    if (!name || !price) {
-      document.getElementById('wiz-details-error').style.display = '';
-      return;
+    const errEl = document.getElementById('wiz-details-error');
+    if (!name || !price) { errEl.textContent = 'Izpolnite naziv in začetno ceno.'; errEl.style.display = ''; return; }
+    if (wiz.saleType === 'auction') {
+      const res = document.getElementById('wiz-reserve-price').value.trim();
+      if (!res) { errEl.textContent = 'Vnesite minimalno (rezervno) ceno za dražbo.'; errEl.style.display = ''; return; }
+      wiz.reservePrice = parseFloat(res);
+      wiz.auctionDuration = parseInt(document.getElementById('wiz-auction-duration').value);
     }
-    document.getElementById('wiz-details-error').style.display = 'none';
+    errEl.style.display = 'none';
     wiz.name = name;
     wiz.weight = document.getElementById('wiz-weight').value.trim();
     wiz.weightUnit = document.getElementById('wiz-weight-unit').value;
@@ -4192,6 +4408,10 @@ async function submitListing() {
       if (urlData?.publicUrl) imageUrls.push(urlData.publicUrl);
     }
 
+    const auctionEndAt = wiz.saleType === 'auction'
+      ? new Date(Date.now() + wiz.auctionDuration * 24 * 60 * 60 * 1000).toISOString()
+      : null;
+
     const payload = {
       type: wiz.category,
       material: wiz.treeNode?.matKey || null,
@@ -4203,6 +4423,10 @@ async function submitListing() {
       shape: wiz.shape || null,
       description: wiz.description || null,
       images: imageUrls.length ? imageUrls : undefined,
+      sale_type: wiz.saleType,
+      reserve_price: wiz.saleType === 'auction' ? wiz.reservePrice : null,
+      auction_end_at: auctionEndAt,
+      current_bid: 0,
     };
 
     let data, error;
@@ -4300,6 +4524,12 @@ function prefillDetailsEdit() {
 // ── DELETE LISTING ──
 async function deleteListing(dbId, cardEl) {
   if (!currentUser) return;
+  const listing = dbListings.find(l => l.dbId === dbId);
+  if (listing && listing.saleType === 'auction' && listing.auctionEndAt) {
+    if (new Date(listing.auctionEndAt) <= new Date()) {
+      alert('Dražba je že zaključena. Oglasa ni mogoče odstraniti.'); return;
+    }
+  }
   if (!confirm('Res želite izbrisati ta oglas?')) return;
   const { error } = await sbM.from('listings').delete().eq('id', dbId).eq('user_id', currentUser.id);
   if (error) { alert('Napaka pri brisanju. Poskusite znova.'); return; }
@@ -4408,9 +4638,13 @@ renderListings = function(list) {
       ? `<img class="listing-img" src="${esc(l.images[0])}" alt="${esc(l.name)}" />`
       : `<div class="listing-material-icon" style="color:rgba(201,162,39,0.25);">${l.material || '⬡'}</div>`;
     const isOwner = currentUser && currentUser.id === l.user_id;
+    const isAuction = l.saleType === 'auction';
+    const auctionEnded = isAuction && l.auctionEndAt && new Date(l.auctionEndAt) <= new Date();
+    const iWon = auctionEnded && currentUser && l.currentBidderId === currentUser.id;
+    const canDelete = !auctionEnded;
     const ownerBar = isOwner ? `
       <div class="listing-owner-bar">
-        <button class="btn-delete-listing" onclick="event.stopPropagation(); deleteListing('${l.dbId}', this.closest('.listing-card'))">Izbriši</button>
+        ${canDelete ? `<button class="btn-delete-listing" onclick="event.stopPropagation(); deleteListing('${l.dbId}', this.closest('.listing-card'))">Izbriši</button>` : `<span style="font-size:10px;color:var(--muted);padding:4px 8px;">Dražba zaključena — brisanje ni možno</span>`}
       </div>` : '';
     const isFavListing = getFavListings().includes(l.dbId);
     const favBtn = `<button class="listing-fav-btn${isFavListing ? ' active' : ''}" onclick="toggleFavListing('${l.dbId}', this)" title="Dodaj med priljubljene">
@@ -4420,12 +4654,50 @@ renderListings = function(list) {
     const badgeClasses = { ferrous:'badge-ferrous', nonferrous:'badge-nonferrous', precious:'badge-nonferrous', nonmetals:'badge-ferrous' };
     const weightDisplay = l.weight ? l.weight : '';
     const shapeLabel = { bar:'Palica/Ingot', coin:'Kovanec', granule:'Granule', sheet:'List/Folija', jewelry:'Nakit', powder:'Zrno/Prah', industrial:'Industrijsko', other:'Ostalo' };
+
+    // Auction bottom bar
+    let bottomSection = '';
+    if (isAuction) {
+      if (auctionEnded) {
+        if (iWon) {
+          bottomSection = `<div class="auction-won-banner" onclick="event.stopPropagation(); showPaymentInfo('${l.dbId}', ${l.currentBid})">🏆 Zmagali ste z $${l.currentBid.toLocaleString()} — Kliknite za plačilo</div>`;
+        } else {
+          bottomSection = `<div class="auction-ended-banner">DRAŽBA ZAKLJUČENA — Zmagovalec: ${l.currentBid > 0 ? '$' + l.currentBid.toLocaleString() : 'Ni ponudb'}</div>`;
+        }
+      } else {
+        const timeStr = formatCountdown(l.auctionEndAt);
+        const urgent = l.auctionEndAt && (new Date(l.auctionEndAt) - new Date()) < 3600000;
+        const bidStr = l.currentBid > 0 ? `$${l.currentBid.toLocaleString()}` : 'Ni ponudb';
+        const canBid = currentUser && !isOwner;
+        bottomSection = `<div class="auction-bar">
+          <div class="auction-bar-left">
+            <div class="${l.currentBid > 0 ? 'auction-current-bid' : 'auction-no-bid'}">${bidStr}</div>
+            <div class="auction-timer${urgent ? ' urgent' : ''}">⏱ ${timeStr}</div>
+          </div>
+          ${canBid ? `<button class="btn-bid" onclick="event.stopPropagation(); openBidModal('${l.dbId}')">Ponudi 🔨</button>` : !currentUser ? `<button class="btn-bid" onclick="event.stopPropagation(); openAuthModal('signin')">Prijavi se</button>` : ''}
+        </div>`;
+      }
+    } else {
+      // Spot — show buy button
+      const canBuy = currentUser && !isOwner;
+      if (canBuy) {
+        bottomSection = `<div class="auction-bar" style="background:rgba(72,199,142,0.03);">
+          <div class="auction-bar-left">
+            <div class="auction-current-bid" style="color:rgba(72,199,142,0.9);">${price > 0 ? sym + price.toLocaleString('sl-SI') : 'Cena na poizvedbo'}</div>
+            <div class="auction-timer">Spot nakup</div>
+          </div>
+          <button class="btn-buy-spot" onclick="event.stopPropagation(); showPaymentInfo('${l.dbId}', ${l.priceUsd})">Kupi zdaj</button>
+        </div>`;
+      }
+    }
+
     return `
     <div class="listing-card">
       <div class="listing-card-img" style="background:linear-gradient(135deg, var(--ink-3), #1e2a30);">
         ${imgHtml}
         <div class="listing-card-img-overlay"></div>
-        <span class="listing-badge ${badgeClasses[l.type]||'badge-nonferrous'}">${typeLabels[l.type]||l.type}</span>
+        <span class="listing-badge ${badgeClasses[l.type]||'badge-nonferrous'}" style="top:8px;left:8px;">${typeLabels[l.type]||l.type}</span>
+        <span class="listing-badge ${isAuction ? (auctionEnded ? 'badge-ended' : 'badge-auction') : 'badge-spot'}" style="top:34px;left:8px;">${isAuction ? (auctionEnded ? 'ZAKLJUČENO' : 'DRAŽBA') : 'SPOT'}</span>
         ${favBtn}
       </div>
       <div class="listing-card-body">
@@ -4434,20 +4706,102 @@ renderListings = function(list) {
         <div class="listing-card-meta">
           ${l.shape ? `<span class="listing-meta-tag">${esc(shapeLabel[l.shape]||l.shape)}</span>` : ''}
           ${weightDisplay ? `<span class="listing-meta-tag">${esc(weightDisplay)}</span>` : ''}
-          <span class="listing-meta-tag" style="color:rgba(72,199,142,0.8);">Oglas</span>
-        </div>
-        <div class="listing-card-footer">
-          <div class="listing-price">
-            <div class="listing-price-main">${price > 0 ? sym + price.toLocaleString('sl-SI', {minimumFractionDigits: price < 10 ? 2 : 0}) : '—'}</div>
-            <div class="listing-price-unit">${price > 0 ? 'cena / enota' : 'Cena na poizvedbo'}</div>
-          </div>
-          <button class="listing-contact-btn" data-name="${esc(l.name)}" onclick="event.stopPropagation(); openContact(this.dataset.name)">Povpraši</button>
+          ${isAuction ? `<span class="listing-meta-tag">Zač. $${esc(String(l.priceUsd))}</span>` : ''}
         </div>
       </div>
+      ${bottomSection}
       ${ownerBar}
     </div>`;
   }).join('');
 };
+
+// ── AUCTION HELPERS ──────────────────────────────────────────────────────────
+
+function formatCountdown(endAtIso) {
+  if (!endAtIso) return '—';
+  const diff = new Date(endAtIso) - new Date();
+  if (diff <= 0) return 'Zaključeno';
+  const days  = Math.floor(diff / 86400000);
+  const hours = Math.floor((diff % 86400000) / 3600000);
+  const mins  = Math.floor((diff % 3600000) / 60000);
+  if (days > 0)  return `${days}d ${hours}h`;
+  if (hours > 0) return `${hours}h ${mins}m`;
+  return `${mins}m`;
+}
+
+let bidListingId = null;
+
+async function openBidModal(dbId) {
+  const listing = dbListings.find(l => l.dbId === dbId);
+  if (!listing) return;
+  bidListingId = dbId;
+  document.getElementById('bid-listing-name').textContent = listing.name;
+  const bidVal = listing.currentBid > 0 ? `$${listing.currentBid.toLocaleString()}` : 'Ni ponudb';
+  document.getElementById('bid-current-val').textContent = bidVal;
+  document.getElementById('bid-timer-val').textContent = formatCountdown(listing.auctionEndAt);
+  const minBid = Math.max(listing.currentBid + 1, listing.reservePrice || 0);
+  const inp = document.getElementById('bid-amount-input');
+  inp.value = minBid;
+  inp.min = minBid;
+  document.getElementById('bid-error').textContent = '';
+  document.getElementById('bid-overlay').classList.add('active');
+}
+
+async function submitBid() {
+  if (!bidListingId) return;
+  const amount = parseFloat(document.getElementById('bid-amount-input').value);
+  const errEl  = document.getElementById('bid-error');
+  const btn    = document.getElementById('bid-submit-btn');
+  errEl.textContent = '';
+  if (!amount || amount <= 0) { errEl.textContent = 'Vnesite veljavno ponudbo.'; return; }
+
+  btn.disabled = true;
+  btn.textContent = 'Pošiljam…';
+  try {
+    const { data, error } = await sbM.rpc('place_bid', { p_listing_id: bidListingId, p_amount: amount });
+    if (error) throw error;
+    const res = data;
+    if (res && res.error) {
+      const msgs = {
+        not_authenticated: 'Prijaviti se morate.',
+        listing_not_found: 'Oglas ni bil najden.',
+        not_an_auction:    'Ta oglas ni dražba.',
+        auction_ended:     'Dražba je že zaključena.',
+        own_listing:       'Ne morete ponuditi za lasten oglas.',
+        bid_too_low:       `Ponudba mora biti višja od trenutne ($${res.current_bid}).`,
+        below_reserve:     `Ponudba mora biti vsaj $${res.reserve_price} (rezervna cena).`,
+      };
+      errEl.textContent = msgs[res.error] || `Napaka: ${res.error}`;
+    } else if (res && res.success) {
+      closeOverlay('bid-overlay');
+      await loadDbListings();
+      renderListings(getFiltered());
+    } else {
+      errEl.textContent = 'Napaka pri oddaji ponudbe.';
+    }
+  } catch (e) {
+    errEl.textContent = 'Napaka pri oddaji ponudbe.';
+  } finally {
+    btn.disabled = false;
+    btn.textContent = '🔨 Oddaj ponudbo';
+  }
+}
+
+function showPaymentInfo(dbId, amount) {
+  const listing = dbListings.find(l => l.dbId === dbId);
+  const name = listing ? listing.name : dbId;
+  document.getElementById('pay-listing-name').textContent = name;
+  document.getElementById('pay-amount').textContent = `$${Number(amount).toLocaleString('sl-SI', {minimumFractionDigits: 2})}`;
+  document.getElementById('pay-ref').textContent = `MT-${dbId.slice(0,8).toUpperCase()}`;
+  document.getElementById('payment-overlay').classList.add('active');
+}
+
+// Refresh countdowns every 60 seconds
+setInterval(() => {
+  if (dbListings && dbListings.some(l => l.saleType === 'auction' && l.auctionEndAt && new Date(l.auctionEndAt) > new Date())) {
+    renderListings(getFiltered());
+  }
+}, 60000);
 </script>
 
 </body>
