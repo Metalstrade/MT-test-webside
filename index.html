@@ -1258,6 +1258,18 @@
     </div>
   </section>
 
+  <!-- ── MY BIDS SECTION ── -->
+  <section id="my-bids-section" style="display:none;">
+    <div class="section-inner">
+      <div class="section-eyebrow">Moje Dražitve</div>
+      <h2 class="section-title">Dražbe, kjer Sodelujete</h2>
+      <p class="section-sub">Vse dražbe, na katerih ste oddali ponudbo. Spremljajte status in ponudite znova neposredno od tukaj.</p>
+      <div class="my-listings-grid" id="my-bids-grid">
+        <p style="color:var(--muted); font-size:13px;" id="my-bids-empty">Niste še oddali nobene ponudbe. Obiščite <a href="markets.html" style="color:var(--gold);">Marketplace</a> in poiščite aktivne dražbe.</p>
+      </div>
+    </div>
+  </section>
+
   <!-- ── FAV LISTINGS SECTION ── -->
   <section id="fav-listings-section" style="display:none;">
     <div class="section-inner">
@@ -2391,14 +2403,15 @@ return '$' + price.toLocaleString('en-US', {maximumFractionDigits:2});
 
   // ── PERSONALIZED DASHBOARD ──
   function showPersonalDashboard(user) {
-    // Hide hero text, show dashboard panel
     const els = document.querySelectorAll('.hero-eyebrow, .hero h1, .hero-sub, .hero-actions, .hero-stats');
     els.forEach(el => el.style.display = 'none');
     document.getElementById('dashboard-panel').style.display = 'block';
     document.getElementById('my-listings-section').style.display = 'block';
+    document.getElementById('my-bids-section').style.display = 'block';
     document.getElementById('fav-listings-section').style.display = 'block';
     loadDashFavs(user);
     loadMyListings(user);
+    loadMyBids(user);
     loadFavListings(user);
   }
   function hidePersonalDashboard() {
@@ -2406,6 +2419,7 @@ return '$' + price.toLocaleString('en-US', {maximumFractionDigits:2});
     els.forEach(el => el.style.removeProperty('display'));
     document.getElementById('dashboard-panel').style.display = 'none';
     document.getElementById('my-listings-section').style.display = 'none';
+    document.getElementById('my-bids-section').style.display = 'none';
     document.getElementById('fav-listings-section').style.display = 'none';
   }
 
@@ -2581,6 +2595,88 @@ return '$' + price.toLocaleString('en-US', {maximumFractionDigits:2});
       grid.innerHTML = '';
       grid.appendChild(emptyMsg);
       emptyMsg.style.display = '';
+    }
+  }
+
+  function _bidCountdown(endAtIso) {
+    if (!endAtIso) return '—';
+    const diff = new Date(endAtIso) - new Date();
+    if (diff <= 0) return 'Zaključeno';
+    const days  = Math.floor(diff / 86400000);
+    const hours = Math.floor((diff % 86400000) / 3600000);
+    const mins  = Math.floor((diff % 3600000) / 60000);
+    if (days > 0)  return `${days}d ${hours}h`;
+    if (hours > 0) return `${hours}h ${mins}m`;
+    return `${mins}m`;
+  }
+
+  async function loadMyBids(user) {
+    const grid = document.getElementById('my-bids-grid');
+    const emptyMsg = document.getElementById('my-bids-empty');
+    try {
+      // Get distinct listing IDs + my highest bid per listing
+      const { data: bidsData, error: bidsErr } = await sb
+        .from('bids')
+        .select('listing_id, amount')
+        .eq('user_id', user.id)
+        .order('amount', { ascending: false });
+      if (bidsErr || !bidsData || !bidsData.length) {
+        grid.innerHTML = ''; grid.appendChild(emptyMsg); emptyMsg.style.display = ''; return;
+      }
+      // Deduplicate — keep highest bid per listing
+      const myBidMap = {};
+      bidsData.forEach(b => {
+        if (!myBidMap[b.listing_id] || b.amount > myBidMap[b.listing_id]) myBidMap[b.listing_id] = b.amount;
+      });
+      const listingIds = Object.keys(myBidMap);
+      const { data: listings, error: listErr } = await sb
+        .from('listings').select('*').in('id', listingIds);
+      if (listErr || !listings || !listings.length) {
+        grid.innerHTML = ''; grid.appendChild(emptyMsg); emptyMsg.style.display = ''; return;
+      }
+      emptyMsg.style.display = 'none';
+      grid.innerHTML = listings.map(row => {
+        const myBid   = myBidMap[row.id] || 0;
+        const curBid  = row.current_bid || 0;
+        const endAt   = row.auction_end_at;
+        const ended   = endAt && new Date(endAt) <= new Date();
+        const iWon    = ended && row.current_bidder_id === user.id;
+        const isLeading = !ended && row.current_bidder_id === user.id;
+        const countdown = _bidCountdown(endAt);
+        const imgHtml = row.images && row.images[0]
+          ? `<img src="${esc(row.images[0])}" style="width:100%;height:100%;object-fit:cover;" alt="${esc(row.name)}">`
+          : `<div style="width:100%;height:100%;display:flex;align-items:center;justify-content:center;font-size:28px;color:rgba(201,162,39,0.25);">⬡</div>`;
+
+        let statusBadge = '';
+        let actionBtn   = '';
+        if (iWon) {
+          statusBadge = `<span style="display:inline-block;padding:2px 8px;background:rgba(201,162,39,0.15);color:#E4BF5A;border:1px solid rgba(201,162,39,0.3);border-radius:2px;font-size:10px;font-weight:600;letter-spacing:0.06em;">🏆 ZMAGALI STE</span>`;
+          actionBtn = `<a href="markets.html" class="btn-edit-my" style="text-decoration:none;background:linear-gradient(135deg,#E4BF5A,#C9A227,#8B6F14);color:#0D1117;">💳 Plačaj zdaj</a>`;
+        } else if (ended) {
+          statusBadge = `<span style="display:inline-block;padding:2px 8px;background:rgba(143,163,177,0.1);color:#6B8090;border:1px solid rgba(143,163,177,0.2);border-radius:2px;font-size:10px;font-weight:600;letter-spacing:0.06em;">ZAKLJUČENO</span>`;
+          actionBtn = `<a href="markets.html" class="btn-edit-my" style="text-decoration:none;opacity:0.5;cursor:default;">Dražba zaključena</a>`;
+        } else if (isLeading) {
+          statusBadge = `<span style="display:inline-block;padding:2px 8px;background:rgba(72,199,142,0.12);color:rgba(72,199,142,0.9);border:1px solid rgba(72,199,142,0.25);border-radius:2px;font-size:10px;font-weight:600;letter-spacing:0.06em;">▲ VODITE</span>`;
+          actionBtn = `<a href="markets.html" class="btn-edit-my" style="text-decoration:none;">⏱ ${countdown} — Marketplace</a>`;
+        } else {
+          statusBadge = `<span style="display:inline-block;padding:2px 8px;background:rgba(240,100,90,0.12);color:#f0645a;border:1px solid rgba(240,100,90,0.2);border-radius:2px;font-size:10px;font-weight:600;letter-spacing:0.06em;">▼ PREBIT</span>`;
+          actionBtn = `<a href="markets.html" class="btn-edit-my" style="text-decoration:none;border-color:rgba(201,162,39,0.4);color:var(--gold-lt);">🔨 Ponudi znova — ${countdown}</a>`;
+        }
+        return `<div class="my-listing-card" style="position:relative;">
+          <div class="my-listing-img" style="background:linear-gradient(135deg,#1a2530,#0e161e);">${imgHtml}</div>
+          <div class="my-listing-body">
+            <div style="margin-bottom:6px;">${statusBadge}</div>
+            <div class="my-listing-name">${esc(row.name)}</div>
+            <div class="my-listing-meta" style="display:flex;flex-direction:column;gap:2px;">
+              <span>Trenutna ponudba: <strong style="color:#E4BF5A;">$${Number(curBid).toLocaleString()}</strong></span>
+              <span style="color:var(--muted);font-size:12px;">Vaša ponudba: $${Number(myBid).toLocaleString()}</span>
+            </div>
+            ${actionBtn}
+          </div>
+        </div>`;
+      }).join('');
+    } catch {
+      grid.innerHTML = ''; grid.appendChild(emptyMsg); emptyMsg.style.display = '';
     }
   }
 </script>
