@@ -4744,7 +4744,7 @@ async function openBidModal(dbId) {
   inp.value = minBid;
   inp.min = minBid;
   document.getElementById('bid-error').textContent = '';
-  document.getElementById('bid-overlay').classList.add('active');
+  document.getElementById('bid-overlay').classList.add('open');
 }
 
 async function submitBid() {
@@ -4793,7 +4793,7 @@ function showPaymentInfo(dbId, amount) {
   document.getElementById('pay-listing-name').textContent = name;
   document.getElementById('pay-amount').textContent = `$${Number(amount).toLocaleString('sl-SI', {minimumFractionDigits: 2})}`;
   document.getElementById('pay-ref').textContent = `MT-${dbId.slice(0,8).toUpperCase()}`;
-  document.getElementById('payment-overlay').classList.add('active');
+  document.getElementById('payment-overlay').classList.add('open');
 }
 
 // Refresh countdowns every 60 seconds
