@@ -256,7 +256,7 @@
 <script>
   // ── CONFIG ──
   const ADMIN_PASSWORD = 'MT-admin-2024'; // Spremenite po želji
-  const ADMIN_EMAILS   = ['Metals-trade@protonmail.com', 'jani.zibert@gazela.si'];
+  const ADMIN_EMAILS   = ['metals-trade@protonmail.com', 'jani.zibert@gazela.si'];
 
   const sb = supabase.createClient(
     'https://xurgxkrnmutmocqbjffw.supabase.co',
@@ -295,7 +295,7 @@
     const { data: { session } } = await sb.auth.getSession();
     if (session) {
       const email = session.user.email;
-      if (ADMIN_EMAILS.includes(email)) {
+      if (ADMIN_EMAILS.includes(email.toLowerCase())) {
         showDashboard(session.user);
       } else {
         await sb.auth.signOut();
@@ -316,7 +316,7 @@
   sb.auth.onAuthStateChange((_event, session) => {
     if (session) {
       const email = session.user.email;
-      if (ADMIN_EMAILS.includes(email)) {
+      if (ADMIN_EMAILS.includes(email.toLowerCase())) {
         showDashboard(session.user);
       } else {
         sb.auth.signOut();
