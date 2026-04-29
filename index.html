@@ -1726,6 +1726,46 @@
         " onfocus="this.style.borderColor='var(--gold)'" onblur="this.style.borderColor='rgba(143,163,177,0.2)'" />
       </div>
 
+      <!-- Country -->
+      <div>
+        <label style="display:block; font-size:11px; letter-spacing:0.08em; text-transform:uppercase; color:var(--muted); margin-bottom:6px; font-family:'Inter',sans-serif;">Država</label>
+        <select name="country" style="
+          width:100%; padding:11px 14px;
+          background:var(--ink-3); border:1px solid rgba(143,163,177,0.2);
+          border-radius:3px; color:#E8EEF2; font-family:'Inter',sans-serif; font-size:14px;
+          outline:none; transition:border-color 0.2s ease;
+        " onfocus="this.style.borderColor='var(--gold)'" onblur="this.style.borderColor='rgba(143,163,177,0.2)'">
+          <option value="">— Izberite —</option>
+          <option value="AT">Avstrija</option>
+          <option value="BE">Belgija</option>
+          <option value="BG">Bolgarija</option>
+          <option value="CY">Ciper</option>
+          <option value="CZ">Češka</option>
+          <option value="DK">Danska</option>
+          <option value="EE">Estonija</option>
+          <option value="FI">Finska</option>
+          <option value="FR">Francija</option>
+          <option value="GR">Grčija</option>
+          <option value="IE">Irska</option>
+          <option value="IT">Italija</option>
+          <option value="LV">Latvija</option>
+          <option value="LT">Litva</option>
+          <option value="LU">Luksemburg</option>
+          <option value="MT">Malta</option>
+          <option value="HU">Madžarska</option>
+          <option value="DE">Nemčija</option>
+          <option value="NL">Nizozemska</option>
+          <option value="PL">Poljska</option>
+          <option value="PT">Portugalska</option>
+          <option value="RO">Romunija</option>
+          <option value="SK">Slovaška</option>
+          <option value="SI">Slovenija</option>
+          <option value="ES">Španija</option>
+          <option value="SE">Švedska</option>
+          <option value="HR">Hrvaška</option>
+        </select>
+      </div>
+
       <!-- Password -->
       <div>
         <label style="display:block; font-size:11px; letter-spacing:0.08em; text-transform:uppercase; color:var(--muted); margin-bottom:6px; font-family:'Inter',sans-serif;" data-i18n="reg_password">Password</label>
@@ -2030,11 +2070,33 @@
             <label class="sform-label">Država</label>
             <select class="sform-input" id="sp-country">
               <option value="">— Izberite —</option>
-              <option value="SI">Slovenija</option><option value="AT">Avstrija</option>
-              <option value="DE">Nemčija</option><option value="HR">Hrvaška</option>
-              <option value="IT">Italija</option><option value="HU">Madžarska</option>
-              <option value="CH">Švica</option><option value="US">ZDA</option>
-              <option value="GB">Velika Britanija</option><option value="OTHER">Drugo</option>
+              <option value="AT">Avstrija</option>
+              <option value="BE">Belgija</option>
+              <option value="BG">Bolgarija</option>
+              <option value="CY">Ciper</option>
+              <option value="CZ">Češka</option>
+              <option value="DK">Danska</option>
+              <option value="EE">Estonija</option>
+              <option value="FI">Finska</option>
+              <option value="FR">Francija</option>
+              <option value="GR">Grčija</option>
+              <option value="IE">Irska</option>
+              <option value="IT">Italija</option>
+              <option value="LV">Latvija</option>
+              <option value="LT">Litva</option>
+              <option value="LU">Luksemburg</option>
+              <option value="MT">Malta</option>
+              <option value="HU">Madžarska</option>
+              <option value="DE">Nemčija</option>
+              <option value="NL">Nizozemska</option>
+              <option value="PL">Poljska</option>
+              <option value="PT">Portugalska</option>
+              <option value="RO">Romunija</option>
+              <option value="SK">Slovaška</option>
+              <option value="SI">Slovenija</option>
+              <option value="ES">Španija</option>
+              <option value="SE">Švedska</option>
+              <option value="HR">Hrvaška</option>
             </select>
           </div>
           <div class="sform-field">
@@ -2268,6 +2330,7 @@
           last_name: fd.get('priimek'),
           phone: fd.get('telefon'),
           tax_number: fd.get('davcna'),
+          country: fd.get('country'),
         }
       }
     });
