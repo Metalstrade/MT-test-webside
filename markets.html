@@ -4393,6 +4393,10 @@ function resetImgSlots() {
 
 // ── SUBMIT LISTING ──
 async function submitListing() {
+  if (!currentUser || !currentUser.user_metadata?.marketplace_approved) {
+    alert('Vaš račun še čaka na odobritev administratorja.');
+    return;
+  }
   const nextBtn = document.getElementById('wiz-btn-next');
   nextBtn.disabled = true;
   nextBtn.textContent = 'Objavljam…';

@@ -360,8 +360,7 @@
     document.getElementById('login-prompt').style.display = 'none';
     document.getElementById('dashboard').style.display    = 'block';
     document.getElementById('nav-email').textContent = user.email;
-    await loadRegistrations();
-    await loadVerifications();
+    await Promise.all([loadRegistrations(), loadVerifications()]);
   }
 
   // ── SECTION SWITCH ──
