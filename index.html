@@ -2975,11 +2975,18 @@ return '$' + price.toLocaleString('en-US', {maximumFractionDigits:2});
     if (file.size > 5 * 1024 * 1024) { msg.style.color = '#f0645a'; msg.textContent = 'Datoteka je prevelika (max 5MB).'; return; }
     const allowed = ['application/pdf','image/jpeg','image/png'];
     if (!allowed.includes(file.type)) { msg.style.color = '#f0645a'; msg.textContent = 'Dovoljeni formati: PDF, JPG, PNG.'; return; }
-    // Upload to Supabase storage
     const { data: { user } } = await sb.auth.getUser();
     const path = `verifications/${user.id}/${Date.now()}_${file.name}`;
-    const { error } = await sb.storage.from('documents').upload(path, file, { upsert: true });
-    if (error) { msg.style.color = '#f0645a'; msg.textContent = 'Napaka pri pošiljanju: ' + error.message; return; }
+    const { error: upErr } = await sb.storage.from('documents').upload(path, file, { upsert: true });
+    if (upErr) { msg.style.color = '#f0645a'; msg.textContent = 'Napaka pri pošiljanju: ' + upErr.message; return; }
+    // Record in verifications table
+    await sb.from('verifications').insert({
+      user_id: user.id,
+      user_email: user.email,
+      file_path: path,
+      file_name: file.name,
+      status: 'pending'
+    });
     msg.style.color = '#48c78e';
     msg.textContent = '✓ Dokument poslan. Pregledali ga bomo v 1-2 delovnih dneh.';
     fileEl.value = '';

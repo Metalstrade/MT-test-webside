@@ -1,0 +1,455 @@
+<!DOCTYPE html>
+<html lang="sl">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Admin — Metals Trading</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;600;700&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet" />
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
+  <style>
+    :root {
+      --gold:    #C9A227;
+      --gold-lt: #E4BF5A;
+      --gold-dk: #8B6F14;
+      --ink:     #0D1117;
+      --ink-2:   #141C24;
+      --ink-3:   #1B2733;
+      --muted:   #6B8090;
+      --silver:  #8FA3B1;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      background: var(--ink); color: #E8EEF2;
+      font-family: 'Inter', sans-serif; font-size: 14px;
+      line-height: 1.6; min-height: 100vh;
+    }
+    body::before {
+      content:''; position:fixed; inset:0; pointer-events:none; z-index:0;
+      background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='300' height='300'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.75' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='300' height='300' filter='url(%23n)' opacity='0.04'/%3E%3C/svg%3E");
+      opacity:0.5;
+    }
+
+    /* ── PASSWORD GATE ── */
+    #gate {
+      position:fixed; inset:0; z-index:999;
+      background:var(--ink);
+      display:flex; align-items:center; justify-content:center;
+    }
+    .gate-box {
+      background:var(--ink-2); border:1px solid rgba(201,162,39,0.2);
+      border-radius:4px; padding:48px 44px;
+      width:100%; max-width:380px; text-align:center;
+      box-shadow:0 8px 60px rgba(0,0,0,0.6);
+    }
+    .gate-eyebrow { font-size:10px; letter-spacing:0.14em; text-transform:uppercase; color:var(--gold); margin-bottom:8px; }
+    .gate-title { font-family:'Cormorant Garamond',serif; font-size:28px; color:#E8EEF2; margin-bottom:28px; }
+    .gate-input {
+      width:100%; padding:11px 14px;
+      background:rgba(255,255,255,0.04); border:1px solid rgba(143,163,177,0.18);
+      border-radius:2px; color:#E8EEF2; font-family:'Inter',sans-serif; font-size:14px;
+      outline:none; transition:border-color 0.15s; text-align:center; letter-spacing:0.1em;
+    }
+    .gate-input:focus { border-color:rgba(201,162,39,0.4); }
+    .gate-btn {
+      width:100%; margin-top:14px; padding:12px;
+      background:linear-gradient(135deg,var(--gold-lt),var(--gold),var(--gold-dk));
+      color:var(--ink); font-family:'Inter',sans-serif; font-weight:600;
+      font-size:12px; letter-spacing:0.08em; text-transform:uppercase;
+      border:none; cursor:pointer; border-radius:2px;
+      transition:opacity 0.15s;
+    }
+    .gate-btn:hover { opacity:0.88; }
+    .gate-error { color:#f0645a; font-size:12px; margin-top:10px; display:none; }
+
+    /* ── MAIN LAYOUT ── */
+    #app { display:none; position:relative; z-index:1; }
+
+    /* ── NAV ── */
+    nav {
+      position:sticky; top:0; z-index:100;
+      display:flex; align-items:center; justify-content:space-between;
+      padding:0 40px; height:64px;
+      background:rgba(13,17,23,0.95); backdrop-filter:blur(12px);
+      border-bottom:1px solid rgba(201,162,39,0.12);
+    }
+    .nav-brand { font-family:'Cormorant Garamond',serif; font-size:18px; color:var(--gold-lt); letter-spacing:0.02em; }
+    .nav-brand span { color:var(--muted); font-size:12px; font-family:'Inter',sans-serif; margin-left:10px; font-weight:400; }
+    .nav-user { font-size:12px; color:var(--muted); display:flex; align-items:center; gap:14px; }
+    .btn-logout {
+      padding:6px 14px; background:none; border:1px solid rgba(143,163,177,0.2);
+      border-radius:2px; color:var(--muted); font-family:'Inter',sans-serif;
+      font-size:11px; cursor:pointer; letter-spacing:0.04em;
+      transition:all 0.15s;
+    }
+    .btn-logout:hover { border-color:rgba(240,100,90,0.4); color:#f0645a; }
+
+    /* ── LOGIN PROMPT ── */
+    #login-prompt {
+      max-width:420px; margin:80px auto; padding:0 16px; text-align:center;
+    }
+    .lp-title { font-family:'Cormorant Garamond',serif; font-size:26px; margin-bottom:8px; }
+    .lp-sub { color:var(--muted); font-size:13px; margin-bottom:28px; }
+    .lp-input {
+      width:100%; padding:10px 14px; margin-bottom:10px;
+      background:rgba(255,255,255,0.04); border:1px solid rgba(143,163,177,0.18);
+      border-radius:2px; color:#E8EEF2; font-family:'Inter',sans-serif; font-size:14px; outline:none;
+      transition:border-color 0.15s;
+    }
+    .lp-input:focus { border-color:rgba(201,162,39,0.4); }
+    .lp-btn {
+      width:100%; padding:11px;
+      background:linear-gradient(135deg,var(--gold-lt),var(--gold),var(--gold-dk));
+      color:var(--ink); font-family:'Inter',sans-serif; font-weight:600;
+      font-size:12px; letter-spacing:0.08em; text-transform:uppercase;
+      border:none; cursor:pointer; border-radius:2px; transition:opacity 0.15s;
+    }
+    .lp-btn:hover { opacity:0.88; }
+    .lp-error { color:#f0645a; font-size:12px; margin-top:8px; display:none; }
+
+    /* ── DASHBOARD ── */
+    #dashboard { padding:32px 40px; max-width:1100px; margin:0 auto; }
+    .dash-header { margin-bottom:28px; }
+    .dash-eyebrow { font-size:10px; letter-spacing:0.14em; text-transform:uppercase; color:var(--gold); margin-bottom:6px; }
+    .dash-title { font-family:'Cormorant Garamond',serif; font-size:32px; color:#E8EEF2; }
+
+    /* Stats row */
+    .stats-row { display:flex; gap:14px; margin-bottom:32px; flex-wrap:wrap; }
+    .stat-tile {
+      flex:1; min-width:120px; padding:16px 20px;
+      background:var(--ink-2); border:1px solid rgba(201,162,39,0.1);
+      border-radius:3px;
+    }
+    .stat-num { font-family:'Cormorant Garamond',serif; font-size:32px; color:var(--gold-lt); line-height:1; }
+    .stat-lbl { font-size:11px; color:var(--muted); margin-top:4px; letter-spacing:0.04em; }
+
+    /* Filter tabs */
+    .filter-tabs { display:flex; gap:0; border-bottom:1px solid rgba(201,162,39,0.1); margin-bottom:24px; }
+    .ftab {
+      background:none; border:none; border-bottom:2px solid transparent;
+      color:var(--muted); font-family:'Inter',sans-serif; font-size:12px;
+      font-weight:500; letter-spacing:0.04em; padding:10px 16px 8px;
+      cursor:pointer; transition:all 0.15s; white-space:nowrap;
+    }
+    .ftab:hover { color:var(--silver); }
+    .ftab.active { color:var(--gold-lt); border-bottom-color:var(--gold); }
+
+    /* Cards */
+    .cards-grid { display:grid; grid-template-columns:repeat(auto-fill, minmax(320px,1fr)); gap:16px; }
+    .vcard {
+      background:var(--ink-2); border:1px solid rgba(143,163,177,0.1);
+      border-radius:3px; overflow:hidden;
+      transition:border-color 0.15s;
+    }
+    .vcard:hover { border-color:rgba(201,162,39,0.2); }
+    .vcard-header { padding:16px 18px 12px; border-bottom:1px solid rgba(143,163,177,0.08); }
+    .vcard-email { font-weight:500; color:#E8EEF2; font-size:13px; margin-bottom:2px; }
+    .vcard-company { font-size:12px; color:var(--muted); }
+    .vcard-body { padding:14px 18px; }
+    .vcard-row { display:flex; justify-content:space-between; align-items:center; margin-bottom:8px; font-size:12px; }
+    .vcard-lbl { color:var(--muted); }
+    .vcard-val { color:#E8EEF2; font-weight:500; }
+    .status-badge {
+      display:inline-block; padding:2px 9px;
+      border-radius:2px; font-size:10px; font-weight:600; letter-spacing:0.07em;
+    }
+    .status-pending  { background:rgba(201,162,39,0.12); color:var(--gold-lt); border:1px solid rgba(201,162,39,0.25); }
+    .status-approved { background:rgba(72,199,142,0.1);  color:#48c78e;        border:1px solid rgba(72,199,142,0.25); }
+    .status-rejected { background:rgba(240,100,90,0.1);  color:#f0645a;        border:1px solid rgba(240,100,90,0.2); }
+
+    .vcard-actions { display:flex; gap:8px; padding:12px 18px; border-top:1px solid rgba(143,163,177,0.08); }
+    .btn-doc {
+      flex:1; padding:8px 10px; text-align:center;
+      background:rgba(255,255,255,0.04); border:1px solid rgba(143,163,177,0.18);
+      border-radius:2px; color:var(--muted); font-family:'Inter',sans-serif;
+      font-size:11px; font-weight:500; cursor:pointer; text-decoration:none;
+      transition:all 0.15s; display:flex; align-items:center; justify-content:center; gap:5px;
+    }
+    .btn-doc:hover { border-color:rgba(201,162,39,0.3); color:var(--gold-lt); }
+    .btn-approve {
+      flex:1; padding:8px 10px;
+      background:rgba(72,199,142,0.1); border:1px solid rgba(72,199,142,0.25);
+      border-radius:2px; color:#48c78e; font-family:'Inter',sans-serif;
+      font-size:11px; font-weight:600; cursor:pointer; transition:all 0.15s;
+    }
+    .btn-approve:hover { background:rgba(72,199,142,0.18); }
+    .btn-reject {
+      flex:1; padding:8px 10px;
+      background:rgba(240,100,90,0.08); border:1px solid rgba(240,100,90,0.2);
+      border-radius:2px; color:#f0645a; font-family:'Inter',sans-serif;
+      font-size:11px; font-weight:600; cursor:pointer; transition:all 0.15s;
+    }
+    .btn-reject:hover { background:rgba(240,100,90,0.15); }
+    .btn-approve:disabled, .btn-reject:disabled { opacity:0.4; cursor:not-allowed; }
+
+    .empty-state { text-align:center; padding:60px 20px; color:var(--muted); font-size:13px; }
+    .empty-state h3 { font-family:'Cormorant Garamond',serif; font-size:22px; color:#E8EEF2; margin-bottom:8px; }
+
+    .toast {
+      position:fixed; bottom:24px; right:24px; z-index:9999;
+      padding:12px 20px; border-radius:3px; font-size:13px; font-weight:500;
+      box-shadow:0 4px 20px rgba(0,0,0,0.4);
+      animation: fadeInUp 0.2s ease;
+    }
+    .toast.success { background:rgba(72,199,142,0.15); border:1px solid rgba(72,199,142,0.3); color:#48c78e; }
+    .toast.error   { background:rgba(240,100,90,0.12); border:1px solid rgba(240,100,90,0.25); color:#f0645a; }
+    @keyframes fadeInUp { from { opacity:0; transform:translateY(8px); } to { opacity:1; transform:translateY(0); } }
+  </style>
+</head>
+<body>
+
+<!-- PASSWORD GATE -->
+<div id="gate">
+  <div class="gate-box">
+    <div class="gate-eyebrow">Metals Trading</div>
+    <h2 class="gate-title">Admin dostop</h2>
+    <input class="gate-input" type="password" id="gate-pw" placeholder="••••••••" onkeydown="if(event.key==='Enter')checkGate()" />
+    <button class="gate-btn" onclick="checkGate()">Vstopi</button>
+    <div class="gate-error" id="gate-error">Napačno geslo.</div>
+  </div>
+</div>
+
+<!-- MAIN APP -->
+<div id="app">
+  <nav>
+    <div class="nav-brand">Metals Trading <span>/ Admin</span></div>
+    <div class="nav-user">
+      <span id="nav-email">—</span>
+      <button class="btn-logout" onclick="doLogout()">Odjava</button>
+    </div>
+  </nav>
+
+  <!-- Supabase login -->
+  <div id="login-prompt">
+    <p class="lp-title">Prijavite se kot admin</p>
+    <p class="lp-sub">Dostop imajo samo pooblaščeni administratorji.</p>
+    <input class="lp-input" type="email" id="lp-email" placeholder="admin@email.com" />
+    <input class="lp-input" type="password" id="lp-pw" placeholder="Geslo" onkeydown="if(event.key==='Enter')doLogin()" />
+    <button class="lp-btn" onclick="doLogin()">Prijava</button>
+    <div class="lp-error" id="lp-error"></div>
+  </div>
+
+  <!-- Dashboard -->
+  <div id="dashboard" style="display:none;">
+    <div class="dash-header">
+      <div class="dash-eyebrow">Nadzorna plošča</div>
+      <h1 class="dash-title">Verifikacije prodajalcev</h1>
+    </div>
+    <div class="stats-row">
+      <div class="stat-tile"><div class="stat-num" id="stat-pending">—</div><div class="stat-lbl">Čakajoče</div></div>
+      <div class="stat-tile"><div class="stat-num" id="stat-approved">—</div><div class="stat-lbl">Odobrene</div></div>
+      <div class="stat-tile"><div class="stat-num" id="stat-rejected">—</div><div class="stat-lbl">Zavrnjene</div></div>
+      <div class="stat-tile"><div class="stat-num" id="stat-total">—</div><div class="stat-lbl">Skupaj</div></div>
+    </div>
+    <div class="filter-tabs">
+      <button class="ftab active" data-filter="pending"  onclick="setFilter('pending')">⏳ Čakajoče</button>
+      <button class="ftab"        data-filter="approved" onclick="setFilter('approved')">✓ Odobrene</button>
+      <button class="ftab"        data-filter="rejected" onclick="setFilter('rejected')">✕ Zavrnjene</button>
+      <button class="ftab"        data-filter="all"      onclick="setFilter('all')">Vse</button>
+    </div>
+    <div class="cards-grid" id="cards-grid"></div>
+  </div>
+</div>
+
+<script>
+  // ── CONFIG ──
+  const ADMIN_PASSWORD = 'MT-admin-2024'; // Spremenite po želji
+  const ADMIN_EMAILS   = ['Metals-trade@protonmail.com', 'jani.zibert@gazela.si'];
+
+  const sb = supabase.createClient(
+    'https://xurgxkrnmutmocqbjffw.supabase.co',
+    'sb_publishable_2YGXEXBZS2gXuw4j1ZL4_g_UHuRaoE3'
+  );
+
+  function esc(str) {
+    if (str == null) return '';
+    const d = document.createElement('div');
+    d.textContent = String(str);
+    return d.innerHTML;
+  }
+
+  // ── GATE ──
+  function checkGate() {
+    const pw = document.getElementById('gate-pw').value;
+    if (pw === ADMIN_PASSWORD) {
+      document.getElementById('gate').style.display = 'none';
+      document.getElementById('app').style.display  = 'block';
+      sessionStorage.setItem('admin_gate', '1');
+      checkSession();
+    } else {
+      document.getElementById('gate-error').style.display = 'block';
+      document.getElementById('gate-pw').value = '';
+    }
+  }
+
+  // Auto-skip gate if already passed this session
+  if (sessionStorage.getItem('admin_gate') === '1') {
+    document.getElementById('gate').style.display = 'none';
+    document.getElementById('app').style.display  = 'block';
+  }
+
+  // ── AUTH ──
+  async function checkSession() {
+    const { data: { session } } = await sb.auth.getSession();
+    if (session && ADMIN_EMAILS.includes(session.user.email)) {
+      showDashboard(session.user);
+    } else if (session) {
+      // Logged in but not admin
+      await sb.auth.signOut();
+      showLoginError('Ta račun nima admin dostopa.');
+    }
+  }
+
+  async function doLogin() {
+    const email = document.getElementById('lp-email').value.trim();
+    const pw    = document.getElementById('lp-pw').value;
+    const errEl = document.getElementById('lp-error');
+    errEl.style.display = 'none';
+    if (!ADMIN_EMAILS.includes(email)) {
+      errEl.style.display = ''; errEl.textContent = 'Ta e-mail nima admin dostopa.'; return;
+    }
+    const { data, error } = await sb.auth.signInWithPassword({ email, password: pw });
+    if (error) { errEl.style.display = ''; errEl.textContent = error.message; return; }
+    showDashboard(data.user);
+  }
+
+  function showLoginError(msg) {
+    const errEl = document.getElementById('lp-error');
+    errEl.style.display = ''; errEl.textContent = msg;
+  }
+
+  async function doLogout() {
+    await sb.auth.signOut();
+    document.getElementById('dashboard').style.display = 'none';
+    document.getElementById('login-prompt').style.display = 'block';
+    document.getElementById('nav-email').textContent = '—';
+  }
+
+  // ── DASHBOARD ──
+  let allVerifications = [];
+  let currentFilter = 'pending';
+
+  async function showDashboard(user) {
+    document.getElementById('login-prompt').style.display = 'none';
+    document.getElementById('dashboard').style.display    = 'block';
+    document.getElementById('nav-email').textContent = user.email;
+    await loadVerifications();
+  }
+
+  async function loadVerifications() {
+    try {
+      const { data, error } = await sb.rpc('admin_get_verifications');
+      if (error) throw error;
+      allVerifications = data || [];
+      updateStats();
+      renderCards();
+    } catch (e) {
+      document.getElementById('cards-grid').innerHTML =
+        `<div class="empty-state"><p style="color:#f0645a;">Napaka: ${esc(e.message)}</p></div>`;
+    }
+  }
+
+  function updateStats() {
+    const pending  = allVerifications.filter(v => v.status === 'pending').length;
+    const approved = allVerifications.filter(v => v.status === 'approved').length;
+    const rejected = allVerifications.filter(v => v.status === 'rejected').length;
+    document.getElementById('stat-pending').textContent  = pending;
+    document.getElementById('stat-approved').textContent = approved;
+    document.getElementById('stat-rejected').textContent = rejected;
+    document.getElementById('stat-total').textContent    = allVerifications.length;
+  }
+
+  function setFilter(f) {
+    currentFilter = f;
+    document.querySelectorAll('.ftab').forEach(t => t.classList.toggle('active', t.dataset.filter === f));
+    renderCards();
+  }
+
+  function renderCards() {
+    const list = currentFilter === 'all'
+      ? allVerifications
+      : allVerifications.filter(v => v.status === currentFilter);
+
+    const grid = document.getElementById('cards-grid');
+    if (!list.length) {
+      grid.innerHTML = `<div class="empty-state"><h3>Ni zapisov</h3><p>Ni verifikacij v tej kategoriji.</p></div>`;
+      return;
+    }
+
+    grid.innerHTML = list.map(v => {
+      const date = new Date(v.created_at).toLocaleDateString('sl-SI', { day:'2-digit', month:'2-digit', year:'numeric' });
+      const statusClass = { pending:'status-pending', approved:'status-approved', rejected:'status-rejected' }[v.status] || '';
+      const statusLabel = { pending:'Čakajoče', approved:'Odobreno', rejected:'Zavrnjeno' }[v.status] || v.status;
+      const isPending = v.status === 'pending';
+
+      return `<div class="vcard" id="vcard-${v.id}">
+        <div class="vcard-header">
+          <div class="vcard-email">${esc(v.user_email || '—')}</div>
+          <div class="vcard-company">${esc(v.file_name || '—')}</div>
+        </div>
+        <div class="vcard-body">
+          <div class="vcard-row">
+            <span class="vcard-lbl">Status</span>
+            <span class="status-badge ${statusClass}">${statusLabel}</span>
+          </div>
+          <div class="vcard-row">
+            <span class="vcard-lbl">Datum oddaje</span>
+            <span class="vcard-val">${date}</span>
+          </div>
+          <div class="vcard-row">
+            <span class="vcard-lbl">ID uporabnika</span>
+            <span class="vcard-val" style="font-size:10px;color:var(--muted);">${esc(v.user_id ? v.user_id.slice(0,16)+'…' : '—')}</span>
+          </div>
+        </div>
+        <div class="vcard-actions">
+          <button class="btn-doc" onclick="openDoc('${esc(v.file_path)}')">
+            <svg width="12" height="12" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M4 2h6l3 3v9H4V2z"/><polyline points="10,2 10,5 13,5"/></svg>
+            Dokument
+          </button>
+          ${isPending ? `
+          <button class="btn-approve" id="approve-${v.id}" onclick="reviewVerification('${v.id}', true)">✓ Odobri</button>
+          <button class="btn-reject"  id="reject-${v.id}"  onclick="reviewVerification('${v.id}', false)">✕ Zavrni</button>
+          ` : `<span style="font-size:11px;color:var(--muted);padding:8px;flex:2;text-align:center;">Že obdelano</span>`}
+        </div>
+      </div>`;
+    }).join('');
+  }
+
+  async function openDoc(filePath) {
+    if (!filePath) return;
+    const { data, error } = await sb.storage.from('documents').createSignedUrl(filePath, 3600);
+    if (error || !data) { showToast('Napaka pri odpiranju dokumenta.', 'error'); return; }
+    window.open(data.signedUrl, '_blank');
+  }
+
+  async function reviewVerification(id, approve) {
+    const aBtn = document.getElementById('approve-' + id);
+    const rBtn = document.getElementById('reject-' + id);
+    if (aBtn) aBtn.disabled = true;
+    if (rBtn) rBtn.disabled = true;
+
+    const { data, error } = await sb.rpc('admin_review_verification', { p_id: id, p_approve: approve });
+    if (error || (data && data.error)) {
+      showToast('Napaka: ' + (error?.message || data?.error), 'error');
+      if (aBtn) aBtn.disabled = false;
+      if (rBtn) rBtn.disabled = false;
+      return;
+    }
+    showToast(approve ? '✓ Verifikacija odobrena' : '✕ Verifikacija zavrnjena', approve ? 'success' : 'error');
+    await loadVerifications();
+  }
+
+  function showToast(msg, type = 'success') {
+    const t = document.createElement('div');
+    t.className = 'toast ' + type;
+    t.textContent = msg;
+    document.body.appendChild(t);
+    setTimeout(() => t.remove(), 3000);
+  }
+
+  // Init
+  if (sessionStorage.getItem('admin_gate') === '1') checkSession();
+</script>
+</body>
+</html>
