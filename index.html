@@ -1707,6 +1707,16 @@
       </div>
 
       <div>
+        <label style="display:block; font-size:11px; letter-spacing:0.08em; text-transform:uppercase; color:var(--muted); margin-bottom:6px; font-family:'Inter',sans-serif;">Naziv podjetja</label>
+        <input type="text" name="company_name" required placeholder="npr. Metals d.o.o." style="
+          width:100%; padding:11px 14px;
+          background:var(--ink-3); border:1px solid rgba(143,163,177,0.2);
+          border-radius:3px; color:#E8EEF2; font-family:'Inter',sans-serif; font-size:14px;
+          outline:none; transition:border-color 0.2s ease;
+        " onfocus="this.style.borderColor='var(--gold)'" onblur="this.style.borderColor='rgba(143,163,177,0.2)'" />
+      </div>
+
+      <div>
         <label style="display:block; font-size:11px; letter-spacing:0.08em; text-transform:uppercase; color:var(--muted); margin-bottom:6px; font-family:'Inter',sans-serif;" data-i18n="reg_phone">Phone Number</label>
         <input type="tel" name="telefon" required data-i18n-placeholder="reg_phone_ph" placeholder="+386 41 123 456" style="
           width:100%; padding:11px 14px;
@@ -2329,8 +2339,10 @@
           first_name: fd.get('ime'),
           last_name: fd.get('priimek'),
           phone: fd.get('telefon'),
+          company_name: fd.get('company_name'),
           tax_number: fd.get('davcna'),
           country: fd.get('country'),
+          marketplace_approved: false,
         }
       }
     });
@@ -2357,11 +2369,23 @@
       return;
     }
 
+    // Insert into user_registrations for admin approval
+    if (data.user) {
+      await sb.from('user_registrations').insert({
+        user_id:      data.user.id,
+        email:        fd.get('email'),
+        company_name: fd.get('company_name'),
+        vat:          fd.get('davcna'),
+        country:      fd.get('country'),
+        status:       'pending'
+      });
+    }
+
     const email = fd.get('email');
     document.getElementById('reg-success-msg').textContent =
       lang === 'sl'
-        ? `Poslali smo potrditveni link na ${email}. Kliknite nanj, da aktivirate račun.`
-        : `We sent a confirmation link to ${email}. Click it to activate your account.`;
+        ? `Poslali smo potrditveni link na ${email}. Kliknite nanj, da aktivirate račun. Po potrditvi emaila vas bomo pregledali in odobrili dostop do Marketplace-a.`
+        : `We sent a confirmation link to ${email}. Click it to activate your account. After email confirmation, we will review and approve your Marketplace access.`;
 
     document.getElementById('reg-form').style.display = 'none';
     document.getElementById('reg-success').style.display = 'block';

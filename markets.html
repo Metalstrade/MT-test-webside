@@ -3949,9 +3949,14 @@ function overlayClickClose(event, id) {
 function fabClick() {
   if (!currentUser) {
     openAuthModal('signin');
-  } else {
-    openWizard();
+    return;
   }
+  const approved = currentUser.user_metadata?.marketplace_approved;
+  if (!approved) {
+    alert('Vaš račun še čaka na odobritev administratorja. Ko bo odobren, boste prejeli obvestilo in bodo omogočene vse funkcije Marketplace-a.');
+    return;
+  }
+  openWizard();
 }
 
 // ── AUTH MODAL ──

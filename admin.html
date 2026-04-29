@@ -243,13 +243,33 @@
       <div class="stat-tile"><div class="stat-num" id="stat-rejected">—</div><div class="stat-lbl">Zavrnjene</div></div>
       <div class="stat-tile"><div class="stat-num" id="stat-total">—</div><div class="stat-lbl">Skupaj</div></div>
     </div>
-    <div class="filter-tabs">
-      <button class="ftab active" data-filter="pending"  onclick="setFilter('pending')">⏳ Čakajoče</button>
-      <button class="ftab"        data-filter="approved" onclick="setFilter('approved')">✓ Odobrene</button>
-      <button class="ftab"        data-filter="rejected" onclick="setFilter('rejected')">✕ Zavrnjene</button>
-      <button class="ftab"        data-filter="all"      onclick="setFilter('all')">Vse</button>
+    <!-- Section tabs -->
+    <div style="display:flex;gap:0;border-bottom:1px solid rgba(201,162,39,0.15);margin-bottom:24px;">
+      <button class="ftab active" data-section="registrations" onclick="switchSection('registrations')" style="font-size:13px;padding:10px 20px 8px;">👤 Registracije</button>
+      <button class="ftab"        data-section="verifications" onclick="switchSection('verifications')" style="font-size:13px;padding:10px 20px 8px;">📄 Verifikacije</button>
     </div>
-    <div class="cards-grid" id="cards-grid"></div>
+
+    <!-- Registrations -->
+    <div id="section-registrations">
+      <div class="filter-tabs">
+        <button class="ftab active" data-filter="reg-pending"  onclick="setRegFilter('pending')">⏳ Čakajoče</button>
+        <button class="ftab"        data-filter="reg-approved" onclick="setRegFilter('approved')">✓ Odobrene</button>
+        <button class="ftab"        data-filter="reg-rejected" onclick="setRegFilter('rejected')">✕ Zavrnjene</button>
+        <button class="ftab"        data-filter="reg-all"      onclick="setRegFilter('all')">Vse</button>
+      </div>
+      <div class="cards-grid" id="reg-cards-grid"></div>
+    </div>
+
+    <!-- Verifications -->
+    <div id="section-verifications" style="display:none;">
+      <div class="filter-tabs">
+        <button class="ftab active" data-filter="pending"  onclick="setFilter('pending')">⏳ Čakajoče</button>
+        <button class="ftab"        data-filter="approved" onclick="setFilter('approved')">✓ Odobrene</button>
+        <button class="ftab"        data-filter="rejected" onclick="setFilter('rejected')">✕ Zavrnjene</button>
+        <button class="ftab"        data-filter="all"      onclick="setFilter('all')">Vse</button>
+      </div>
+      <div class="cards-grid" id="cards-grid"></div>
+    </div>
   </div>
 </div>
 
@@ -340,7 +360,90 @@
     document.getElementById('login-prompt').style.display = 'none';
     document.getElementById('dashboard').style.display    = 'block';
     document.getElementById('nav-email').textContent = user.email;
+    await loadRegistrations();
     await loadVerifications();
+  }
+
+  // ── SECTION SWITCH ──
+  function switchSection(sec) {
+    document.querySelectorAll('[data-section]').forEach(b => b.classList.toggle('active', b.dataset.section === sec));
+    document.getElementById('section-registrations').style.display = sec === 'registrations' ? '' : 'none';
+    document.getElementById('section-verifications').style.display = sec === 'verifications'  ? '' : 'none';
+  }
+
+  // ── REGISTRATIONS ──
+  let allRegistrations = [];
+  let currentRegFilter = 'pending';
+
+  async function loadRegistrations() {
+    try {
+      const { data, error } = await sb.rpc('admin_get_registrations');
+      if (error) throw error;
+      allRegistrations = data || [];
+      updateStats();
+      renderRegCards();
+    } catch (e) {
+      document.getElementById('reg-cards-grid').innerHTML =
+        `<div class="empty-state"><p style="color:#f0645a;">Napaka: ${esc(e.message)}</p></div>`;
+    }
+  }
+
+  function setRegFilter(f) {
+    currentRegFilter = f;
+    document.querySelectorAll('[data-filter^="reg-"]').forEach(t => t.classList.toggle('active', t.dataset.filter === 'reg-' + f));
+    renderRegCards();
+  }
+
+  function renderRegCards() {
+    const list = currentRegFilter === 'all'
+      ? allRegistrations
+      : allRegistrations.filter(r => r.status === currentRegFilter);
+    const grid = document.getElementById('reg-cards-grid');
+    if (!list.length) {
+      grid.innerHTML = `<div class="empty-state"><h3>Ni zapisov</h3><p>Ni registracij v tej kategoriji.</p></div>`;
+      return;
+    }
+    const countryNames = {AT:'Avstrija',BE:'Belgija',BG:'Bolgarija',CY:'Ciper',CZ:'Češka',DK:'Danska',EE:'Estonija',FI:'Finska',FR:'Francija',GR:'Grčija',IE:'Irska',IT:'Italija',LV:'Latvija',LT:'Litva',LU:'Luksemburg',MT:'Malta',HU:'Madžarska',DE:'Nemčija',NL:'Nizozemska',PL:'Poljska',PT:'Portugalska',RO:'Romunija',SK:'Slovaška',SI:'Slovenija',ES:'Španija',SE:'Švedska',HR:'Hrvaška'};
+    grid.innerHTML = list.map(r => {
+      const date = new Date(r.created_at).toLocaleDateString('sl-SI', {day:'2-digit',month:'2-digit',year:'numeric'});
+      const statusClass = {pending:'status-pending',approved:'status-approved',rejected:'status-rejected'}[r.status] || '';
+      const statusLabel = {pending:'Čakajoče',approved:'Odobreno',rejected:'Zavrnjeno'}[r.status] || r.status;
+      const isPending = r.status === 'pending';
+      return `<div class="vcard" id="regcard-${r.id}">
+        <div class="vcard-header">
+          <div class="vcard-email">${esc(r.company_name || '—')}</div>
+          <div class="vcard-company">${esc(r.email || '—')}</div>
+        </div>
+        <div class="vcard-body">
+          <div class="vcard-row"><span class="vcard-lbl">Status</span><span class="status-badge ${statusClass}">${statusLabel}</span></div>
+          <div class="vcard-row"><span class="vcard-lbl">VAT številka</span><span class="vcard-val">${esc(r.vat || '—')}</span></div>
+          <div class="vcard-row"><span class="vcard-lbl">Država</span><span class="vcard-val">${esc(countryNames[r.country] || r.country || '—')}</span></div>
+          <div class="vcard-row"><span class="vcard-lbl">Datum</span><span class="vcard-val">${date}</span></div>
+        </div>
+        <div class="vcard-actions">
+          ${isPending ? `
+          <button class="btn-approve" id="reg-approve-${r.id}" onclick="reviewRegistration('${r.id}', true)">✓ Odobri dostop</button>
+          <button class="btn-reject"  id="reg-reject-${r.id}"  onclick="reviewRegistration('${r.id}', false)">✕ Zavrni</button>
+          ` : `<span style="font-size:11px;color:var(--muted);padding:8px;flex:1;text-align:center;">Že obdelano</span>`}
+        </div>
+      </div>`;
+    }).join('');
+  }
+
+  async function reviewRegistration(id, approve) {
+    const aBtn = document.getElementById('reg-approve-' + id);
+    const rBtn = document.getElementById('reg-reject-' + id);
+    if (aBtn) aBtn.disabled = true;
+    if (rBtn) rBtn.disabled = true;
+    const { data, error } = await sb.rpc('admin_review_registration', { p_id: id, p_approve: approve });
+    if (error || (data && data.error)) {
+      showToast('Napaka: ' + (error?.message || data?.error), 'error');
+      if (aBtn) aBtn.disabled = false;
+      if (rBtn) rBtn.disabled = false;
+      return;
+    }
+    showToast(approve ? '✓ Dostop odobren' : '✕ Registracija zavrnjena', approve ? 'success' : 'error');
+    await loadRegistrations();
   }
 
   async function loadVerifications() {
@@ -357,13 +460,13 @@
   }
 
   function updateStats() {
-    const pending  = allVerifications.filter(v => v.status === 'pending').length;
-    const approved = allVerifications.filter(v => v.status === 'approved').length;
-    const rejected = allVerifications.filter(v => v.status === 'rejected').length;
+    const pending  = allRegistrations.filter(v => v.status === 'pending').length  + allVerifications.filter(v => v.status === 'pending').length;
+    const approved = allRegistrations.filter(v => v.status === 'approved').length + allVerifications.filter(v => v.status === 'approved').length;
+    const rejected = allRegistrations.filter(v => v.status === 'rejected').length + allVerifications.filter(v => v.status === 'rejected').length;
     document.getElementById('stat-pending').textContent  = pending;
     document.getElementById('stat-approved').textContent = approved;
     document.getElementById('stat-rejected').textContent = rejected;
-    document.getElementById('stat-total').textContent    = allVerifications.length;
+    document.getElementById('stat-total').textContent    = allRegistrations.length + allVerifications.length;
   }
 
   function setFilter(f) {
