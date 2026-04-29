@@ -417,6 +417,8 @@
         <div class="vcard-body">
           <div class="vcard-row"><span class="vcard-lbl">Status</span><span class="status-badge ${statusClass}">${statusLabel}</span></div>
           <div class="vcard-row"><span class="vcard-lbl">VAT številka</span><span class="vcard-val">${esc(r.vat || '—')}</span></div>
+          <div class="vcard-row"><span class="vcard-lbl">Naslov</span><span class="vcard-val" style="font-size:12px;">${esc(r.address || '—')}</span></div>
+          <div class="vcard-row"><span class="vcard-lbl">NACE</span><span class="vcard-val" style="font-size:12px;">${esc(r.nace || '—')}</span></div>
           <div class="vcard-row"><span class="vcard-lbl">Država</span><span class="vcard-val">${esc(countryNames[r.country] || r.country || '—')}</span></div>
           <div class="vcard-row"><span class="vcard-lbl">Datum</span><span class="vcard-val">${date}</span></div>
         </div>

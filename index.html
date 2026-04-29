@@ -1736,6 +1736,29 @@
         " onfocus="this.style.borderColor='var(--gold)'" onblur="this.style.borderColor='rgba(143,163,177,0.2)'" />
       </div>
 
+      <!-- Address -->
+      <div>
+        <label style="display:block; font-size:11px; letter-spacing:0.08em; text-transform:uppercase; color:var(--muted); margin-bottom:6px; font-family:'Inter',sans-serif;">Naslov podjetja <span style="color:var(--gold);">*</span></label>
+        <input type="text" name="address" required placeholder="npr. Dunajska cesta 5, 1000 Ljubljana" style="
+          width:100%; padding:11px 14px;
+          background:var(--ink-3); border:1px solid rgba(143,163,177,0.2);
+          border-radius:3px; color:#E8EEF2; font-family:'Inter',sans-serif; font-size:14px;
+          outline:none; transition:border-color 0.2s ease;
+        " onfocus="this.style.borderColor='var(--gold)'" onblur="this.style.borderColor='rgba(143,163,177,0.2)'" />
+      </div>
+
+      <!-- NACE -->
+      <div>
+        <label style="display:block; font-size:11px; letter-spacing:0.08em; text-transform:uppercase; color:var(--muted); margin-bottom:6px; font-family:'Inter',sans-serif;">NACE dejavnost <span style="color:var(--gold);">*</span></label>
+        <input type="text" name="nace" required placeholder="npr. 24.10 — Proizvodnja surovega železa in jekla" style="
+          width:100%; padding:11px 14px;
+          background:var(--ink-3); border:1px solid rgba(143,163,177,0.2);
+          border-radius:3px; color:#E8EEF2; font-family:'Inter',sans-serif; font-size:14px;
+          outline:none; transition:border-color 0.2s ease;
+        " onfocus="this.style.borderColor='var(--gold)'" onblur="this.style.borderColor='rgba(143,163,177,0.2)'" />
+        <div style="font-size:11px;color:var(--muted);margin-top:4px;">Vpišite kodo in naziv (npr. 46.72, 24.45, 38.32...)</div>
+      </div>
+
       <!-- Country -->
       <div>
         <label style="display:block; font-size:11px; letter-spacing:0.08em; text-transform:uppercase; color:var(--muted); margin-bottom:6px; font-family:'Inter',sans-serif;">Država</label>
@@ -2340,6 +2363,8 @@
           last_name: fd.get('priimek'),
           phone: fd.get('telefon'),
           company_name: fd.get('company_name'),
+          address: fd.get('address'),
+          nace: fd.get('nace'),
           tax_number: fd.get('davcna'),
           country: fd.get('country'),
           marketplace_approved: false,
@@ -2377,6 +2402,8 @@
         company_name: fd.get('company_name'),
         vat:          fd.get('davcna'),
         country:      fd.get('country'),
+        address:      fd.get('address'),
+        nace:         fd.get('nace'),
         status:       'pending'
       });
     }
