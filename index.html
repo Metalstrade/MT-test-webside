@@ -542,12 +542,58 @@
       background: linear-gradient(135deg, rgba(201,162,39,0.15) 0%, transparent 60%);
       mix-blend-mode: multiply;
     }
-    .why-image-frame {
+    .why-stats-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 1px;
+      margin: 40px 0 0;
+      background: rgba(201,162,39,0.15);
+      border: 1px solid rgba(201,162,39,0.15);
+    }
+    .why-stat {
+      background: var(--ink);
+      padding: 22px 16px;
+      text-align: center;
+    }
+    .why-stat-num {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 44px;
+      font-weight: 700;
+      color: var(--gold-lt);
+      line-height: 1;
+      margin-bottom: 5px;
+    }
+    .why-stat-lbl {
+      font-size: 10px;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--muted);
+    }
+    .why-visual {
+      position: relative;
+      height: 180px;
+      margin-top: 1px;
+      overflow: hidden;
+      border: 1px solid rgba(201,162,39,0.1);
+      border-top: none;
+      background: var(--ink);
+    }
+    .why-visual-grid {
       position: absolute;
-      top: 16px; left: 16px; right: -16px; bottom: -16px;
-      border: 1px solid rgba(201,162,39,0.2);
-      pointer-events: none;
-      z-index: -1;
+      inset: 0;
+      background-image:
+        linear-gradient(rgba(201,162,39,0.07) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(201,162,39,0.07) 1px, transparent 1px);
+      background-size: 36px 36px;
+    }
+    .why-visual-orb {
+      position: absolute;
+      width: 260px;
+      height: 260px;
+      border-radius: 50%;
+      background: radial-gradient(circle, rgba(201,162,39,0.1) 0%, transparent 70%);
+      bottom: -100px;
+      right: -60px;
     }
     .feature-list {
       display: flex;
@@ -1346,49 +1392,79 @@
     <div class="section-inner">
       <div class="why-layout">
         <div class="why-left">
-          <div class="section-eyebrow" data-i18n="why_eyebrow">Why Metals Trading</div>
-          <h2 class="section-title" data-i18n="why_h2">Built for Serious Market Participants</h2>
-          <p class="section-sub" data-i18n="why_sub">We combine decades of metals expertise with cutting-edge technology to deliver an edge that matters.</p>
-          <div class="why-image">
-            <img src="https://placehold.co/560x420/141C24/8FA3B1?text=Metals+Trading+Floor" alt="Trading Floor" />
-            <div class="why-image-overlay"></div>
-            <div class="why-image-frame"></div>
+          <div class="section-eyebrow">Zakaj Metals Trading</div>
+          <h2 class="section-title">Zgrajen za resne<br>udeležence na trgu</h2>
+          <p class="section-sub">Moderna B2B platforma za trgovanje s kovinami med preverjenimi EU podjetji — varna, transparentna, učinkovita.</p>
+          <div class="why-stats-grid">
+            <div class="why-stat">
+              <div class="why-stat-num">27</div>
+              <div class="why-stat-lbl">EU držav</div>
+            </div>
+            <div class="why-stat">
+              <div class="why-stat-num">4</div>
+              <div class="why-stat-lbl">Kategorije</div>
+            </div>
+            <div class="why-stat">
+              <div class="why-stat-num">24h</div>
+              <div class="why-stat-lbl">Verifikacija</div>
+            </div>
+          </div>
+          <div class="why-visual">
+            <div class="why-visual-grid"></div>
+            <div class="why-visual-orb"></div>
+            <div style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;gap:32px;">
+              <div style="font-family:'Cormorant Garamond',serif;font-size:72px;font-weight:700;color:rgba(201,162,39,0.1);letter-spacing:-0.02em;user-select:none;">MT</div>
+              <div style="display:flex;flex-direction:column;gap:8px;">
+                <div style="display:flex;align-items:center;gap:8px;">
+                  <div style="width:6px;height:6px;border-radius:50%;background:var(--gold);opacity:0.6;"></div>
+                  <div style="font-size:11px;letter-spacing:0.08em;text-transform:uppercase;color:rgba(201,162,39,0.5);">EU Marketplace</div>
+                </div>
+                <div style="display:flex;align-items:center;gap:8px;">
+                  <div style="width:6px;height:6px;border-radius:50%;background:var(--silver);opacity:0.5;"></div>
+                  <div style="font-size:11px;letter-spacing:0.08em;text-transform:uppercase;color:rgba(143,163,177,0.4);">B2B Verified</div>
+                </div>
+                <div style="display:flex;align-items:center;gap:8px;">
+                  <div style="width:6px;height:6px;border-radius:50%;background:#8FA3B1;opacity:0.4;"></div>
+                  <div style="font-size:11px;letter-spacing:0.08em;text-transform:uppercase;color:rgba(143,163,177,0.3);">GDPR Compliant</div>
+                </div>
+              </div>
+            </div>
           </div>
         </div>
         <div class="feature-list">
           <div class="feature-item">
             <div class="feature-num">01</div>
             <div class="feature-body">
-              <h3 data-i18n="f1_title">Live Spot Pricing</h3>
-              <p data-i18n="f1_desc">Real-time bid/ask quotes sourced from 12+ global exchanges, updated every 100ms. No stale prices, no surprises — just the market as it is.</p>
+              <h3>Preverjena podjetja</h3>
+              <p>Dostop do platforme imajo samo verificirana EU podjetja z veljavno VAT številko in potrjeno dejavnostjo. Nobenih anonimnih ponudnikov — samo resni poslovni partnerji.</p>
             </div>
           </div>
           <div class="feature-item">
             <div class="feature-num">02</div>
             <div class="feature-body">
-              <h3 data-i18n="f2_title">Physical Delivery Network</h3>
-              <p data-i18n="f2_desc">Access 40+ accredited vaults and warehouses across London, Zurich, Singapore, and New York. We handle logistics so you can focus on trading.</p>
+              <h3>Celoten spekter kovin</h3>
+              <p>Železne, neželezne, plemenite kovine in nekovine — vse kategorije industrijskega trga na enem mestu. Oglas objavite v manj kot petih minutah.</p>
             </div>
           </div>
           <div class="feature-item">
             <div class="feature-num">03</div>
             <div class="feature-body">
-              <h3 data-i18n="f3_title">Dedicated Relationship Managers</h3>
-              <p data-i18n="f3_desc">Every client is assigned a senior metals specialist who understands your portfolio, your risk appetite, and your market outlook.</p>
+              <h3>Žive tržne cene</h3>
+              <p>Kotacije v realnem času za zlato, srebro, baker, aluminij, nikelj in več — neposredno iz globalnih borz. Vedno veste, kje je trg.</p>
             </div>
           </div>
           <div class="feature-item">
             <div class="feature-num">04</div>
             <div class="feature-body">
-              <h3 data-i18n="f4_title">Regulated &amp; Transparent</h3>
-              <p data-i18n="f4_desc">Fully licensed and regulated. Segregated client accounts, daily mark-to-market reporting, and real-time position visibility at all times.</p>
+              <h3>Klasični oglasi in dražbe</h3>
+              <p>Izbirate med fiksno ceno ali dražbenim sistemom z realnim odštevanjem. Vi določite pogoje — platforma poskrbi za vidnost.</p>
             </div>
           </div>
           <div class="feature-item">
             <div class="feature-num">05</div>
             <div class="feature-body">
-              <h3 data-i18n="f5_title">Competitive Financing</h3>
-              <p data-i18n="f5_desc">Tailored margin and financing solutions for miners, refiners, manufacturers, and institutional investors. Flexible terms, fast execution.</p>
+              <h3>Skladnost z EU regulativo</h3>
+              <p>Platforma je zasnovana skladno z GDPR. Vaši podatki so varni, transakcije sledljive in dokumentirane v skladu z zahtevami EU B2B poslovanja.</p>
             </div>
           </div>
         </div>
@@ -1402,30 +1478,30 @@
   <section class="process-section" id="process">
     <div class="section-inner">
       <div style="text-align:center; margin-bottom: 0;">
-        <div class="section-eyebrow" style="justify-content:center;" data-i18n="process_eyebrow">How It Works</div>
-        <h2 class="section-title" data-i18n="process_h2">From Signup to First Trade in 48 Hours</h2>
-        <p class="section-sub" style="margin: 0 auto;" data-i18n="process_sub">Our streamlined onboarding process gets you to market fast without compromising compliance or security.</p>
+        <div class="section-eyebrow" style="justify-content:center;">Kako deluje</div>
+        <h2 class="section-title">Od registracije do prve transakcije v 48 urah</h2>
+        <p class="section-sub" style="margin: 0 auto;">Preprost postopek, ki vas pripelje do trga hitro in brez zapletenosti — a brez kompromisov pri varnosti in skladnosti.</p>
       </div>
       <div class="process-grid">
         <div class="process-step">
           <div class="step-num">01</div>
-          <div class="step-title" data-i18n="s1_title">Apply Online</div>
-          <p class="step-desc" data-i18n="s1_desc">Complete our digital application in under 20 minutes. Submit KYC documents and entity verification — all in one place.</p>
+          <div class="step-title">Registracija</div>
+          <p class="step-desc">Izpolnite obrazec z osnovnimi podatki podjetja — naziv, VAT številka, NACE dejavnost in naslov. Vse skupaj v manj kot 5 minutah.</p>
         </div>
         <div class="process-step">
           <div class="step-num">02</div>
-          <div class="step-title" data-i18n="s2_title">Account Review</div>
-          <p class="step-desc" data-i18n="s2_desc">Our compliance team reviews your application within 24 hours. You'll receive your account credentials and platform access immediately upon approval.</p>
+          <div class="step-title">Verifikacija</div>
+          <p class="step-desc">Naša ekipa preveri vaše podjetje v roku 24 ur. Po odobritvi prejmete polni dostop do marketplace-a in vseh funkcij platforme.</p>
         </div>
         <div class="process-step">
           <div class="step-num">03</div>
-          <div class="step-title" data-i18n="s3_title">Fund &amp; Configure</div>
-          <p class="step-desc" data-i18n="s3_desc">Wire funds or transfer assets to your segregated account. Configure alerts, set risk limits, and connect via API or our web platform.</p>
+          <div class="step-title">Objava ali iskanje</div>
+          <p class="step-desc">Objavite oglas ali dražbo v minutah — ali pregledujte ponudbe verificiranih EU podjetij in oddajte ponudbo neposredno prek platforme.</p>
         </div>
         <div class="process-step">
           <div class="step-num">04</div>
-          <div class="step-title" data-i18n="s4_title">Start Trading</div>
-          <p class="step-desc" data-i18n="s4_desc">Execute your first trade with support from your dedicated relationship manager. Access real-time pricing, research, and execution tools.</p>
+          <div class="step-title">Zaključite posel</div>
+          <p class="step-desc">Stopite v stik s potencialnim partnerjem, dogovorite se o pogojih in zaključite transakcijo. Direktno B2B, brez posrednikov.</p>
         </div>
       </div>
     </div>
@@ -1436,36 +1512,36 @@
   <!-- ── TESTIMONIALS ── -->
   <section class="testimonials-section">
     <div class="section-inner">
-      <div class="section-eyebrow" data-i18n="test_eyebrow">Client Voices</div>
-      <h2 class="section-title" data-i18n="test_h2">Trusted by Industry Leaders</h2>
+      <div class="section-eyebrow">Kaj pravijo stranke</div>
+      <h2 class="section-title">Zaupajo nam podjetja po vsej EU</h2>
       <div class="testimonials-grid">
         <div class="testimonial-card">
-          <p class="testimonial-text" data-i18n="t1_text">"Metals Trading gave our treasury team direct access to spot markets we couldn't reach before. The pricing is tight, execution is fast, and the reporting is exactly what our CFO needs."</p>
+          <p class="testimonial-text">"Metals Trading nam je omogočil direkten dostop do kupcev bakra v Nemčiji in Avstriji. Verifikacijski postopek je bil hiter in strokoven — platforma deluje točno tako, kot se pričakuje od resne B2B rešitve."</p>
           <div class="testimonial-author">
-            <img src="https://placehold.co/44x44/1B2733/8FA3B1?text=JM" class="author-avatar" alt="" />
+            <img src="https://placehold.co/44x44/1B2733/8FA3B1?text=MK" class="author-avatar" alt="" />
             <div>
-              <div class="author-name">James Morrow</div>
-              <div class="author-title" data-i18n="t1_title">CFO, Redstone Manufacturing</div>
+              <div class="author-name">Marko Kovač</div>
+              <div class="author-title">Direktor nabave, KovinaTech d.o.o.</div>
             </div>
           </div>
         </div>
         <div class="testimonial-card">
-          <p class="testimonial-text" data-i18n="t2_text">"We've been hedging our gold exposure with MT for three years. Their desk understands miners, not just traders. The relationship adds real value beyond just the execution."</p>
+          <p class="testimonial-text">"Prodajamo odpadno aluminijevo folijo in prej smo imeli težave z iskanjem kupcev. Prek te platforme smo v prvem tednu dobili tri resne povpraševanje. Preprost vmesnik, samo preverjena podjetja."</p>
           <div class="testimonial-author">
-            <img src="https://placehold.co/44x44/1B2733/8FA3B1?text=SL" class="author-avatar" alt="" />
+            <img src="https://placehold.co/44x44/1B2733/8FA3B1?text=AL" class="author-avatar" alt="" />
             <div>
-              <div class="author-name">Sofia Larsson</div>
-              <div class="author-title" data-i18n="t2_title">Head of Risk, Vantage Gold Corp</div>
+              <div class="author-name">Anna Lehmann</div>
+              <div class="author-title">Geschäftsführerin, RecycAl GmbH</div>
             </div>
           </div>
         </div>
         <div class="testimonial-card">
-          <p class="testimonial-text" data-i18n="t3_text">"The copper desk at Metals Trading consistently finds us better prices than our previous prime broker. They've become a core part of our procurement strategy."</p>
+          <p class="testimonial-text">"Dražbeni sistem je odlično orodje — za naša niklova jekla smo dosegli bistveno boljšo ceno kot pri direktnih pogajanjih. Platforma je pregledna, odzivna in zanesljiva."</p>
           <div class="testimonial-author">
-            <img src="https://placehold.co/44x44/1B2733/8FA3B1?text=DK" class="author-avatar" alt="" />
+            <img src="https://placehold.co/44x44/1B2733/8FA3B1?text=JP" class="author-avatar" alt="" />
             <div>
-              <div class="author-name">David Kim</div>
-              <div class="author-title" data-i18n="t3_title">Director of Procurement, ElectroCon</div>
+              <div class="author-name">Jan Procházka</div>
+              <div class="author-title">Obchodní ředitel, SteelCz s.r.o.</div>
             </div>
           </div>
         </div>
@@ -1478,15 +1554,15 @@
     <div class="section-inner">
       <div class="cta-inner">
         <div class="cta-text">
-          <h2 data-i18n-html="cta_h2">Ready to Trade at the <span class="gradient-gold">Highest Level?</span></h2>
-          <p data-i18n="cta_sub">Speak with a metals specialist today. No commitment, no pressure — just expertise.</p>
+          <h2>Pripravljeni na <span class="gradient-gold">svojo prvo transakcijo?</span></h2>
+          <p>Registrirajte podjetje, pridobite dostop in začnite poslovati z verificiranimi EU partnerji — v 48 urah.</p>
         </div>
         <div class="cta-actions">
-          <a href="#contact" class="btn-primary">
-            <span data-i18n="cta_btn1">Request a Consultation</span>
+          <a href="#" onclick="openAuthModal('signup'); return false;" class="btn-primary">
+            <span>Registracija podjetja</span>
             <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 8h10M9 4l4 4-4 4"/></svg>
           </a>
-          <a href="#metals" class="btn-outline" data-i18n="cta_btn2">View Markets</a>
+          <a href="#contact" class="btn-outline">Pišite nam</a>
         </div>
       </div>
     </div>
@@ -1497,25 +1573,16 @@
     <div class="section-inner">
       <div class="contact-layout">
         <div>
-          <div class="section-eyebrow" data-i18n="contact_eyebrow">Get in Touch</div>
-          <h2 class="section-title" data-i18n="contact_h2">Speak with a Specialist</h2>
-          <p class="section-sub" data-i18n="contact_sub">Our team is available around the clock during market hours. Reach out to discuss your trading needs, account setup, or market outlook.</p>
+          <div class="section-eyebrow">Stopite v stik</div>
+          <h2 class="section-title">Pišite nam</h2>
+          <p class="section-sub">Imate vprašanja o platformi, registraciji ali verifikacijskem postopku? Naša ekipa vam odgovori v najkrajšem možnem času.</p>
           <div class="contact-info">
-            <div class="contact-item">
-              <div class="contact-icon">
-                <svg viewBox="0 0 24 24"><path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07A19.5 19.5 0 013.07 10.8 19.79 19.79 0 01.1 2.18 2 2 0 012.08 0h3a2 2 0 012 1.72 12.84 12.84 0 00.7 2.81 2 2 0 01-.45 2.11L6.09 7.91a16 16 0 006 6l1.27-1.27a2 2 0 012.11-.45 12.84 12.84 0 002.81.7A2 2 0 0122 14.92z"/></svg>
-              </div>
-              <div>
-                <div class="contact-label" data-i18n="contact_desk">Trading Desk</div>
-                <div class="contact-val">+1 (212) 555-0192</div>
-              </div>
-            </div>
             <div class="contact-item">
               <div class="contact-icon">
                 <svg viewBox="0 0 24 24"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
               </div>
               <div>
-                <div class="contact-label" data-i18n="contact_email_lbl">Email</div>
+                <div class="contact-label">E-pošta</div>
                 <div class="contact-val">Metals-trade@protonmail.com</div>
               </div>
             </div>
@@ -1524,8 +1591,17 @@
                 <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
               </div>
               <div>
-                <div class="contact-label" data-i18n="contact_hours_lbl">Market Hours</div>
-                <div class="contact-val" data-i18n="contact_hours_val">Mon–Fri 06:00–22:00 EST</div>
+                <div class="contact-label">Odzivni čas</div>
+                <div class="contact-val">Pon–Pet, v roku 24–48 ur</div>
+              </div>
+            </div>
+            <div class="contact-item">
+              <div class="contact-icon">
+                <svg viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+              </div>
+              <div>
+                <div class="contact-label">Varnost in zasebnost</div>
+                <div class="contact-val">GDPR skladno · EU regulativa</div>
               </div>
             </div>
           </div>
@@ -1533,45 +1609,45 @@
         <form id="contact-form" onsubmit="submitContactForm(event)">
           <div class="form-row">
             <div class="form-group">
-              <label for="fname" data-i18n="form_fname">First Name</label>
-              <input type="text" id="fname" name="first_name" placeholder="James" data-i18n-placeholder="form_fname_ph" required />
+              <label for="fname">Ime</label>
+              <input type="text" id="fname" name="first_name" placeholder="Marko" required />
             </div>
             <div class="form-group">
-              <label for="lname" data-i18n="form_lname">Last Name</label>
-              <input type="text" id="lname" name="last_name" placeholder="Morrow" data-i18n-placeholder="form_lname_ph" required />
+              <label for="lname">Priimek</label>
+              <input type="text" id="lname" name="last_name" placeholder="Kovač" required />
             </div>
           </div>
           <div class="form-group">
-            <label for="cemail" data-i18n="form_email">Email Address</label>
-            <input type="email" id="cemail" name="email" placeholder="james@company.com" required />
+            <label for="cemail">E-pošta</label>
+            <input type="email" id="cemail" name="email" placeholder="marko@podjetje.si" required />
           </div>
           <div class="form-group">
-            <label for="company" data-i18n="form_company">Company</label>
-            <input type="text" id="company" name="company" placeholder="Your organization" data-i18n-placeholder="form_company_ph" />
+            <label for="company">Podjetje</label>
+            <input type="text" id="company" name="company" placeholder="Vaše podjetje" />
           </div>
           <div class="form-group">
-            <label for="interest" data-i18n="form_interest">Metal of Interest</label>
+            <label for="interest">Kategorija kovin</label>
             <select id="interest" name="interest">
-              <option value="" disabled selected data-i18n="form_interest_ph">Select a metal</option>
-              <option>Gold (XAU)</option>
-              <option>Silver (XAG)</option>
-              <option>Steel (HRC)</option>
-              <option>Copper (HG)</option>
-              <option data-i18n="form_multi">Multiple / Portfolio</option>
+              <option value="" disabled selected>Izberite kategorijo</option>
+              <option>Železne kovine (Ferrous)</option>
+              <option>Neželezne kovine (Non-Ferrous)</option>
+              <option>Plemenite kovine (Precious)</option>
+              <option>Nekovine (Non-Metals)</option>
+              <option>Več kategorij</option>
             </select>
           </div>
           <div class="form-group">
-            <label for="message" data-i18n="form_message">Message</label>
-            <textarea id="message" name="message" placeholder="Tell us about your trading needs or questions..." data-i18n-placeholder="form_message_ph" required></textarea>
+            <label for="message">Sporočilo</label>
+            <textarea id="message" name="message" placeholder="Opišite vaše potrebe ali vprašanje..." required></textarea>
           </div>
-          <div id="contact-success" style="display:none; background:rgba(72,199,142,0.1); border:1px solid rgba(72,199,142,0.3); border-radius:4px; padding:14px 16px; color:rgba(72,199,142,0.9); font-size:13px; margin-bottom:12px;" data-i18n="form_success">
-            Your message has been sent. We'll get back to you shortly.
+          <div id="contact-success" style="display:none; background:rgba(72,199,142,0.1); border:1px solid rgba(72,199,142,0.3); border-radius:4px; padding:14px 16px; color:rgba(72,199,142,0.9); font-size:13px; margin-bottom:12px;">
+            Vaše sporočilo je bilo poslano. Odgovorili vam bomo v najkrajšem možnem času.
           </div>
-          <div id="contact-error" style="display:none; background:rgba(229,115,115,0.1); border:1px solid rgba(229,115,115,0.3); border-radius:4px; padding:14px 16px; color:rgba(229,115,115,0.9); font-size:13px; margin-bottom:12px;" data-i18n="form_error">
-            Something went wrong. Please try again or email us directly.
+          <div id="contact-error" style="display:none; background:rgba(229,115,115,0.1); border:1px solid rgba(229,115,115,0.3); border-radius:4px; padding:14px 16px; color:rgba(229,115,115,0.9); font-size:13px; margin-bottom:12px;">
+            Prišlo je do napake. Poskusite znova ali nam pišite neposredno.
           </div>
           <button type="submit" id="contact-submit-btn" class="btn-primary" style="width:100%; justify-content:center;">
-            <span data-i18n="form_send">Send Message</span>
+            <span>Pošlji sporočilo</span>
             <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 8h10M9 4l4 4-4 4"/></svg>
           </button>
         </form>
@@ -1585,54 +1661,53 @@
       <div class="footer-top">
         <div class="footer-brand">
           <img src="brand_assets/LOGO.png" alt="Metals Trading" />
-          <p data-i18n="footer_brand_desc">Global metals trading solutions for institutions, miners, refiners, and sophisticated investors. Precision execution. Unrivaled expertise.</p>
+          <p>EU B2B platforma za trgovanje s kovinami. Povežemo kupce in prodajalce certificiranih kovin — od reciklaže do primarnih materialov, po vsej Evropi.</p>
           <div class="footer-metals">
-            <span class="text-gold">Gold</span>
+            <span class="text-gold">Železne</span>
             <span style="color:var(--steel)">·</span>
-            <span class="text-silver">Silver</span>
+            <span class="text-silver">Neželezne</span>
             <span style="color:var(--steel)">·</span>
-            <span style="color:#8FA3B1">Steel</span>
+            <span style="color:#E4BF5A">Plemenite</span>
             <span style="color:var(--steel)">·</span>
-            <span style="color:#C17A50">Copper</span>
+            <span style="color:#8FA3B1">Nekovine</span>
           </div>
         </div>
         <div class="footer-col">
-          <h4 data-i18n="footer_markets">Markets</h4>
+          <h4>Platforma</h4>
           <ul>
-            <li><a href="#" data-i18n="footer_gold_spot">Gold Spot</a></li>
-            <li><a href="#" data-i18n="footer_silver_spot">Silver Spot</a></li>
-            <li><a href="#" data-i18n="footer_steel_fut">Steel Futures</a></li>
-            <li><a href="#" data-i18n="footer_copper_fut">Copper Futures</a></li>
-            <li><a href="#" data-i18n="footer_options">Options &amp; Swaps</a></li>
+            <li><a href="markets.html">Marketplace</a></li>
+            <li><a href="financial-markets.html">Finančni trgi</a></li>
+            <li><a href="#why">Zakaj Metals Trading</a></li>
+            <li><a href="#process">Kako deluje</a></li>
+            <li><a href="#contact">Kontakt</a></li>
           </ul>
         </div>
         <div class="footer-col">
-          <h4 data-i18n="footer_company">Company</h4>
+          <h4>Kategorije</h4>
           <ul>
-            <li><a href="#" data-i18n="footer_about">About Us</a></li>
-            <li><a href="#" data-i18n="footer_team">Our Team</a></li>
-            <li><a href="#" data-i18n="footer_careers">Careers</a></li>
-            <li><a href="#" data-i18n="footer_regulatory">Regulatory</a></li>
-            <li><a href="#" data-i18n="footer_news">News</a></li>
+            <li><a href="markets.html">Železne kovine</a></li>
+            <li><a href="markets.html">Neželezne kovine</a></li>
+            <li><a href="markets.html">Plemenite kovine</a></li>
+            <li><a href="markets.html">Nekovine</a></li>
+            <li><a href="markets.html">Dražbe</a></li>
           </ul>
         </div>
         <div class="footer-col">
-          <h4 data-i18n="footer_support">Support</h4>
+          <h4>Pravno</h4>
           <ul>
-            <li><a href="#" data-i18n="footer_platform">Trading Platform</a></li>
-            <li><a href="#" data-i18n="footer_api">API Documentation</a></li>
-            <li><a href="#" data-i18n="footer_portal">Account Portal</a></li>
-            <li><a href="#" data-i18n="footer_contact">Contact</a></li>
-            <li><a href="#" data-i18n="footer_faq">FAQ</a></li>
+            <li><a href="#" onclick="openTermsModal()">Pogoji uporabe</a></li>
+            <li><a href="#">Politika zasebnosti</a></li>
+            <li><a href="#">GDPR</a></li>
+            <li><a href="#contact">Kontakt</a></li>
           </ul>
         </div>
       </div>
       <div class="footer-bottom">
-        <span class="footer-copy" data-i18n="footer_copy">© 2026 Metals Trading. All rights reserved. Trading in metals carries risk of loss.</span>
+        <span class="footer-copy">© 2026 Metals Trading. Vse pravice pridržane. Navedene cene so informativne narave.</span>
         <div style="display:flex; gap:24px;">
-          <a href="#" style="font-size:12px; color:var(--steel); text-decoration:none;" data-i18n="footer_privacy">Privacy Policy</a>
-          <a href="#" style="font-size:12px; color:var(--steel); text-decoration:none;" data-i18n="footer_terms">Terms of Service</a>
-          <a href="#" style="font-size:12px; color:var(--steel); text-decoration:none;" data-i18n="footer_disc">Disclosures</a>
+          <a href="#" onclick="openTermsModal()" style="font-size:12px; color:var(--steel); text-decoration:none;">Pogoji uporabe</a>
+          <a href="#" style="font-size:12px; color:var(--steel); text-decoration:none;">Zasebnost</a>
+          <a href="#" style="font-size:12px; color:var(--steel); text-decoration:none;">GDPR</a>
         </div>
       </div>
     </div>
