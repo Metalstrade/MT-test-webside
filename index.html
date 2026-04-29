@@ -1129,7 +1129,7 @@
           <svg width="15" height="15" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><rect x="2" y="2" width="5" height="5"/><rect x="9" y="2" width="5" height="5"/><rect x="2" y="9" width="5" height="5"/><rect x="9" y="9" width="5" height="5"/></svg>
           <span data-i18n="dd_marketplace">Marketplace</span>
         </a>
-        <a href="#" class="dropdown-item" onclick="closeDropdown()">
+        <a href="#" class="dropdown-item" id="dd-settings" style="display:none;" onclick="openSettingsModal(); closeDropdown()">
           <svg width="15" height="15" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><circle cx="8" cy="8" r="2"/><path d="M8 1v2M8 13v2M1 8h2M13 8h2M3.4 3.4l1.4 1.4M11.2 11.2l1.4 1.4M3.4 12.6l1.4-1.4M11.2 4.8l1.4-1.4"/></svg>
           <span data-i18n="dd_settings">Settings</span>
         </a>
@@ -1969,6 +1969,229 @@
   </div>
 </div>
 
+<!-- ── SETTINGS MODAL ── -->
+<div id="settings-modal" style="
+  display:none; position:fixed; inset:0; z-index:9999;
+  background:rgba(13,17,23,0.88); backdrop-filter:blur(10px);
+  -webkit-backdrop-filter:blur(10px);
+  align-items:center; justify-content:center;
+" onclick="if(event.target===this)closeSettingsModal()">
+  <div style="
+    position:relative; background:var(--ink-2);
+    border:1px solid rgba(201,162,39,0.2); border-radius:4px;
+    width:100%; max-width:680px; margin:16px;
+    box-shadow:0 8px 60px rgba(0,0,0,0.7), 0 0 0 1px rgba(201,162,39,0.06);
+    display:flex; flex-direction:column; max-height:90vh; overflow:hidden;
+  ">
+    <!-- Header -->
+    <div style="display:flex;align-items:center;justify-content:space-between;padding:24px 28px 20px;border-bottom:1px solid rgba(201,162,39,0.1);">
+      <div>
+        <div style="font-size:10px;letter-spacing:0.12em;text-transform:uppercase;color:var(--gold);font-weight:500;margin-bottom:4px;">Nastavitve</div>
+        <h3 style="font-family:'Cormorant Garamond',serif;font-size:22px;color:#E8EEF2;margin:0;">Upravljanje Računa</h3>
+      </div>
+      <button onclick="closeSettingsModal()" style="background:none;border:none;color:var(--muted);font-size:22px;cursor:pointer;line-height:1;transition:color 0.15s;" onmouseover="this.style.color='var(--gold)'" onmouseout="this.style.color='var(--muted)'">&#x2715;</button>
+    </div>
+    <!-- Tabs -->
+    <div style="display:flex;gap:0;border-bottom:1px solid rgba(201,162,39,0.1);padding:0 28px;overflow-x:auto;flex-shrink:0;" id="settings-tabs">
+      <button class="stab active" data-tab="profile" onclick="switchSettingsTab('profile')">Profil</button>
+      <button class="stab" data-tab="security" onclick="switchSettingsTab('security')">Geslo & Email</button>
+      <button class="stab" data-tab="notif" onclick="switchSettingsTab('notif')">Obvestila</button>
+      <button class="stab" data-tab="history" onclick="switchSettingsTab('history')">Transakcije</button>
+      <button class="stab" data-tab="verify" onclick="switchSettingsTab('verify')">Verifikacija</button>
+      <button class="stab" data-tab="prefs" onclick="switchSettingsTab('prefs')">Jezik & Valuta</button>
+    </div>
+    <!-- Body -->
+    <div style="overflow-y:auto;flex:1;padding:28px;" id="settings-body">
+
+      <!-- TAB: PROFILE -->
+      <div id="stab-profile">
+        <div class="sform-grid">
+          <div class="sform-field">
+            <label class="sform-label">Ime</label>
+            <input class="sform-input" id="sp-first" type="text" placeholder="Janez" />
+          </div>
+          <div class="sform-field">
+            <label class="sform-label">Priimek</label>
+            <input class="sform-input" id="sp-last" type="text" placeholder="Novak" />
+          </div>
+          <div class="sform-field" style="grid-column:1/-1;">
+            <label class="sform-label">Ime podjetja</label>
+            <input class="sform-input" id="sp-company" type="text" placeholder="npr. Metals d.o.o." />
+          </div>
+          <div class="sform-field">
+            <label class="sform-label">Davčna številka (VAT)</label>
+            <input class="sform-input" id="sp-vat" type="text" placeholder="SI12345678" />
+          </div>
+          <div class="sform-field">
+            <label class="sform-label">Telefon</label>
+            <input class="sform-input" id="sp-phone" type="tel" placeholder="+386 40 123 456" />
+          </div>
+          <div class="sform-field">
+            <label class="sform-label">Država</label>
+            <select class="sform-input" id="sp-country">
+              <option value="">— Izberite —</option>
+              <option value="SI">Slovenija</option><option value="AT">Avstrija</option>
+              <option value="DE">Nemčija</option><option value="HR">Hrvaška</option>
+              <option value="IT">Italija</option><option value="HU">Madžarska</option>
+              <option value="CH">Švica</option><option value="US">ZDA</option>
+              <option value="GB">Velika Britanija</option><option value="OTHER">Drugo</option>
+            </select>
+          </div>
+          <div class="sform-field">
+            <label class="sform-label">Kontaktni email</label>
+            <input class="sform-input" id="sp-contact-email" type="email" placeholder="info@podjetje.si" />
+          </div>
+          <div class="sform-field" style="grid-column:1/-1;">
+            <label class="sform-label">Opis podjetja <span style="color:var(--muted);font-weight:400;">(neobvezno)</span></label>
+            <textarea class="sform-input" id="sp-desc" rows="3" placeholder="Kratko opišite vašo dejavnost..." style="resize:vertical;"></textarea>
+          </div>
+        </div>
+        <div id="sp-msg" style="display:none;margin-top:12px;font-size:13px;"></div>
+        <button class="sform-save-btn" onclick="saveProfile()">Shrani profil</button>
+      </div>
+
+      <!-- TAB: SECURITY -->
+      <div id="stab-security" style="display:none;">
+        <div style="margin-bottom:28px;">
+          <div style="font-size:11px;letter-spacing:0.08em;text-transform:uppercase;color:var(--gold);margin-bottom:16px;">Sprememba e-pošte</div>
+          <div class="sform-field" style="max-width:360px;">
+            <label class="sform-label">Nov e-mail naslov</label>
+            <input class="sform-input" id="sec-email" type="email" placeholder="nov@email.com" />
+          </div>
+          <div id="sec-email-msg" style="display:none;margin-top:8px;font-size:13px;"></div>
+          <button class="sform-save-btn" style="margin-top:12px;" onclick="changeEmail()">Posodobi e-mail</button>
+        </div>
+        <div style="border-top:1px solid rgba(201,162,39,0.1);padding-top:24px;">
+          <div style="font-size:11px;letter-spacing:0.08em;text-transform:uppercase;color:var(--gold);margin-bottom:16px;">Sprememba gesla</div>
+          <div class="sform-field" style="max-width:360px;">
+            <label class="sform-label">Novo geslo</label>
+            <input class="sform-input" id="sec-pw1" type="password" placeholder="••••••••" />
+          </div>
+          <div class="sform-field" style="max-width:360px;margin-top:12px;">
+            <label class="sform-label">Potrdi geslo</label>
+            <input class="sform-input" id="sec-pw2" type="password" placeholder="••••••••" />
+          </div>
+          <div id="sec-pw-msg" style="display:none;margin-top:8px;font-size:13px;"></div>
+          <button class="sform-save-btn" style="margin-top:12px;" onclick="changePassword()">Posodobi geslo</button>
+        </div>
+      </div>
+
+      <!-- TAB: NOTIFICATIONS -->
+      <div id="stab-notif" style="display:none;">
+        <p style="color:var(--muted);font-size:13px;margin:0 0 20px;">Izberite, kdaj vas obvestimo po e-pošti.</p>
+        <div style="display:flex;flex-direction:column;gap:14px;" id="notif-list">
+          <label class="snotif-row"><input type="checkbox" id="notif-outbid" /><div><div class="snotif-title">Prebit na dražbi</div><div class="snotif-sub">Ko vas nekdo prebid z višjo ponudbo.</div></div></label>
+          <label class="snotif-row"><input type="checkbox" id="notif-won" /><div><div class="snotif-title">Zmaga na dražbi</div><div class="snotif-sub">Ko zaključena dražba postane vaša.</div></div></label>
+          <label class="snotif-row"><input type="checkbox" id="notif-newbid" /><div><div class="snotif-title">Nova ponudba na mojem oglasu</div><div class="snotif-sub">Ko nekdo pošlje ponudbo na vašo dražbo.</div></div></label>
+          <label class="snotif-row"><input type="checkbox" id="notif-inquiry" /><div><div class="snotif-title">Nova poizvedba</div><div class="snotif-sub">Ko nekdo klikne "Povpraši" na vašem oglasu.</div></div></label>
+          <label class="snotif-row"><input type="checkbox" id="notif-expiry" /><div><div class="snotif-title">Dražba se izteka</div><div class="snotif-sub">Opomnik 1 uro pred koncem dražbe.</div></div></label>
+        </div>
+        <div id="notif-msg" style="display:none;margin-top:12px;font-size:13px;"></div>
+        <button class="sform-save-btn" style="margin-top:20px;" onclick="saveNotifications()">Shrani nastavitve</button>
+      </div>
+
+      <!-- TAB: HISTORY -->
+      <div id="stab-history" style="display:none;">
+        <p style="color:var(--muted);font-size:13px;margin:0 0 20px;">Vaše oddane ponudbe in zaključene transakcije.</p>
+        <div id="hist-list"><div style="color:var(--muted);font-size:13px;">Nalagam...</div></div>
+      </div>
+
+      <!-- TAB: VERIFY -->
+      <div id="stab-verify" style="display:none;">
+        <div id="verify-status-box" style="padding:16px;border-radius:3px;margin-bottom:20px;font-size:13px;"></div>
+        <p style="color:var(--muted);font-size:13px;margin:0 0 20px;">Za pridobitev oznake <strong style="color:var(--gold-lt);">Verified Seller ✓</strong> naložite enega od dokumentov:</p>
+        <ul style="color:var(--muted);font-size:13px;margin:0 0 20px;padding-left:20px;line-height:2;">
+          <li>Izpisek iz poslovnega registra (ne starejši od 3 mes.)</li>
+          <li>Kopija davčne registracije</li>
+          <li>Katerikoli uradni dokument z imenom podjetja in naslovom</li>
+        </ul>
+        <div class="sform-field" style="max-width:360px;">
+          <label class="sform-label">Naloži dokument (PDF / JPG / PNG, max 5MB)</label>
+          <input class="sform-input" id="verify-file" type="file" accept=".pdf,.jpg,.jpeg,.png" style="padding:8px;" />
+        </div>
+        <div id="verify-msg" style="display:none;margin-top:8px;font-size:13px;"></div>
+        <button class="sform-save-btn" style="margin-top:12px;" onclick="submitVerification()">Pošlji za pregled</button>
+      </div>
+
+      <!-- TAB: PREFS -->
+      <div id="stab-prefs" style="display:none;">
+        <div style="margin-bottom:28px;">
+          <div style="font-size:11px;letter-spacing:0.08em;text-transform:uppercase;color:var(--gold);margin-bottom:14px;">Jezik vmesnika</div>
+          <div style="display:flex;gap:10px;">
+            <button class="spref-btn" id="pref-lang-en" onclick="setLang('en');updateLangPrefBtns();">🇬🇧 English</button>
+            <button class="spref-btn" id="pref-lang-sl" onclick="setLang('sl');updateLangPrefBtns();">🇸🇮 Slovenščina</button>
+          </div>
+        </div>
+        <div style="border-top:1px solid rgba(201,162,39,0.1);padding-top:24px;">
+          <div style="font-size:11px;letter-spacing:0.08em;text-transform:uppercase;color:var(--gold);margin-bottom:14px;">Privzeta valuta</div>
+          <div style="display:flex;gap:10px;">
+            <button class="spref-btn" id="pref-cur-usd" onclick="setPrefCurrency('usd')">$ USD</button>
+            <button class="spref-btn" id="pref-cur-eur" onclick="setPrefCurrency('eur')">€ EUR</button>
+          </div>
+        </div>
+        <p style="color:var(--muted);font-size:12px;margin-top:24px;">Nastavitve se shranijo lokalno v brskalnik.</p>
+      </div>
+
+    </div><!-- /settings-body -->
+  </div>
+</div>
+
+<style>
+  .stab {
+    background:none; border:none; border-bottom:2px solid transparent;
+    color:var(--muted); font-family:'Inter',sans-serif; font-size:12px;
+    font-weight:500; letter-spacing:0.04em; padding:12px 14px 10px;
+    cursor:pointer; white-space:nowrap;
+    transition:color 0.15s ease, border-color 0.15s ease;
+  }
+  .stab:hover { color:var(--silver-lt); }
+  .stab.active { color:var(--gold-lt); border-bottom-color:var(--gold); }
+  .sform-grid { display:grid; grid-template-columns:1fr 1fr; gap:14px; }
+  @media(max-width:520px){ .sform-grid { grid-template-columns:1fr; } }
+  .sform-field { display:flex; flex-direction:column; gap:5px; }
+  .sform-label { font-size:11px; letter-spacing:0.06em; text-transform:uppercase; color:var(--muted); font-weight:500; }
+  .sform-input {
+    background:rgba(255,255,255,0.04); border:1px solid rgba(143,163,177,0.18);
+    border-radius:2px; color:#E8EEF2; font-family:'Inter',sans-serif; font-size:14px;
+    padding:9px 12px; outline:none; transition:border-color 0.15s ease;
+    width:100%;
+  }
+  .sform-input:focus { border-color:rgba(201,162,39,0.4); }
+  .sform-save-btn {
+    display:inline-flex; align-items:center;
+    padding:10px 24px; background:linear-gradient(135deg,var(--gold-lt),var(--gold),var(--gold-dk));
+    color:var(--ink); font-family:'Inter',sans-serif; font-weight:600;
+    font-size:12px; letter-spacing:0.07em; text-transform:uppercase;
+    border:none; cursor:pointer; border-radius:2px; margin-top:8px;
+    transition:opacity 0.15s ease;
+  }
+  .sform-save-btn:hover { opacity:0.88; }
+  .sform-save-btn:disabled { opacity:0.4; cursor:not-allowed; }
+  .snotif-row {
+    display:flex; align-items:flex-start; gap:12px; cursor:pointer;
+    padding:12px 14px; border:1px solid rgba(143,163,177,0.12);
+    border-radius:3px; transition:background 0.15s ease;
+  }
+  .snotif-row:hover { background:rgba(201,162,39,0.04); }
+  .snotif-row input[type=checkbox] { margin-top:3px; accent-color:var(--gold); width:15px; height:15px; flex-shrink:0; }
+  .snotif-title { font-size:13px; font-weight:500; color:#E8EEF2; }
+  .snotif-sub { font-size:12px; color:var(--muted); margin-top:2px; }
+  .spref-btn {
+    padding:9px 18px; background:rgba(255,255,255,0.04);
+    border:1px solid rgba(143,163,177,0.18); border-radius:2px;
+    color:var(--muted); font-family:'Inter',sans-serif; font-size:13px;
+    cursor:pointer; transition:all 0.15s ease;
+  }
+  .spref-btn:hover { border-color:rgba(201,162,39,0.3); color:var(--silver-lt); }
+  .spref-btn.active { border-color:rgba(201,162,39,0.5); background:rgba(201,162,39,0.08); color:var(--gold-lt); }
+  .hist-row {
+    display:flex; align-items:center; justify-content:space-between;
+    padding:10px 0; border-bottom:1px solid rgba(143,163,177,0.08);
+    font-size:13px;
+  }
+  .hist-row:last-child { border-bottom:none; }
+</style>
+
 <script>
   // ── HTML ESCAPE HELPER ──
   function esc(str) {
@@ -2237,9 +2460,11 @@
     const ddReg = document.getElementById('dd-register');
     const ddSignin = document.getElementById('dd-signin');
     const ddLogout = document.getElementById('dd-logout');
+    const ddSettings = document.getElementById('dd-settings');
     if (ddReg) ddReg.style.display = 'none';
     if (ddSignin) ddSignin.style.display = 'none';
     if (ddLogout) ddLogout.style.display = '';
+    if (ddSettings) ddSettings.style.display = '';
   }
 
   function toggleDropdown() {
@@ -2274,13 +2499,15 @@
     const ddReg = document.getElementById('dd-register');
     const ddSignin = document.getElementById('dd-signin');
     const ddLogout = document.getElementById('dd-logout');
+    const ddSettings = document.getElementById('dd-settings');
     if (ddReg) ddReg.style.display = '';
     if (ddSignin) ddSignin.style.display = '';
     if (ddLogout) ddLogout.style.display = 'none';
+    if (ddSettings) ddSettings.style.display = 'none';
   }
 
   document.addEventListener('keydown', function(e) {
-    if (e.key === 'Escape') { closeRegModal(); closeSignInModal(); }
+    if (e.key === 'Escape') { closeRegModal(); closeSignInModal(); closeSettingsModal(); }
   });
 
   // ── TICKER ──
@@ -2597,6 +2824,191 @@ return '$' + price.toLocaleString('en-US', {maximumFractionDigits:2});
       emptyMsg.style.display = '';
     }
   }
+
+  // ── SETTINGS MODAL ──────────────────────────────────────────────────────────
+
+  function openSettingsModal() {
+    const modal = document.getElementById('settings-modal');
+    modal.style.display = 'flex';
+    document.body.style.overflow = 'hidden';
+    switchSettingsTab('profile');
+    loadSettingsProfile();
+    loadNotificationPrefs();
+    updateLangPrefBtns();
+  }
+  function closeSettingsModal() {
+    document.getElementById('settings-modal').style.display = 'none';
+    document.body.style.overflow = '';
+  }
+  function switchSettingsTab(tab) {
+    ['profile','security','notif','history','verify','prefs'].forEach(t => {
+      document.getElementById('stab-' + t).style.display = t === tab ? '' : 'none';
+      document.querySelector(`.stab[data-tab="${t}"]`).classList.toggle('active', t === tab);
+    });
+    if (tab === 'history') loadHistoryTab();
+  }
+
+  // Profile
+  async function loadSettingsProfile() {
+    const { data: { user } } = await sb.auth.getUser();
+    if (!user) return;
+    const m = user.user_metadata || {};
+    document.getElementById('sp-first').value   = m.first_name || '';
+    document.getElementById('sp-last').value    = m.last_name  || '';
+    document.getElementById('sp-company').value = m.company_name || '';
+    document.getElementById('sp-vat').value     = m.vat || '';
+    document.getElementById('sp-phone').value   = m.phone || '';
+    document.getElementById('sp-country').value = m.country || '';
+    document.getElementById('sp-contact-email').value = m.contact_email || user.email || '';
+    document.getElementById('sp-desc').value    = m.company_desc || '';
+    if (m.verified) {
+      document.getElementById('verify-status-box').innerHTML = '<span style="color:#48c78e;">✓ Račun je verificiran</span>';
+      document.getElementById('verify-status-box').style.background = 'rgba(72,199,142,0.08)';
+      document.getElementById('verify-status-box').style.border = '1px solid rgba(72,199,142,0.2)';
+    } else {
+      document.getElementById('verify-status-box').innerHTML = '<span style="color:var(--muted);">Račun še ni verificiran.</span>';
+      document.getElementById('verify-status-box').style.background = 'rgba(143,163,177,0.06)';
+      document.getElementById('verify-status-box').style.border = '1px solid rgba(143,163,177,0.12)';
+    }
+  }
+  async function saveProfile() {
+    const btn = document.querySelector('#stab-profile .sform-save-btn');
+    const msg = document.getElementById('sp-msg');
+    btn.disabled = true;
+    try {
+      const { error } = await sb.auth.updateUser({ data: {
+        first_name:    document.getElementById('sp-first').value.trim(),
+        last_name:     document.getElementById('sp-last').value.trim(),
+        company_name:  document.getElementById('sp-company').value.trim(),
+        vat:           document.getElementById('sp-vat').value.trim(),
+        phone:         document.getElementById('sp-phone').value.trim(),
+        country:       document.getElementById('sp-country').value,
+        contact_email: document.getElementById('sp-contact-email').value.trim(),
+        company_desc:  document.getElementById('sp-desc').value.trim(),
+      }});
+      msg.style.display = '';
+      if (error) { msg.style.color = '#f0645a'; msg.textContent = 'Napaka: ' + error.message; }
+      else        { msg.style.color = '#48c78e'; msg.textContent = '✓ Profil shranjen.'; }
+    } catch { msg.style.display = ''; msg.style.color = '#f0645a'; msg.textContent = 'Napaka.'; }
+    btn.disabled = false;
+  }
+
+  // Security
+  async function changeEmail() {
+    const val = document.getElementById('sec-email').value.trim();
+    const msg = document.getElementById('sec-email-msg');
+    if (!val) { msg.style.display = ''; msg.style.color = '#f0645a'; msg.textContent = 'Vnesite e-mail.'; return; }
+    const { error } = await sb.auth.updateUser({ email: val });
+    msg.style.display = '';
+    if (error) { msg.style.color = '#f0645a'; msg.textContent = 'Napaka: ' + error.message; }
+    else        { msg.style.color = '#48c78e'; msg.textContent = '✓ Potrditveno sporočilo poslano na nov naslov.'; }
+  }
+  async function changePassword() {
+    const p1 = document.getElementById('sec-pw1').value;
+    const p2 = document.getElementById('sec-pw2').value;
+    const msg = document.getElementById('sec-pw-msg');
+    msg.style.display = '';
+    if (p1.length < 8) { msg.style.color = '#f0645a'; msg.textContent = 'Geslo mora imeti vsaj 8 znakov.'; return; }
+    if (p1 !== p2)     { msg.style.color = '#f0645a'; msg.textContent = 'Gesli se ne ujemata.'; return; }
+    const { error } = await sb.auth.updateUser({ password: p1 });
+    if (error) { msg.style.color = '#f0645a'; msg.textContent = 'Napaka: ' + error.message; }
+    else { msg.style.color = '#48c78e'; msg.textContent = '✓ Geslo posodobljeno.'; document.getElementById('sec-pw1').value = ''; document.getElementById('sec-pw2').value = ''; }
+  }
+
+  // Notifications
+  const NOTIF_KEY = 'mt_notif_prefs';
+  function loadNotificationPrefs() {
+    const prefs = JSON.parse(localStorage.getItem(NOTIF_KEY) || '{}');
+    ['outbid','won','newbid','inquiry','expiry'].forEach(k => {
+      const el = document.getElementById('notif-' + k);
+      if (el) el.checked = prefs[k] !== false;
+    });
+  }
+  function saveNotifications() {
+    const prefs = {};
+    ['outbid','won','newbid','inquiry','expiry'].forEach(k => {
+      prefs[k] = document.getElementById('notif-' + k).checked;
+    });
+    localStorage.setItem(NOTIF_KEY, JSON.stringify(prefs));
+    const msg = document.getElementById('notif-msg');
+    msg.style.display = ''; msg.style.color = '#48c78e'; msg.textContent = '✓ Nastavitve shranjene.';
+    setTimeout(() => { msg.style.display = 'none'; }, 2500);
+  }
+
+  // History
+  async function loadHistoryTab() {
+    const box = document.getElementById('hist-list');
+    const { data: { user } } = await sb.auth.getUser();
+    if (!user) { box.innerHTML = '<p style="color:var(--muted);font-size:13px;">Niste prijavljeni.</p>'; return; }
+    box.innerHTML = '<div style="color:var(--muted);font-size:13px;">Nalagam...</div>';
+    try {
+      const { data, error } = await sb.from('bids')
+        .select('amount, created_at, listing_id, listings(name, sale_type, current_bid, current_bidder_id, auction_end_at)')
+        .eq('user_id', user.id)
+        .order('created_at', { ascending: false })
+        .limit(50);
+      if (error || !data || !data.length) {
+        box.innerHTML = '<p style="color:var(--muted);font-size:13px;">Nimate še nobenih oddanih ponudb.</p>'; return;
+      }
+      box.innerHTML = data.map(b => {
+        const l = b.listings;
+        const name = l ? esc(l.name) : esc(b.listing_id);
+        const ended = l && l.auction_end_at && new Date(l.auction_end_at) <= new Date();
+        const iWon  = ended && l && l.current_bidder_id === user.id && l.current_bid === b.amount;
+        const date  = new Date(b.created_at).toLocaleDateString('sl-SI');
+        const badge = iWon
+          ? `<span style="color:#E4BF5A;font-size:11px;font-weight:600;">🏆 ZMAGA</span>`
+          : ended
+            ? `<span style="color:var(--muted);font-size:11px;">Zaključeno</span>`
+            : `<span style="color:rgba(72,199,142,0.8);font-size:11px;">Aktivno</span>`;
+        return `<div class="hist-row">
+          <div><div style="font-weight:500;color:#E8EEF2;">${name}</div><div style="color:var(--muted);font-size:11px;">${date}</div></div>
+          <div style="text-align:right;">${badge}<div style="font-weight:600;color:var(--gold-lt);margin-top:2px;">$${Number(b.amount).toLocaleString()}</div></div>
+        </div>`;
+      }).join('');
+    } catch { box.innerHTML = '<p style="color:#f0645a;font-size:13px;">Napaka pri nalaganju.</p>'; }
+  }
+
+  // Verification
+  async function submitVerification() {
+    const fileEl = document.getElementById('verify-file');
+    const msg    = document.getElementById('verify-msg');
+    const file   = fileEl.files[0];
+    msg.style.display = '';
+    if (!file) { msg.style.color = '#f0645a'; msg.textContent = 'Izberite datoteko.'; return; }
+    if (file.size > 5 * 1024 * 1024) { msg.style.color = '#f0645a'; msg.textContent = 'Datoteka je prevelika (max 5MB).'; return; }
+    const allowed = ['application/pdf','image/jpeg','image/png'];
+    if (!allowed.includes(file.type)) { msg.style.color = '#f0645a'; msg.textContent = 'Dovoljeni formati: PDF, JPG, PNG.'; return; }
+    // Upload to Supabase storage
+    const { data: { user } } = await sb.auth.getUser();
+    const path = `verifications/${user.id}/${Date.now()}_${file.name}`;
+    const { error } = await sb.storage.from('documents').upload(path, file, { upsert: true });
+    if (error) { msg.style.color = '#f0645a'; msg.textContent = 'Napaka pri pošiljanju: ' + error.message; return; }
+    msg.style.color = '#48c78e';
+    msg.textContent = '✓ Dokument poslan. Pregledali ga bomo v 1-2 delovnih dneh.';
+    fileEl.value = '';
+  }
+
+  // Language / Currency prefs
+  function updateLangPrefBtns() {
+    const lang = localStorage.getItem('lang') || 'en';
+    document.getElementById('pref-lang-en').classList.toggle('active', lang === 'en');
+    document.getElementById('pref-lang-sl').classList.toggle('active', lang === 'sl');
+  }
+  function setPrefCurrency(cur) {
+    localStorage.setItem('mt_pref_currency', cur);
+    document.getElementById('pref-cur-usd').classList.toggle('active', cur === 'usd');
+    document.getElementById('pref-cur-eur').classList.toggle('active', cur === 'eur');
+  }
+  (function initCurrencyPref() {
+    const cur = localStorage.getItem('mt_pref_currency') || 'usd';
+    const uBtn = document.getElementById('pref-cur-usd');
+    const eBtn = document.getElementById('pref-cur-eur');
+    if (uBtn) uBtn.classList.toggle('active', cur === 'usd');
+    if (eBtn) eBtn.classList.toggle('active', cur === 'eur');
+  })();
+
+  // ── MY BIDS ─────────────────────────────────────────────────────────────────
 
   function _bidCountdown(endAtIso) {
     if (!endAtIso) return '—';
