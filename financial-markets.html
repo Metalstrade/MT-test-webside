@@ -662,5 +662,56 @@
     });
     renderFavChipsFM();
   </script>
+
+<!-- ── COOKIE BANNER ── -->
+<div id="cookie-banner" style="
+  display:none; position:fixed; bottom:0; left:0; right:0; z-index:99999;
+  background:rgba(20,28,36,0.97); backdrop-filter:blur(12px);
+  border-top:1px solid rgba(201,162,39,0.2);
+  padding:18px 32px; font-family:'Inter',sans-serif;
+  box-shadow:0 -4px 32px rgba(0,0,0,0.4);
+">
+  <div style="max-width:1100px;margin:0 auto;display:flex;align-items:center;justify-content:space-between;gap:24px;flex-wrap:wrap;">
+    <div style="flex:1;min-width:260px;">
+      <div style="font-size:13px;font-weight:600;color:#E8EEF2;margin-bottom:4px;">Ta spletna stran uporablja piškotke 🍪</div>
+      <div style="font-size:12px;color:#6B8090;line-height:1.6;">
+        Uporabljamo nujne piškotke za delovanje strani (prijava, seja) in analitične piškotke za izboljšanje izkušnje.
+        Z nadaljevanjem ali klikom na "Sprejmi vse" se strinjate z uporabo piškotkov.
+      </div>
+    </div>
+    <div style="display:flex;gap:10px;flex-shrink:0;align-items:center;">
+      <button onclick="cookieChoice('essential')" style="
+        padding:9px 18px; background:none;
+        border:1px solid rgba(143,163,177,0.25); border-radius:2px;
+        color:#6B8090; font-family:'Inter',sans-serif; font-size:12px;
+        font-weight:500; cursor:pointer; transition:all 0.15s; white-space:nowrap;
+      " onmouseover="this.style.borderColor='rgba(143,163,177,0.5)';this.style.color='#B8C9D4'"
+         onmouseout="this.style.borderColor='rgba(143,163,177,0.25)';this.style.color='#6B8090'">
+        Samo nujni
+      </button>
+      <button onclick="cookieChoice('all')" style="
+        padding:9px 22px;
+        background:linear-gradient(135deg,#E4BF5A,#C9A227,#8B6F14);
+        color:#0D1117; font-family:'Inter',sans-serif; font-weight:600;
+        font-size:12px; letter-spacing:0.06em; text-transform:uppercase;
+        border:none; cursor:pointer; border-radius:2px;
+        transition:opacity 0.15s; white-space:nowrap;
+      " onmouseover="this.style.opacity='0.88'" onmouseout="this.style.opacity='1'">
+        Sprejmi vse
+      </button>
+    </div>
+  </div>
+</div>
+<script>
+(function() {
+  var consent = localStorage.getItem('mt_cookie_consent');
+  if (!consent) document.getElementById('cookie-banner').style.display = 'block';
+})();
+function cookieChoice(type) {
+  localStorage.setItem('mt_cookie_consent', type);
+  localStorage.setItem('mt_cookie_date', new Date().toISOString());
+  document.getElementById('cookie-banner').style.display = 'none';
+}
+</script>
 </body>
 </html>
