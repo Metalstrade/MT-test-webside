@@ -31,40 +31,8 @@
       opacity:0.5;
     }
 
-    /* ── PASSWORD GATE ── */
-    #gate {
-      position:fixed; inset:0; z-index:999;
-      background:var(--ink);
-      display:flex; align-items:center; justify-content:center;
-    }
-    .gate-box {
-      background:var(--ink-2); border:1px solid rgba(201,162,39,0.2);
-      border-radius:4px; padding:48px 44px;
-      width:100%; max-width:380px; text-align:center;
-      box-shadow:0 8px 60px rgba(0,0,0,0.6);
-    }
-    .gate-eyebrow { font-size:10px; letter-spacing:0.14em; text-transform:uppercase; color:var(--gold); margin-bottom:8px; }
-    .gate-title { font-family:'Cormorant Garamond',serif; font-size:28px; color:#E8EEF2; margin-bottom:28px; }
-    .gate-input {
-      width:100%; padding:11px 14px;
-      background:rgba(255,255,255,0.04); border:1px solid rgba(143,163,177,0.18);
-      border-radius:2px; color:#E8EEF2; font-family:'Inter',sans-serif; font-size:14px;
-      outline:none; transition:border-color 0.15s; text-align:center; letter-spacing:0.1em;
-    }
-    .gate-input:focus { border-color:rgba(201,162,39,0.4); }
-    .gate-btn {
-      width:100%; margin-top:14px; padding:12px;
-      background:linear-gradient(135deg,var(--gold-lt),var(--gold),var(--gold-dk));
-      color:var(--ink); font-family:'Inter',sans-serif; font-weight:600;
-      font-size:12px; letter-spacing:0.08em; text-transform:uppercase;
-      border:none; cursor:pointer; border-radius:2px;
-      transition:opacity 0.15s;
-    }
-    .gate-btn:hover { opacity:0.88; }
-    .gate-error { color:#f0645a; font-size:12px; margin-top:10px; display:none; }
-
     /* ── MAIN LAYOUT ── */
-    #app { display:none; position:relative; z-index:1; }
+    #app { display:block; position:relative; z-index:1; }
 
     /* ── NAV ── */
     nav {
@@ -199,17 +167,6 @@
 </head>
 <body>
 
-<!-- PASSWORD GATE -->
-<div id="gate">
-  <div class="gate-box">
-    <div class="gate-eyebrow">Metals Trading</div>
-    <h2 class="gate-title">Admin dostop</h2>
-    <input class="gate-input" type="password" id="gate-pw" placeholder="••••••••" onkeydown="if(event.key==='Enter')checkGate()" />
-    <button class="gate-btn" onclick="checkGate()">Vstopi</button>
-    <div class="gate-error" id="gate-error">Napačno geslo.</div>
-  </div>
-</div>
-
 <!-- MAIN APP -->
 <div id="app">
   <nav>
@@ -275,8 +232,7 @@
 
 <script>
   // ── CONFIG ──
-  const ADMIN_PASSWORD = 'MT-admin-2024'; // Spremenite po želji
-  const ADMIN_EMAILS   = ['metals-trade@protonmail.com', 'jani.zibert@gazela.si'];
+  const ADMIN_EMAILS = ['metals-trade@protonmail.com', 'jani.zibert@gazela.si'];
 
   const sb = supabase.createClient(
     'https://xurgxkrnmutmocqbjffw.supabase.co',
@@ -288,26 +244,6 @@
     const d = document.createElement('div');
     d.textContent = String(str);
     return d.innerHTML;
-  }
-
-  // ── GATE ──
-  function checkGate() {
-    const pw = document.getElementById('gate-pw').value;
-    if (pw === ADMIN_PASSWORD) {
-      document.getElementById('gate').style.display = 'none';
-      document.getElementById('app').style.display  = 'block';
-      sessionStorage.setItem('admin_gate', '1');
-      checkSession();
-    } else {
-      document.getElementById('gate-error').style.display = 'block';
-      document.getElementById('gate-pw').value = '';
-    }
-  }
-
-  // Auto-skip gate if already passed this session
-  if (sessionStorage.getItem('admin_gate') === '1') {
-    document.getElementById('gate').style.display = 'none';
-    document.getElementById('app').style.display  = 'block';
   }
 
   // ── AUTH ──
