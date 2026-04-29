@@ -2052,14 +2052,17 @@
 
       <!-- TAB: SECURITY -->
       <div id="stab-security" style="display:none;">
-        <div style="margin-bottom:28px;">
-          <div style="font-size:11px;letter-spacing:0.08em;text-transform:uppercase;color:var(--gold);margin-bottom:16px;">Sprememba e-pošte</div>
-          <div class="sform-field" style="max-width:360px;">
-            <label class="sform-label">Nov e-mail naslov</label>
-            <input class="sform-input" id="sec-email" type="email" placeholder="nov@email.com" />
+        <div style="margin-bottom:24px;">
+          <div style="font-size:11px;letter-spacing:0.08em;text-transform:uppercase;color:var(--muted);margin-bottom:8px;">E-poštni naslov</div>
+          <div style="display:flex;align-items:center;gap:10px;max-width:360px;">
+            <div id="sec-email-display" style="
+              flex:1; padding:9px 12px;
+              background:rgba(255,255,255,0.02); border:1px solid rgba(143,163,177,0.1);
+              border-radius:2px; color:var(--muted); font-size:14px; font-family:'Inter',sans-serif;
+              user-select:none;
+            ">—</div>
+            <span style="font-size:11px;color:var(--muted);white-space:nowrap;">Ni spremenljiv</span>
           </div>
-          <div id="sec-email-msg" style="display:none;margin-top:8px;font-size:13px;"></div>
-          <button class="sform-save-btn" style="margin-top:12px;" onclick="changeEmail()">Posodobi e-mail</button>
         </div>
         <div style="border-top:1px solid rgba(201,162,39,0.1);padding-top:24px;">
           <div style="font-size:11px;letter-spacing:0.08em;text-transform:uppercase;color:var(--gold);margin-bottom:16px;">Sprememba gesla</div>
@@ -2861,6 +2864,8 @@ return '$' + price.toLocaleString('en-US', {maximumFractionDigits:2});
     document.getElementById('sp-country').value = m.country || '';
     document.getElementById('sp-contact-email').value = m.contact_email || user.email || '';
     document.getElementById('sp-desc').value    = m.company_desc || '';
+    const emailDisplay = document.getElementById('sec-email-display');
+    if (emailDisplay) emailDisplay.textContent = user.email || '—';
     if (m.verified) {
       document.getElementById('verify-status-box').innerHTML = '<span style="color:#48c78e;">✓ Račun je verificiran</span>';
       document.getElementById('verify-status-box').style.background = 'rgba(72,199,142,0.08)';
@@ -2894,15 +2899,6 @@ return '$' + price.toLocaleString('en-US', {maximumFractionDigits:2});
   }
 
   // Security
-  async function changeEmail() {
-    const val = document.getElementById('sec-email').value.trim();
-    const msg = document.getElementById('sec-email-msg');
-    if (!val) { msg.style.display = ''; msg.style.color = '#f0645a'; msg.textContent = 'Vnesite e-mail.'; return; }
-    const { error } = await sb.auth.updateUser({ email: val });
-    msg.style.display = '';
-    if (error) { msg.style.color = '#f0645a'; msg.textContent = 'Napaka: ' + error.message; }
-    else        { msg.style.color = '#48c78e'; msg.textContent = '✓ Potrditveno sporočilo poslano na nov naslov.'; }
-  }
   async function changePassword() {
     const p1 = document.getElementById('sec-pw1').value;
     const p2 = document.getElementById('sec-pw2').value;
