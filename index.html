@@ -2093,45 +2093,20 @@
             <input class="sform-input" id="sp-company" type="text" placeholder="npr. Metals d.o.o." />
           </div>
           <div class="sform-field">
-            <label class="sform-label">Davčna številka (VAT)</label>
-            <input class="sform-input" id="sp-vat" type="text" placeholder="SI12345678" />
+            <label class="sform-label">Davčna številka (VAT) <span style="color:var(--muted);font-weight:400;font-size:10px;">— ni spremenljivo</span></label>
+            <div id="sp-vat" class="sform-input" style="color:var(--muted);cursor:default;user-select:none;background:rgba(255,255,255,0.02);border-color:rgba(143,163,177,0.08);">—</div>
           </div>
           <div class="sform-field">
             <label class="sform-label">Telefon</label>
             <input class="sform-input" id="sp-phone" type="tel" placeholder="+386 40 123 456" />
           </div>
           <div class="sform-field">
-            <label class="sform-label">Država</label>
-            <select class="sform-input" id="sp-country">
-              <option value="">— Izberite —</option>
-              <option value="AT">Avstrija</option>
-              <option value="BE">Belgija</option>
-              <option value="BG">Bolgarija</option>
-              <option value="CY">Ciper</option>
-              <option value="CZ">Češka</option>
-              <option value="DK">Danska</option>
-              <option value="EE">Estonija</option>
-              <option value="FI">Finska</option>
-              <option value="FR">Francija</option>
-              <option value="GR">Grčija</option>
-              <option value="IE">Irska</option>
-              <option value="IT">Italija</option>
-              <option value="LV">Latvija</option>
-              <option value="LT">Litva</option>
-              <option value="LU">Luksemburg</option>
-              <option value="MT">Malta</option>
-              <option value="HU">Madžarska</option>
-              <option value="DE">Nemčija</option>
-              <option value="NL">Nizozemska</option>
-              <option value="PL">Poljska</option>
-              <option value="PT">Portugalska</option>
-              <option value="RO">Romunija</option>
-              <option value="SK">Slovaška</option>
-              <option value="SI">Slovenija</option>
-              <option value="ES">Španija</option>
-              <option value="SE">Švedska</option>
-              <option value="HR">Hrvaška</option>
-            </select>
+            <label class="sform-label">Država <span style="color:var(--muted);font-weight:400;font-size:10px;">— ni spremenljivo</span></label>
+            <div id="sp-country" class="sform-input" style="color:var(--muted);cursor:default;user-select:none;background:rgba(255,255,255,0.02);border-color:rgba(143,163,177,0.08);">—</div>
+          </div>
+          <div class="sform-field" style="grid-column:1/-1;">
+            <label class="sform-label">NACE dejavnost <span style="color:var(--muted);font-weight:400;font-size:10px;">— ni spremenljivo</span></label>
+            <div id="sp-nace" class="sform-input" style="color:var(--muted);cursor:default;user-select:none;background:rgba(255,255,255,0.02);border-color:rgba(143,163,177,0.08);">—</div>
           </div>
           <div class="sform-field">
             <label class="sform-label">Kontaktni email</label>
@@ -2974,11 +2949,13 @@ return '$' + price.toLocaleString('en-US', {maximumFractionDigits:2});
     document.getElementById('sp-first').value   = m.first_name || '';
     document.getElementById('sp-last').value    = m.last_name  || '';
     document.getElementById('sp-company').value = m.company_name || '';
-    document.getElementById('sp-vat').value     = m.vat || '';
-    document.getElementById('sp-phone').value   = m.phone || '';
-    document.getElementById('sp-country').value = m.country || '';
-    document.getElementById('sp-contact-email').value = m.contact_email || user.email || '';
-    document.getElementById('sp-desc').value    = m.company_desc || '';
+    document.getElementById('sp-vat').textContent     = m.vat || m.tax_number || '—';
+    document.getElementById('sp-phone').value          = m.phone || '';
+    const countryNames = {AT:'Avstrija',BE:'Belgija',BG:'Bolgarija',CY:'Ciper',CZ:'Češka',DK:'Danska',EE:'Estonija',FI:'Finska',FR:'Francija',GR:'Grčija',IE:'Irska',IT:'Italija',LV:'Latvija',LT:'Litva',LU:'Luksemburg',MT:'Malta',HU:'Madžarska',DE:'Nemčija',NL:'Nizozemska',PL:'Poljska',PT:'Portugalska',RO:'Romunija',SK:'Slovaška',SI:'Slovenija',ES:'Španija',SE:'Švedska',HR:'Hrvaška'};
+    document.getElementById('sp-country').textContent  = countryNames[m.country] || m.country || '—';
+    document.getElementById('sp-nace').textContent     = m.nace || '—';
+    document.getElementById('sp-contact-email').value  = m.contact_email || user.email || '';
+    document.getElementById('sp-desc').value           = m.company_desc || '';
     const emailDisplay = document.getElementById('sec-email-display');
     if (emailDisplay) emailDisplay.textContent = user.email || '—';
     if (m.verified) {
@@ -3000,9 +2977,7 @@ return '$' + price.toLocaleString('en-US', {maximumFractionDigits:2});
         first_name:    document.getElementById('sp-first').value.trim(),
         last_name:     document.getElementById('sp-last').value.trim(),
         company_name:  document.getElementById('sp-company').value.trim(),
-        vat:           document.getElementById('sp-vat').value.trim(),
         phone:         document.getElementById('sp-phone').value.trim(),
-        country:       document.getElementById('sp-country').value,
         contact_email: document.getElementById('sp-contact-email').value.trim(),
         company_desc:  document.getElementById('sp-desc').value.trim(),
       }});
