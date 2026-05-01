@@ -155,6 +155,55 @@
     .empty-state { text-align:center; padding:60px 20px; color:var(--muted); font-size:13px; }
     .empty-state h3 { font-family:'Cormorant Garamond',serif; font-size:22px; color:#E8EEF2; margin-bottom:8px; }
 
+    /* ── TRANSACTIONS ── */
+    .tx-grid { display:flex; flex-direction:column; gap:12px; }
+    .tx-admin-card {
+      background:var(--ink-2); border:1px solid rgba(143,163,177,0.1);
+      border-radius:3px; padding:0; overflow:hidden;
+      transition:border-color 0.15s;
+    }
+    .tx-admin-card:hover { border-color:rgba(201,162,39,0.2); }
+    .tx-admin-header {
+      display:grid; grid-template-columns:1fr auto;
+      padding:16px 18px 12px; border-bottom:1px solid rgba(143,163,177,0.08);
+      gap:12px; align-items:start;
+    }
+    .tx-admin-title { font-weight:600; color:#E8EEF2; font-size:13px; margin-bottom:3px; }
+    .tx-admin-meta  { font-size:11px; color:var(--muted); }
+    .tx-admin-ref   { font-family:monospace; color:var(--gold-lt); font-size:11px; }
+    .tx-amount-col  { text-align:right; }
+    .tx-total  { font-family:'Cormorant Garamond',serif; font-size:24px; color:var(--gold-lt); }
+    .tx-payout { font-size:11px; color:var(--muted); margin-top:2px; }
+    .tx-admin-body { padding:12px 18px; display:grid; grid-template-columns:repeat(auto-fill,minmax(160px,1fr)); gap:8px; }
+    .tx-detail-item { font-size:11px; }
+    .tx-detail-lbl  { color:var(--muted); margin-bottom:2px; }
+    .tx-detail-val  { color:#E8EEF2; font-weight:500; }
+    .tx-admin-actions { padding:12px 18px; border-top:1px solid rgba(143,163,177,0.08); display:flex; gap:8px; flex-wrap:wrap; }
+    .btn-tx {
+      padding:7px 14px; border-radius:2px; font-family:'Inter',sans-serif;
+      font-size:11px; font-weight:600; cursor:pointer; transition:all 0.15s;
+    }
+    .btn-tx-confirm-pay { background:rgba(99,179,237,0.1); border:1px solid rgba(99,179,237,0.3); color:#63b3ed; }
+    .btn-tx-confirm-pay:hover { background:rgba(99,179,237,0.2); }
+    .btn-tx-ship        { background:rgba(183,148,246,0.1); border:1px solid rgba(183,148,246,0.3); color:#b794f4; }
+    .btn-tx-ship:hover  { background:rgba(183,148,246,0.2); }
+    .btn-tx-release     { background:rgba(72,199,142,0.1);  border:1px solid rgba(72,199,142,0.3);  color:#48c78e; }
+    .btn-tx-release:hover { background:rgba(72,199,142,0.2); }
+    .btn-tx-cancel      { background:rgba(240,100,90,0.08); border:1px solid rgba(240,100,90,0.2);  color:#f0645a; }
+    .btn-tx-cancel:hover { background:rgba(240,100,90,0.15); }
+    .btn-tx:disabled    { opacity:0.4; cursor:not-allowed; }
+    .tx-status-badge {
+      display:inline-block; padding:2px 9px; border-radius:2px;
+      font-size:10px; font-weight:600; letter-spacing:0.07em;
+    }
+    .tx-s-pending_payment  { background:rgba(201,162,39,0.12); color:var(--gold-lt);  border:1px solid rgba(201,162,39,0.25); }
+    .tx-s-payment_received { background:rgba(99,179,237,0.1);  color:#63b3ed;         border:1px solid rgba(99,179,237,0.25); }
+    .tx-s-goods_shipped    { background:rgba(183,148,246,0.1); color:#b794f4;         border:1px solid rgba(183,148,246,0.25); }
+    .tx-s-goods_received   { background:rgba(72,199,142,0.1);  color:#48c78e;         border:1px solid rgba(72,199,142,0.25); }
+    .tx-s-completed        { background:rgba(72,199,142,0.15); color:#48c78e;         border:1px solid rgba(72,199,142,0.35); }
+    .tx-s-disputed         { background:rgba(240,100,90,0.1);  color:#f0645a;         border:1px solid rgba(240,100,90,0.25); }
+    .tx-s-cancelled        { background:rgba(107,128,144,0.1); color:var(--muted);    border:1px solid rgba(107,128,144,0.2); }
+
     .toast {
       position:fixed; bottom:24px; right:24px; z-index:9999;
       padding:12px 20px; border-radius:3px; font-size:13px; font-weight:500;
@@ -200,11 +249,14 @@
       <div class="stat-tile"><div class="stat-num" id="stat-approved">—</div><div class="stat-lbl">Odobrene</div></div>
       <div class="stat-tile"><div class="stat-num" id="stat-rejected">—</div><div class="stat-lbl">Zavrnjene</div></div>
       <div class="stat-tile"><div class="stat-num" id="stat-total">—</div><div class="stat-lbl">Skupaj</div></div>
+      <div class="stat-tile"><div class="stat-num" id="stat-tx-active">—</div><div class="stat-lbl">Aktivne tx</div></div>
+      <div class="stat-tile"><div class="stat-num" id="stat-tx-revenue" style="font-size:20px;">—</div><div class="stat-lbl">Provizija (€)</div></div>
     </div>
     <!-- Section tabs -->
     <div style="display:flex;gap:0;border-bottom:1px solid rgba(201,162,39,0.15);margin-bottom:24px;">
-      <button class="ftab active" data-section="registrations" onclick="switchSection('registrations')" style="font-size:13px;padding:10px 20px 8px;">👤 Registracije</button>
-      <button class="ftab"        data-section="verifications" onclick="switchSection('verifications')" style="font-size:13px;padding:10px 20px 8px;">📄 Verifikacije</button>
+      <button class="ftab active" data-section="registrations"  onclick="switchSection('registrations')"  style="font-size:13px;padding:10px 20px 8px;">👤 Registracije</button>
+      <button class="ftab"        data-section="verifications"  onclick="switchSection('verifications')"  style="font-size:13px;padding:10px 20px 8px;">📄 Verifikacije</button>
+      <button class="ftab"        data-section="transactions"   onclick="switchSection('transactions')"   style="font-size:13px;padding:10px 20px 8px;">💳 Transakcije</button>
     </div>
 
     <!-- Registrations -->
@@ -227,6 +279,19 @@
         <button class="ftab"        data-filter="all"      onclick="setFilter('all')">Vse</button>
       </div>
       <div class="cards-grid" id="cards-grid"></div>
+    </div>
+
+    <!-- Transactions -->
+    <div id="section-transactions" style="display:none;">
+      <div class="filter-tabs">
+        <button class="ftab active" data-filter="tx-pending_payment"  onclick="setTxFilter('pending_payment')">⏳ Čaka plačilo</button>
+        <button class="ftab"        data-filter="tx-payment_received" onclick="setTxFilter('payment_received')">💶 Plačano</button>
+        <button class="ftab"        data-filter="tx-goods_shipped"    onclick="setTxFilter('goods_shipped')">📦 Odpremljeno</button>
+        <button class="ftab"        data-filter="tx-goods_received"   onclick="setTxFilter('goods_received')">✓ Blago prejeto</button>
+        <button class="ftab"        data-filter="tx-completed"        onclick="setTxFilter('completed')">✅ Zaključeno</button>
+        <button class="ftab"        data-filter="tx-all"              onclick="setTxFilter('all')">Vse</button>
+      </div>
+      <div id="tx-cards-grid"></div>
     </div>
   </div>
 </div>
@@ -297,7 +362,7 @@
     document.getElementById('login-prompt').style.display = 'none';
     document.getElementById('dashboard').style.display    = 'block';
     document.getElementById('nav-email').textContent = user.email;
-    await Promise.all([loadRegistrations(), loadVerifications()]);
+    await Promise.all([loadRegistrations(), loadVerifications(), loadTransactions()]);
   }
 
   // ── SECTION SWITCH ──
@@ -305,6 +370,7 @@
     document.querySelectorAll('[data-section]').forEach(b => b.classList.toggle('active', b.dataset.section === sec));
     document.getElementById('section-registrations').style.display = sec === 'registrations' ? '' : 'none';
     document.getElementById('section-verifications').style.display = sec === 'verifications'  ? '' : 'none';
+    document.getElementById('section-transactions').style.display  = sec === 'transactions'   ? '' : 'none';
   }
 
   // ── REGISTRATIONS ──
@@ -405,6 +471,11 @@
     document.getElementById('stat-approved').textContent = approved;
     document.getElementById('stat-rejected').textContent = rejected;
     document.getElementById('stat-total').textContent    = allRegistrations.length + allVerifications.length;
+    // Transaction stats
+    const activeTx  = allTransactions.filter(t => !['completed','cancelled'].includes(t.status)).length;
+    const totalFees = allTransactions.filter(t => t.status === 'completed').reduce((s,t) => s + (t.fee_amount || 0), 0);
+    document.getElementById('stat-tx-active').textContent  = activeTx;
+    document.getElementById('stat-tx-revenue').textContent = totalFees.toLocaleString('sl-SI', {minimumFractionDigits:2});
   }
 
   function setFilter(f) {
@@ -485,6 +556,98 @@
     }
     showToast(approve ? '✓ Verifikacija odobrena' : '✕ Verifikacija zavrnjena', approve ? 'success' : 'error');
     await loadVerifications();
+  }
+
+  // ── TRANSACTIONS ──
+  let allTransactions  = [];
+  let currentTxFilter  = 'pending_payment';
+
+  const TX_LABELS = {
+    pending_payment:  'Čaka plačilo',
+    payment_received: 'Plačilo prejeto',
+    goods_shipped:    'Blago odpremljeno',
+    goods_received:   'Blago prejeto',
+    completed:        'Zaključeno',
+    disputed:         'Spor',
+    cancelled:        'Preklicano'
+  };
+
+  async function loadTransactions() {
+    try {
+      const { data, error } = await sb.rpc('admin_get_transactions');
+      if (error) throw error;
+      allTransactions = data || [];
+      updateStats();
+      renderTransactions();
+    } catch(e) {
+      document.getElementById('tx-cards-grid').innerHTML =
+        `<div class="empty-state"><p style="color:#f0645a;">Napaka: ${esc(e.message)}</p></div>`;
+    }
+  }
+
+  function setTxFilter(f) {
+    currentTxFilter = f;
+    document.querySelectorAll('[data-filter^="tx-"]').forEach(t =>
+      t.classList.toggle('active', t.dataset.filter === 'tx-' + f));
+    renderTransactions();
+  }
+
+  function renderTransactions() {
+    const list = currentTxFilter === 'all'
+      ? allTransactions
+      : allTransactions.filter(t => t.status === currentTxFilter);
+    const grid = document.getElementById('tx-cards-grid');
+    if (!list.length) {
+      grid.innerHTML = `<div class="empty-state"><h3>Ni transakcij</h3><p>Ni zapisov za ta filter.</p></div>`;
+      return;
+    }
+    grid.innerHTML = `<div class="tx-grid">${list.map(tx => {
+      const date   = new Date(tx.created_at).toLocaleDateString('sl-SI',{day:'2-digit',month:'2-digit',year:'numeric'});
+      const badge  = TX_LABELS[tx.status] || tx.status;
+      const isPending  = tx.status === 'pending_payment';
+      const isPaid     = tx.status === 'payment_received';
+      const isShipped  = tx.status === 'goods_shipped';
+      const isReceived = tx.status === 'goods_received';
+      const isDone     = tx.status === 'completed' || tx.status === 'cancelled';
+      return `<div class="tx-admin-card" id="txcard-${tx.id}">
+        <div class="tx-admin-header">
+          <div>
+            <div class="tx-admin-title">${esc(tx.listing_title)}</div>
+            <div class="tx-admin-meta">${date} · <span class="tx-admin-ref">${esc(tx.payment_ref)}</span></div>
+            <div style="margin-top:6px;"><span class="tx-status-badge tx-s-${tx.status}">${badge}</span></div>
+          </div>
+          <div class="tx-amount-col">
+            <div class="tx-total">${Number(tx.amount).toLocaleString('sl-SI',{minimumFractionDigits:2})} ${tx.currency}</div>
+            <div class="tx-payout">Prodajalec prejme: ${Number(tx.seller_payout).toLocaleString('sl-SI',{minimumFractionDigits:2})} ${tx.currency}</div>
+            <div class="tx-payout" style="color:var(--gold);">Provizija: ${Number(tx.fee_amount).toLocaleString('sl-SI',{minimumFractionDigits:2})} ${tx.currency}</div>
+          </div>
+        </div>
+        <div class="tx-admin-body">
+          <div class="tx-detail-item"><div class="tx-detail-lbl">Provizija</div><div class="tx-detail-val">${tx.fee_pct}%</div></div>
+          ${tx.admin_notes ? `<div class="tx-detail-item" style="grid-column:1/-1;"><div class="tx-detail-lbl">Admin opomba</div><div class="tx-detail-val">${esc(tx.admin_notes)}</div></div>` : ''}
+        </div>
+        ${isDone ? '' : `<div class="tx-admin-actions">
+          ${isPending  ? `<button class="btn-tx btn-tx-confirm-pay" onclick="adminTxAction('${tx.id}','payment_received')">💶 Potrdi plačilo</button>` : ''}
+          ${isPaid     ? `<button class="btn-tx btn-tx-ship"        onclick="adminTxAction('${tx.id}','goods_shipped')">📦 Blago odpremljeno</button>` : ''}
+          ${isReceived ? `<button class="btn-tx btn-tx-release"     onclick="adminTxAction('${tx.id}','completed')">✅ Sprosti denar prodajalcu</button>` : ''}
+          ${!isDone    ? `<button class="btn-tx btn-tx-cancel"      onclick="adminTxAction('${tx.id}','cancelled')">✕ Prekliči</button>` : ''}
+        </div>`}
+      </div>`;
+    }).join('')}</div>`;
+  }
+
+  async function adminTxAction(id, newStatus) {
+    const btns = document.querySelectorAll(`#txcard-${id} .btn-tx`);
+    btns.forEach(b => b.disabled = true);
+    const { data, error } = await sb.rpc('admin_update_transaction', { p_id: id, p_status: newStatus });
+    if (error || data?.error) {
+      showToast('Napaka: ' + (error?.message || data?.error), 'error');
+      btns.forEach(b => b.disabled = false);
+      return;
+    }
+    const labels = { payment_received:'💶 Plačilo potrjeno', goods_shipped:'📦 Označeno kot odpremljeno', completed:'✅ Denar sproščen prodajalcu', cancelled:'✕ Transakcija preklicana' };
+    showToast(labels[newStatus] || 'Posodobljeno');
+    await loadTransactions();
   }
 
   function showToast(msg, type = 'success') {

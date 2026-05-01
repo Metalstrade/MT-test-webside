@@ -3761,27 +3761,79 @@ updateFilters();
 <div class="modal-overlay" id="payment-overlay" onclick="overlayClickClose(event,'payment-overlay')">
   <div class="payment-modal-box">
     <button class="modal-close" onclick="closeOverlay('payment-overlay')">×</button>
-    <h3 class="payment-modal-title">✓ Navodila za plačilo</h3>
-    <p class="payment-modal-sub" id="pay-listing-name">—</p>
-    <div class="payment-row">
-      <span class="payment-label">Znesek za plačilo</span>
-      <span class="payment-value big" id="pay-amount">—</span>
+
+    <!-- Header -->
+    <div style="display:flex;align-items:center;gap:10px;margin-bottom:6px;">
+      <div style="width:32px;height:32px;border-radius:50%;background:rgba(72,199,142,0.15);border:1px solid rgba(72,199,142,0.3);display:flex;align-items:center;justify-content:center;font-size:15px;">✓</div>
+      <h3 class="payment-modal-title" style="margin:0;">Navodila za plačilo</h3>
     </div>
-    <div class="payment-row">
-      <span class="payment-label">Referenca / ID naročila</span>
-      <span class="payment-value" id="pay-ref">—</span>
+    <p class="payment-modal-sub" id="pay-listing-name" style="margin-bottom:20px;">—</p>
+
+    <!-- Znesek breakdown -->
+    <div style="background:rgba(201,162,39,0.05);border:1px solid rgba(201,162,39,0.15);border-radius:4px;padding:16px;margin-bottom:16px;">
+      <div class="payment-row" style="margin-bottom:8px;">
+        <span class="payment-label">Cena blaga</span>
+        <span class="payment-value" id="pay-base-amount">—</span>
+      </div>
+      <div class="payment-row" style="margin-bottom:8px;">
+        <span class="payment-label">Provizija storitve (2%)</span>
+        <span class="payment-value" id="pay-fee-amount" style="color:var(--muted);">—</span>
+      </div>
+      <div style="border-top:1px solid rgba(201,162,39,0.15);margin:10px 0;"></div>
+      <div class="payment-row">
+        <span class="payment-label" style="font-weight:600;color:#E8EEF2;">Skupaj za nakazilo</span>
+        <span class="payment-value big" id="pay-amount">—</span>
+      </div>
     </div>
-    <div class="payment-row">
-      <span class="payment-label">Rok plačila</span>
-      <span class="payment-value">5 delovnih dni</span>
+
+    <!-- Bančni podatki -->
+    <div style="background:rgba(13,17,23,0.6);border:1px solid rgba(143,163,177,0.12);border-radius:4px;padding:16px;margin-bottom:16px;">
+      <div style="font-size:10px;letter-spacing:0.1em;text-transform:uppercase;color:var(--gold);margin-bottom:12px;font-weight:600;">Bančni podatki prejemnika</div>
+      <div class="payment-row" style="margin-bottom:8px;">
+        <span class="payment-label">Prejemnik</span>
+        <span class="payment-value">Metals Trading d.o.o.</span>
+      </div>
+      <div class="payment-row" style="margin-bottom:8px;">
+        <span class="payment-label">IBAN</span>
+        <span class="payment-value" style="font-family:monospace;letter-spacing:0.05em;" id="pay-iban">— prihaja kmalu —</span>
+      </div>
+      <div class="payment-row" style="margin-bottom:8px;">
+        <span class="payment-label">BIC / SWIFT</span>
+        <span class="payment-value" id="pay-bic">— prihaja kmalu —</span>
+      </div>
+      <div class="payment-row" style="margin-bottom:0;">
+        <span class="payment-label">Namen plačila</span>
+        <span class="payment-value" id="pay-ref" style="font-family:monospace;color:var(--gold-lt);">—</span>
+      </div>
     </div>
-    <div class="payment-row">
-      <span class="payment-label">Način plačila</span>
-      <span class="payment-value">Bančno nakazilo</span>
+
+    <!-- Escrow pojasnilo -->
+    <div style="background:rgba(143,163,177,0.05);border:1px solid rgba(143,163,177,0.1);border-radius:4px;padding:14px;margin-bottom:16px;">
+      <div style="font-size:10px;letter-spacing:0.1em;text-transform:uppercase;color:var(--muted);margin-bottom:8px;font-weight:600;">Kako deluje escrow zaščita</div>
+      <div style="display:flex;flex-direction:column;gap:6px;">
+        <div style="display:flex;gap:10px;align-items:flex-start;font-size:12px;color:#8FA3B1;">
+          <span style="color:var(--gold);font-weight:700;min-width:18px;">1.</span>
+          <span>Nakažete znesek na zgornji račun z navedeno referenco</span>
+        </div>
+        <div style="display:flex;gap:10px;align-items:flex-start;font-size:12px;color:#8FA3B1;">
+          <span style="color:var(--gold);font-weight:700;min-width:18px;">2.</span>
+          <span>Potrdimo prejem plačila in obvestimo prodajalca</span>
+        </div>
+        <div style="display:flex;gap:10px;align-items:flex-start;font-size:12px;color:#8FA3B1;">
+          <span style="color:var(--gold);font-weight:700;min-width:18px;">3.</span>
+          <span>Prodajalec odpremi blago — vi potrdite prejem</span>
+        </div>
+        <div style="display:flex;gap:10px;align-items:flex-start;font-size:12px;color:#8FA3B1;">
+          <span style="color:var(--gold);font-weight:700;min-width:18px;">4.</span>
+          <span>Prodajalcu nakažemo dogovorjeni znesek (minus 2% provizija)</span>
+        </div>
+      </div>
     </div>
-    <div class="payment-note">
-      Prodajalec vam bo v kratkem poslal podatke za bančno nakazilo (IBAN, BIC, naziv banke) na vaš e-poštni naslov. Prosimo, da plačilo izvedete v roku 5 delovnih dni od zaključka nakupa oziroma dražbe.
+
+    <div style="font-size:11px;color:var(--muted);margin-bottom:16px;">
+      Rok plačila: <strong style="color:#C0CDD6;">5 delovnih dni</strong> od nakupa. Status posla sledite v svojem profilu pod <em>Moje Transakcije</em>.
     </div>
+
     <button class="btn-close-payment" onclick="closeOverlay('payment-overlay')">Zapri</button>
   </div>
 </div>
@@ -4797,12 +4849,50 @@ async function submitBid() {
   }
 }
 
-function showPaymentInfo(dbId, amount) {
+async function showPaymentInfo(dbId, amount) {
+  if (!currentUser) { openAuthModal('signin'); return; }
+
   const listing = dbListings.find(l => l.dbId === dbId);
-  const name = listing ? listing.name : dbId;
-  document.getElementById('pay-listing-name').textContent = name;
-  document.getElementById('pay-amount').textContent = `$${Number(amount).toLocaleString('sl-SI', {minimumFractionDigits: 2})}`;
-  document.getElementById('pay-ref').textContent = `MT-${dbId.slice(0,8).toUpperCase()}`;
+  if (!listing) return;
+
+  // Prevent buying own listing
+  if (listing.user_id === currentUser.id) {
+    alert('Ne morete kupiti lastnega oglasa.'); return;
+  }
+
+  const base   = Number(amount);
+  const fee    = Math.round(base * 2) / 100;        // 2%
+  const total  = Math.round((base + fee) * 100) / 100;
+  const ref    = 'MT-' + new Date().getFullYear() + '-' + Math.random().toString(36).slice(2,8).toUpperCase();
+  const curr   = listing.currency || 'EUR';
+  const fmt    = (n) => `${curr} ${Number(n).toLocaleString('sl-SI', {minimumFractionDigits:2})}`;
+
+  // Create transaction record
+  const { error } = await sbM.from('transactions').insert({
+    listing_id:    dbId,
+    buyer_id:      currentUser.id,
+    seller_id:     listing.user_id,
+    listing_title: listing.name,
+    amount:        total,
+    currency:      curr,
+    fee_pct:       2,
+    payment_ref:   ref,
+    status:        'pending_payment'
+  });
+  if (error && error.code !== '23505') { // ignore duplicate
+    console.error('Transaction insert error:', error);
+  }
+
+  // Populate modal
+  document.getElementById('pay-listing-name').textContent = listing.name;
+  document.getElementById('pay-base-amount').textContent  = fmt(base);
+  document.getElementById('pay-fee-amount').textContent   = fmt(fee);
+  document.getElementById('pay-amount').textContent       = fmt(total);
+  document.getElementById('pay-ref').textContent          = ref;
+  // Bank details — update when IBAN is set
+  document.getElementById('pay-iban').textContent = '— bančni podatki prihajajo kmalu —';
+  document.getElementById('pay-bic').textContent  = '—';
+
   document.getElementById('payment-overlay').classList.add('open');
 }
 

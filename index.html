@@ -960,6 +960,49 @@
     }
     .btn-edit-my:hover { background: rgba(201,162,39,0.1); }
 
+    /* ── TRANSACTIONS ── */
+    .tx-tab {
+      background: none; border: none; border-bottom: 2px solid transparent;
+      color: var(--muted); font-family: 'Inter', sans-serif; font-size: 12px;
+      font-weight: 500; letter-spacing: 0.04em; padding: 10px 18px 8px;
+      cursor: pointer; transition: all 0.15s;
+    }
+    .tx-tab:hover { color: var(--silver); }
+    .tx-tab.active { color: var(--gold-lt); border-bottom-color: var(--gold); }
+    .tx-list { display: flex; flex-direction: column; gap: 12px; }
+    .tx-card {
+      background: var(--ink-2); border: 1px solid rgba(143,163,177,0.1);
+      border-radius: 4px; padding: 18px 20px;
+      display: grid; grid-template-columns: 1fr auto;
+      gap: 12px; align-items: start;
+      transition: border-color 0.15s;
+    }
+    .tx-card:hover { border-color: rgba(201,162,39,0.2); }
+    .tx-title { font-size: 14px; font-weight: 600; color: #E8EEF2; margin-bottom: 4px; }
+    .tx-meta  { font-size: 11px; color: var(--muted); }
+    .tx-ref   { font-size: 11px; font-family: monospace; color: var(--gold-lt); margin-top: 2px; }
+    .tx-amount { font-family: 'Cormorant Garamond', serif; font-size: 22px; font-weight: 700; color: var(--gold-lt); text-align: right; }
+    .tx-currency { font-size: 11px; color: var(--muted); text-align: right; margin-top: 2px; }
+    .tx-status-row { display: flex; gap: 8px; align-items: center; margin-top: 12px; flex-wrap: wrap; }
+    .tx-badge {
+      display: inline-block; padding: 3px 10px; border-radius: 2px;
+      font-size: 10px; font-weight: 600; letter-spacing: 0.07em; text-transform: uppercase;
+    }
+    .tx-badge.pending_payment  { background: rgba(201,162,39,0.1);  color: var(--gold-lt);  border: 1px solid rgba(201,162,39,0.25); }
+    .tx-badge.payment_received { background: rgba(99,179,237,0.1);  color: #63b3ed;         border: 1px solid rgba(99,179,237,0.25); }
+    .tx-badge.goods_shipped    { background: rgba(183,148,246,0.1); color: #b794f4;         border: 1px solid rgba(183,148,246,0.25); }
+    .tx-badge.goods_received   { background: rgba(72,199,142,0.1);  color: #48c78e;         border: 1px solid rgba(72,199,142,0.25); }
+    .tx-badge.completed        { background: rgba(72,199,142,0.15); color: #48c78e;         border: 1px solid rgba(72,199,142,0.35); }
+    .tx-badge.disputed         { background: rgba(240,100,90,0.1);  color: #f0645a;         border: 1px solid rgba(240,100,90,0.25); }
+    .tx-badge.cancelled        { background: rgba(107,128,144,0.1); color: var(--muted);    border: 1px solid rgba(107,128,144,0.2); }
+    .tx-btn-confirm {
+      padding: 6px 14px; font-size: 11px; font-weight: 600; letter-spacing: 0.05em;
+      background: rgba(72,199,142,0.1); border: 1px solid rgba(72,199,142,0.3);
+      border-radius: 2px; color: #48c78e; cursor: pointer;
+      font-family: 'Inter', sans-serif; transition: background 0.15s;
+    }
+    .tx-btn-confirm:hover { background: rgba(72,199,142,0.2); }
+
     /* ── FOOTER ── */
     footer {
       background: var(--ink);
@@ -1326,6 +1369,24 @@
       <div class="my-listings-grid" id="fav-listings-grid">
         <p style="color:var(--muted); font-size:13px;" id="fav-listings-empty">Nimate še nobenih priljubljenih oglasov. Obiščite <a href="markets.html" style="color:var(--gold);">Marketplace</a> in označite oglase z všečkom.</p>
       </div>
+    </div>
+  </section>
+
+  <!-- ── MOJE TRANSAKCIJE ── -->
+  <section id="my-transactions-section" style="display:none;">
+    <div class="section-inner">
+      <div class="section-eyebrow">Escrow</div>
+      <h2 class="section-title">Moje Transakcije</h2>
+      <p class="section-sub">Aktivne in zaključene transakcije — kot kupec in kot prodajalec.</p>
+
+      <!-- Tabs: kot kupec / kot prodajalec -->
+      <div style="display:flex;gap:0;border-bottom:1px solid rgba(201,162,39,0.12);margin:24px 0 20px;">
+        <button class="tx-tab active" data-tab="buyer"  onclick="switchTxTab('buyer')" >Kot kupec</button>
+        <button class="tx-tab"        data-tab="seller" onclick="switchTxTab('seller')">Kot prodajalec</button>
+      </div>
+
+      <div id="tx-buyer-list"  class="tx-list"></div>
+      <div id="tx-seller-list" class="tx-list" style="display:none;"></div>
     </div>
   </section>
 
@@ -2805,10 +2866,12 @@ return '$' + price.toLocaleString('en-US', {maximumFractionDigits:2});
     document.getElementById('my-listings-section').style.display = 'block';
     document.getElementById('my-bids-section').style.display = 'block';
     document.getElementById('fav-listings-section').style.display = 'block';
+    document.getElementById('my-transactions-section').style.display = 'block';
     loadDashFavs(user);
     loadMyListings(user);
     loadMyBids(user);
     loadFavListings(user);
+    loadMyTransactions(user);
   }
   function hidePersonalDashboard() {
     const els = document.querySelectorAll('.hero-eyebrow, .hero h1, .hero-sub, .hero-actions, .hero-stats');
@@ -2817,6 +2880,7 @@ return '$' + price.toLocaleString('en-US', {maximumFractionDigits:2});
     document.getElementById('my-listings-section').style.display = 'none';
     document.getElementById('my-bids-section').style.display = 'none';
     document.getElementById('fav-listings-section').style.display = 'none';
+    document.getElementById('my-transactions-section').style.display = 'none';
   }
 
   async function loadDashFavs(user) {
@@ -3259,6 +3323,85 @@ return '$' + price.toLocaleString('en-US', {maximumFractionDigits:2});
     } catch {
       grid.innerHTML = ''; grid.appendChild(emptyMsg); emptyMsg.style.display = '';
     }
+  }
+
+  // ── TRANSACTIONS ──
+  const TX_LABELS = {
+    pending_payment:  'Čaka plačilo',
+    payment_received: 'Plačilo prejeto',
+    goods_shipped:    'Blago odpremljeno',
+    goods_received:   'Blago prejeto',
+    completed:        'Zaključeno',
+    disputed:         'Spor',
+    cancelled:        'Preklicano'
+  };
+
+  function switchTxTab(tab) {
+    document.querySelectorAll('.tx-tab').forEach(b => b.classList.toggle('active', b.dataset.tab === tab));
+    document.getElementById('tx-buyer-list').style.display  = tab === 'buyer'  ? '' : 'none';
+    document.getElementById('tx-seller-list').style.display = tab === 'seller' ? '' : 'none';
+  }
+
+  function renderTxList(containerId, rows, role) {
+    const el = document.getElementById(containerId);
+    if (!rows || !rows.length) {
+      el.innerHTML = `<p style="color:var(--muted);font-size:13px;padding:16px 0;">Ni ${role === 'buyer' ? 'nakupov' : 'prodaj'} za prikaz.</p>`;
+      return;
+    }
+    el.innerHTML = rows.map(tx => {
+      const date   = new Date(tx.created_at).toLocaleDateString('sl-SI', {day:'2-digit',month:'2-digit',year:'numeric'});
+      const badge  = TX_LABELS[tx.status] || tx.status;
+      const confirmBtn = (role === 'buyer' && tx.status === 'goods_shipped')
+        ? `<button class="tx-btn-confirm" onclick="confirmTxReceipt('${tx.id}')">✓ Potrdi prejem blaga</button>`
+        : '';
+      const payBtn = (role === 'buyer' && tx.status === 'pending_payment')
+        ? `<a href="markets.html" style="display:inline-block;padding:5px 12px;font-size:11px;font-weight:600;background:linear-gradient(135deg,var(--gold-lt),var(--gold));color:#0D1117;border-radius:2px;text-decoration:none;font-family:'Inter',sans-serif;">💳 Nakazilo</a>`
+        : '';
+      return `<div class="tx-card">
+        <div>
+          <div class="tx-title">${esc(tx.listing_title)}</div>
+          <div class="tx-meta">${date} · Ref: <span class="tx-ref">${esc(tx.payment_ref)}</span></div>
+          <div class="tx-status-row">
+            <span class="tx-badge ${tx.status}">${badge}</span>
+            ${confirmBtn}${payBtn}
+          </div>
+        </div>
+        <div>
+          <div class="tx-amount">${Number(tx.amount).toLocaleString('sl-SI', {minimumFractionDigits:2})}</div>
+          <div class="tx-currency">${tx.currency}</div>
+          ${role === 'seller' ? `<div style="font-size:10px;color:var(--muted);margin-top:4px;text-align:right;">Izplačilo: ${Number(tx.seller_payout).toLocaleString('sl-SI',{minimumFractionDigits:2})} ${tx.currency}</div>` : ''}
+        </div>
+      </div>`;
+    }).join('');
+  }
+
+  function esc(str) {
+    if (!str) return '';
+    const d = document.createElement('div');
+    d.textContent = String(str);
+    return d.innerHTML;
+  }
+
+  async function loadMyTransactions(user) {
+    try {
+      const { data, error } = await sb.from('transactions')
+        .select('*').order('created_at', { ascending: false });
+      if (error) throw error;
+      const asBuyer  = (data || []).filter(t => t.buyer_id  === user.id);
+      const asSeller = (data || []).filter(t => t.seller_id === user.id);
+      renderTxList('tx-buyer-list',  asBuyer,  'buyer');
+      renderTxList('tx-seller-list', asSeller, 'seller');
+    } catch(e) {
+      document.getElementById('tx-buyer-list').innerHTML  = `<p style="color:#f0645a;font-size:13px;">Napaka pri nalaganju transakcij.</p>`;
+      document.getElementById('tx-seller-list').innerHTML = '';
+    }
+  }
+
+  async function confirmTxReceipt(txId) {
+    const { data, error } = await sb.rpc('buyer_confirm_receipt', { p_id: txId });
+    if (error || data?.error) { alert('Napaka: ' + (error?.message || data?.error)); return; }
+    const user = (await sb.auth.getUser()).data.user;
+    if (user) loadMyTransactions(user);
   }
 </script>
 
