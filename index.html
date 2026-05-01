@@ -1134,7 +1134,8 @@
     .t-dot { color:rgba(201,162,39,0.25); font-size:7px; padding: 0 4px; }
 
     /* ── HAMBURGER DROPDOWN ── */
-    .nav-dropdown { position: relative; margin-left: 12px; }
+    .nav-cta-group { display: flex; align-items: center; gap: 6px; margin-left: 16px; }
+    .nav-dropdown { position: relative; margin-left: 12px; flex-shrink: 0; }
     .hamburger-btn {
       display: flex; flex-direction: column; justify-content: center; align-items: center; gap: 5px;
       width: 38px; height: 38px;
@@ -1173,8 +1174,8 @@
     .dropdown-divider { height: 1px; background: rgba(201,162,39,0.1); margin: 3px 0; }
 
     @media (max-width: 640px) {
-      nav { padding: 0 24px; }
-      .nav-links, .nav-cta { display: none; }
+      nav { padding: 0 16px; }
+      .nav-links, .nav-cta, .nav-cta-group { display: none; }
       .section-inner { padding: 0 24px; }
       .hero-inner { padding: 136px 24px 60px; }
       .metals-grid { grid-template-columns: 1fr; }
@@ -1200,7 +1201,7 @@
       <li><a href="#process" data-i18n="nav_process">Process</a></li>
       <li><a href="#contact" data-i18n="nav_contact">Contact</a></li>
     </ul>
-    <div style="display:flex;align-items:center;gap:6px;margin-left:16px;">
+    <div class="nav-cta-group">
       <button id="nav-signin-btn" class="btn-outline nav-cta" onclick="openSignInModal()" data-i18n="nav_signin">Sign In</button>
       <button id="nav-reg-btn" class="btn-primary nav-cta" onclick="openRegModal()" data-i18n="nav_cta">Start Trading</button>
     </div>
@@ -3373,13 +3374,6 @@ return '$' + price.toLocaleString('en-US', {maximumFractionDigits:2});
         </div>
       </div>`;
     }).join('');
-  }
-
-  function esc(str) {
-    if (!str) return '';
-    const d = document.createElement('div');
-    d.textContent = String(str);
-    return d.innerHTML;
   }
 
   async function loadMyTransactions(user) {
