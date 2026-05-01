@@ -2468,24 +2468,34 @@
     document.getElementById('reg-terms-error').style.display = 'none';
 
     const fd = new FormData(document.getElementById('reg-form'));
-    const { data, error } = await sb.auth.signUp({
-      email: fd.get('email'),
-      password: fd.get('password'),
-      options: {
-        emailRedirectTo: 'https://metals-trade.com',
-        data: {
-          first_name: fd.get('ime'),
-          last_name: fd.get('priimek'),
-          phone: fd.get('telefon'),
-          company_name: fd.get('company_name'),
-          address: fd.get('address'),
-          nace: fd.get('nace'),
-          tax_number: fd.get('davcna'),
-          country: fd.get('country'),
-          marketplace_approved: false,
+    let data, error;
+    try {
+      const result = await sb.auth.signUp({
+        email: fd.get('email'),
+        password: fd.get('password'),
+        options: {
+          emailRedirectTo: 'https://metals-trade.com',
+          data: {
+            first_name: fd.get('ime'),
+            last_name: fd.get('priimek'),
+            phone: fd.get('telefon'),
+            company_name: fd.get('company_name'),
+            address: fd.get('address'),
+            nace: fd.get('nace'),
+            tax_number: fd.get('davcna'),
+            country: fd.get('country'),
+            marketplace_approved: false,
+          }
         }
-      }
-    });
+      });
+      data = result.data;
+      error = result.error;
+    } catch (ex) {
+      btn.disabled = false; btn.style.opacity = '1'; btn.textContent = i18n[lang].reg_submit;
+      errEl.textContent = (lang === 'sl' ? 'Omrežna napaka: ' : 'Network error: ') + (ex.message || ex);
+      errEl.style.display = 'block';
+      return;
+    }
 
     btn.disabled = false;
     btn.style.opacity = '1';
@@ -2504,14 +2514,23 @@
     }
 
     if (error) {
-      errEl.textContent = i18n[lang].reg_error_generic;
+      const msg = error.message || '';
+      if (msg.toLowerCase().includes('password') && msg.toLowerCase().includes('short')) {
+        errEl.textContent = lang === 'sl' ? 'Geslo mora biti dolgo vsaj 6 znakov.' : 'Password must be at least 6 characters.';
+      } else if (msg.toLowerCase().includes('invalid') && msg.toLowerCase().includes('email')) {
+        errEl.textContent = lang === 'sl' ? 'Neveljaven e-poštni naslov.' : 'Invalid email address.';
+      } else if (msg.toLowerCase().includes('rate limit') || msg.toLowerCase().includes('too many')) {
+        errEl.textContent = lang === 'sl' ? 'Preveč poskusov. Počakajte minuto in poskusite znova.' : 'Too many attempts. Wait a minute and try again.';
+      } else {
+        errEl.textContent = (lang === 'sl' ? 'Napaka pri registraciji: ' : 'Registration error: ') + msg;
+      }
       errEl.style.display = 'block';
       return;
     }
 
     // Insert into user_registrations via SECURITY DEFINER function (bypasses RLS before email confirm)
     if (data.user) {
-      await sb.rpc('register_company', {
+      const { error: rpcErr } = await sb.rpc('register_company', {
         p_user_id:      data.user.id,
         p_email:        fd.get('email'),
         p_company_name: fd.get('company_name'),
@@ -2520,6 +2539,11 @@
         p_address:      fd.get('address'),
         p_nace:         fd.get('nace')
       });
+      if (rpcErr) {
+        errEl.textContent = (lang === 'sl' ? 'Račun je bil ustvarjen, vendar vpis v register ni uspel: ' : 'Account created but registration record failed: ') + rpcErr.message;
+        errEl.style.display = 'block';
+        // Still show success since auth account was created; user can contact admin
+      }
     }
 
     const email = fd.get('email');
