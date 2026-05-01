@@ -2472,7 +2472,7 @@
       email: fd.get('email'),
       password: fd.get('password'),
       options: {
-        emailRedirectTo: 'https://metalstrade.github.io/MT-test-webside',
+        emailRedirectTo: 'https://metals-trade.com',
         data: {
           first_name: fd.get('ime'),
           last_name: fd.get('priimek'),
@@ -2509,17 +2509,16 @@
       return;
     }
 
-    // Insert into user_registrations for admin approval
+    // Insert into user_registrations via SECURITY DEFINER function (bypasses RLS before email confirm)
     if (data.user) {
-      await sb.from('user_registrations').insert({
-        user_id:      data.user.id,
-        email:        fd.get('email'),
-        company_name: fd.get('company_name'),
-        vat:          fd.get('davcna'),
-        country:      fd.get('country'),
-        address:      fd.get('address'),
-        nace:         fd.get('nace'),
-        status:       'pending'
+      await sb.rpc('register_company', {
+        p_user_id:      data.user.id,
+        p_email:        fd.get('email'),
+        p_company_name: fd.get('company_name'),
+        p_vat:          fd.get('davcna'),
+        p_country:      fd.get('country'),
+        p_address:      fd.get('address'),
+        p_nace:         fd.get('nace')
       });
     }
 
