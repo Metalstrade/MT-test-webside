@@ -4640,7 +4640,7 @@ const _origGetFiltered = getFiltered;
 getFiltered = function() {
   const staticList = _origGetFiltered();
   const dbFiltered = dbListings.filter(l => {
-    if (l.type !== state.type) return false;
+    if (state.type && l.type !== state.type) return false;
     if (state.search) {
       const q = state.search.toLowerCase();
       if (!(l.name && l.name.toLowerCase().includes(q)) &&
