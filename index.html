@@ -2315,8 +2315,18 @@
 
       <!-- TAB: HISTORY -->
       <div id="stab-history" style="display:none;">
-        <p style="color:var(--muted);font-size:13px;margin:0 0 20px;">Vaše oddane ponudbe in zaključene transakcije.</p>
-        <div id="hist-list"><div style="color:var(--muted);font-size:13px;">Nalagam...</div></div>
+        <!-- Transaction tabs -->
+        <div style="display:flex;gap:0;border-bottom:1px solid rgba(201,162,39,0.1);margin-bottom:20px;">
+          <button class="tx-tab active" data-stab="stx-buyer"  onclick="switchSettingsTxTab('buyer')" style="font-size:12px;padding:8px 16px;">Kot kupec</button>
+          <button class="tx-tab"        data-stab="stx-seller" onclick="switchSettingsTxTab('seller')" style="font-size:12px;padding:8px 16px;">Kot prodajalec</button>
+        </div>
+        <div id="stx-buyer-list"><div style="color:var(--muted);font-size:13px;">Nalagam...</div></div>
+        <div id="stx-seller-list" style="display:none;"></div>
+        <!-- Bids section -->
+        <div style="border-top:1px solid rgba(201,162,39,0.1);margin-top:28px;padding-top:20px;">
+          <div style="font-size:10px;letter-spacing:0.1em;text-transform:uppercase;color:var(--gold);margin-bottom:14px;font-weight:600;">Moje ponudbe na dražbah</div>
+          <div id="hist-list"><div style="color:var(--muted);font-size:13px;">Nalagam...</div></div>
+        </div>
       </div>
 
       <!-- TAB: VERIFY -->
@@ -2907,7 +2917,7 @@ return '$' + price.toLocaleString('en-US', {maximumFractionDigits:2});
     loadMyListings(user);
     loadMyBids(user);
     loadFavListings(user);
-    loadMyTransactions(user);
+    loadMyTransactions(user, 10);
   }
   function hidePersonalDashboard() {
     const els = document.querySelectorAll('.hero-eyebrow, .hero h1, .hero-sub, .hero-actions, .hero-stats');
@@ -3202,6 +3212,25 @@ return '$' + price.toLocaleString('en-US', {maximumFractionDigits:2});
     const box = document.getElementById('hist-list');
     const { data: { user } } = await sb.auth.getUser();
     if (!user) { box.innerHTML = '<p style="color:var(--muted);font-size:13px;">Niste prijavljeni.</p>'; return; }
+
+    // Load all transactions (no limit) into settings tabs
+    const buyerEl  = document.getElementById('stx-buyer-list');
+    const sellerEl = document.getElementById('stx-seller-list');
+    if (buyerEl) buyerEl.innerHTML  = '<div style="color:var(--muted);font-size:13px;">Nalagam...</div>';
+    if (sellerEl) sellerEl.innerHTML = '';
+    try {
+      const { data: txData, error: txErr } = await sb.from('transactions')
+        .select('*').order('created_at', { ascending: false });
+      if (!txErr && txData) {
+        const asBuyer  = txData.filter(t => t.buyer_id  === user.id);
+        const asSeller = txData.filter(t => t.seller_id === user.id);
+        if (buyerEl)  renderTxList('stx-buyer-list',  asBuyer,  'buyer',  false);
+        if (sellerEl) renderTxList('stx-seller-list', asSeller, 'seller', false);
+      }
+    } catch(e) {
+      if (buyerEl) buyerEl.innerHTML = '<p style="color:#f0645a;font-size:13px;">Napaka pri nalaganju transakcij.</p>';
+    }
+
     box.innerHTML = '<div style="color:var(--muted);font-size:13px;">Nalagam...</div>';
     try {
       const { data, error } = await sb.from('bids')
@@ -3378,7 +3407,7 @@ return '$' + price.toLocaleString('en-US', {maximumFractionDigits:2});
     document.getElementById('tx-seller-list').style.display = tab === 'seller' ? '' : 'none';
   }
 
-  function renderTxList(containerId, rows, role) {
+  function renderTxList(containerId, rows, role, hasMore) {
     const el = document.getElementById(containerId);
     if (!rows || !rows.length) {
       el.innerHTML = `<p style="color:var(--muted);font-size:13px;padding:16px 0;">Ni ${role === 'buyer' ? 'nakupov' : 'prodaj'} za prikaz.</p>`;
@@ -3409,28 +3438,38 @@ return '$' + price.toLocaleString('en-US', {maximumFractionDigits:2});
         </div>
       </div>`;
     }).join('');
+    if (hasMore) {
+      el.innerHTML += `<button onclick="openSettingsModal();switchSettingsTab('history')" style="margin-top:12px;width:100%;padding:9px;background:none;border:1px solid rgba(201,162,39,0.2);border-radius:3px;color:var(--gold);font-size:11px;font-weight:600;letter-spacing:0.07em;text-transform:uppercase;cursor:pointer;font-family:'Inter',sans-serif;">Prikaži vse transakcije →</button>`;
+    }
   }
 
-  async function loadMyTransactions(user) {
+  async function loadMyTransactions(user, limit) {
     try {
       const { data, error } = await sb.from('transactions')
         .select('*').order('created_at', { ascending: false });
       if (error) throw error;
+      const cap = (limit > 0) ? limit : Infinity;
       const asBuyer  = (data || []).filter(t => t.buyer_id  === user.id);
       const asSeller = (data || []).filter(t => t.seller_id === user.id);
-      renderTxList('tx-buyer-list',  asBuyer,  'buyer');
-      renderTxList('tx-seller-list', asSeller, 'seller');
+      renderTxList('tx-buyer-list',  asBuyer.slice(0, cap),  'buyer',  asBuyer.length  > cap);
+      renderTxList('tx-seller-list', asSeller.slice(0, cap), 'seller', asSeller.length > cap);
     } catch(e) {
       document.getElementById('tx-buyer-list').innerHTML  = `<p style="color:#f0645a;font-size:13px;">Napaka pri nalaganju transakcij.</p>`;
       document.getElementById('tx-seller-list').innerHTML = '';
     }
   }
 
+  function switchSettingsTxTab(tab) {
+    document.querySelectorAll('#stab-history .tx-tab').forEach(b => b.classList.toggle('active', b.dataset.stab === 'stx-' + tab));
+    document.getElementById('stx-buyer-list').style.display  = tab === 'buyer'  ? '' : 'none';
+    document.getElementById('stx-seller-list').style.display = tab === 'seller' ? '' : 'none';
+  }
+
   async function confirmTxReceipt(txId) {
     const { data, error } = await sb.rpc('buyer_confirm_receipt', { p_id: txId });
     if (error || data?.error) { alert('Napaka: ' + (error?.message || data?.error)); return; }
     const user = (await sb.auth.getUser()).data.user;
-    if (user) loadMyTransactions(user);
+    if (user) loadMyTransactions(user, 10);
   }
 </script>
 
