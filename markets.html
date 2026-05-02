@@ -1012,7 +1012,7 @@
 
     <!-- MAIN TYPE TOGGLE -->
     <div class="type-toggle">
-      <button class="type-btn active" id="btn-nonferrous" onclick="setType('nonferrous')" data-i18n-html="type_nonferrous">
+      <button class="type-btn" id="btn-nonferrous" onclick="setType('nonferrous')" data-i18n-html="type_nonferrous">
         Neželezne<span class="type-sub">Non-ferrous</span>
       </button>
       <button class="type-btn" id="btn-ferrous" onclick="setType('ferrous')" data-i18n-html="type_ferrous">
@@ -1613,7 +1613,7 @@ let currentLang = localStorage.getItem('lang') || 'sl';
 
 // ── STATE ──
 const state = {
-  type: 'nonferrous',
+  type: null,
   currency: 'usd',
   search: '',
   material: [],
@@ -3248,19 +3248,20 @@ function selectLeafAccNM(leafId) {
 }
 
 function setType(t) {
-  state.type = t;
+  // Toggle: clicking active type deactivates it (show all)
+  state.type = (state.type === t) ? null : t;
   state.material = [];
   state.treeSelection = null;
   ['nonferrous','ferrous','precious','nonmetals'].forEach(k => {
-    document.getElementById('btn-'+k).classList.toggle('active', t === k);
-    document.getElementById('group-'+k).style.display = t === k ? '' : 'none';
+    document.getElementById('btn-'+k).classList.toggle('active', state.type === k);
+    document.getElementById('group-'+k).style.display = state.type === k ? '' : 'none';
   });
   document.querySelectorAll('[data-filter="material"]').forEach(c => c.classList.remove('active'));
-  if (t === 'nonferrous') initMetalAccordion();
-  if (t === 'ferrous')    initFerrousAccordion();
-  if (t === 'precious')   initPreciousAccordion();
-  if (t === 'nonmetals')  initNonMetalsAccordion();
-  const showShape = t === 'precious';
+  if (state.type === 'nonferrous') initMetalAccordion();
+  if (state.type === 'ferrous')    initFerrousAccordion();
+  if (state.type === 'precious')   initPreciousAccordion();
+  if (state.type === 'nonmetals')  initNonMetalsAccordion();
+  const showShape = state.type === 'precious';
   document.getElementById('section-shape').style.display = showShape ? '' : 'none';
   document.getElementById('divider-shape').style.display = showShape ? '' : 'none';
   updateFilters();
@@ -3307,7 +3308,7 @@ function setCurrency(c) {
 }
 
 function getFiltered() {
-  let list = allListings.filter(l => l.type === state.type);
+  let list = state.type ? allListings.filter(l => l.type === state.type) : [...allListings];
   if (state.treeSelection && state.treeSelection.matKey) {
     list = list.filter(l => l.material === state.treeSelection.matKey);
   } else if (state.material.length) {
@@ -3445,21 +3446,21 @@ function renderActiveTags() {
 function clearTag(i) { window._tagClearFns[i](); }
 
 function resetAll() {
-  state.material=[]; state.treeSelection=null; state.purity=[]; state.shape=[]; state.weight=[]; state.origin=''; state.quote=['spot']; state.search='';
+  state.type=null; state.material=[]; state.treeSelection=null; state.purity=[]; state.shape=[]; state.weight=[]; state.origin=''; state.quote=['spot']; state.search='';
   document.getElementById('search-input').value = '';
   document.getElementById('search-clear').style.display = 'none';
   state.cert = { auth:'any', serial:'any', mint:'any', assay:'any' };
-  if (state.type === 'nonferrous') initMetalAccordion();
-  if (state.type === 'ferrous')    initFerrousAccordion();
-  if (state.type === 'precious')   initPreciousAccordion();
-  if (state.type === 'nonmetals')  initNonMetalsAccordion();
+  ['nonferrous','ferrous','precious','nonmetals'].forEach(k => {
+    document.getElementById('btn-'+k).classList.remove('active');
+    document.getElementById('group-'+k).style.display = 'none';
+  });
+  document.getElementById('section-shape').style.display = 'none';
+  document.getElementById('divider-shape').style.display = 'none';
   document.querySelectorAll('.chip, .purity-chip, .weight-chip, .kotacija-chip').forEach(b => b.classList.remove('active'));
   document.getElementById('price-from').value = '';
   document.getElementById('price-to').value   = '';
   document.getElementById('filter-origin').value = '';
-  // reset kotacija
   document.querySelectorAll('.kotacija-chip').forEach(b => { b.classList.toggle('active', b.dataset.val === 'spot'); });
-  // reset cert toggles
   document.querySelectorAll('.toggle-opt').forEach(b => {
     b.classList.remove('active-any','active-yes','active-no');
     if (b.dataset.val === 'any') b.classList.add('active-any');
@@ -3472,7 +3473,6 @@ function openContact(name) {
 }
 
 // ── INIT ──
-initMetalAccordion();
 updateFilters();
 </script>
 
