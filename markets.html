@@ -4715,6 +4715,7 @@ renderListings = function(list) {
     const canDelete = !auctionEnded;
     const ownerBar = isOwner ? `
       <div class="listing-owner-bar">
+        <button class="btn-edit-listing" onclick="event.stopPropagation(); openEditListing('${l.dbId}')">✎ Uredi</button>
         ${canDelete ? `<button class="btn-delete-listing" onclick="event.stopPropagation(); deleteListing('${l.dbId}', this.closest('.listing-card'))">Izbriši</button>` : `<span style="font-size:10px;color:var(--muted);padding:4px 8px;">Dražba zaključena — brisanje ni možno</span>`}
       </div>` : '';
     const isFavListing = getFavListings().includes(l.dbId);
