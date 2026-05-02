@@ -829,6 +829,33 @@
       display: flex; gap: 6px; padding: 8px 16px;
       border-top: 1px solid rgba(143,163,177,0.08);
     }
+    .listing-details-toggle {
+      display: inline-block; font-size: 11px; font-weight: 600; color: var(--gold);
+      letter-spacing: 0.04em; cursor: pointer; margin-top: 8px;
+      background: none; border: none; padding: 0; font-family: 'Inter', sans-serif;
+      transition: color 0.15s;
+    }
+    .listing-details-toggle:hover { color: var(--gold-lt); }
+    .listing-details-panel {
+      display: none; padding: 14px 16px 0;
+      border-top: 1px solid rgba(201,162,39,0.1);
+    }
+    .listing-details-panel.open { display: block; }
+    .listing-details-imgs {
+      display: flex; gap: 6px; margin-bottom: 12px; overflow-x: auto;
+    }
+    .listing-details-imgs img {
+      width: 80px; height: 60px; object-fit: cover; border-radius: 2px;
+      border: 1px solid rgba(201,162,39,0.15); flex-shrink: 0;
+    }
+    .listing-details-row {
+      display: flex; justify-content: space-between; font-size: 11px;
+      padding: 5px 0; border-bottom: 1px solid rgba(143,163,177,0.07);
+      gap: 12px;
+    }
+    .listing-details-row:last-child { border-bottom: none; }
+    .listing-details-lbl { color: var(--muted); flex-shrink: 0; }
+    .listing-details-val { color: #C0CDD6; font-weight: 500; text-align: right; }
     .btn-edit-listing, .btn-delete-listing {
       flex: 1; padding: 6px 10px; border-radius: 2px;
       font-size: 10px; font-weight: 600; letter-spacing: 0.06em; text-transform: uppercase;
@@ -4755,7 +4782,7 @@ renderListings = function(list) {
       if (canBuy) {
         bottomSection = `<div class="auction-bar" style="background:rgba(72,199,142,0.03);">
           <div class="auction-bar-left">
-            <div class="auction-current-bid" style="color:rgba(72,199,142,0.9);">${price > 0 ? sym + price.toLocaleString('sl-SI') : 'Cena na poizvedbo'}</div>
+            <div class="auction-current-bid" style="color:var(--gold-lt);">${price > 0 ? sym + price.toLocaleString('sl-SI') : 'Cena na poizvedbo'}</div>
             <div class="auction-timer">Spot nakup</div>
           </div>
           <button class="btn-buy-spot" onclick="event.stopPropagation(); showPaymentInfo('${l.dbId}', ${l.priceUsd})">Kupi zdaj</button>
@@ -4780,12 +4807,33 @@ renderListings = function(list) {
           ${weightDisplay ? `<span class="listing-meta-tag">${esc(weightDisplay)}</span>` : ''}
           ${isAuction ? `<span class="listing-meta-tag">Zač. $${esc(String(l.priceUsd))}</span>` : ''}
         </div>
+        <button class="listing-details-toggle" onclick="event.stopPropagation(); toggleListingDetails('${l.dbId}', this)">› Podrobnosti</button>
+      </div>
+      <div class="listing-details-panel" id="details-${l.dbId}">
+        ${l.images && l.images.length > 1 ? `<div class="listing-details-imgs">${l.images.map(src => `<img src="${esc(src)}" alt="">`).join('')}</div>` : ''}
+        ${l.images && l.images.length === 1 ? `<div class="listing-details-imgs"><img src="${esc(l.images[0])}" alt="" style="width:100%;height:120px;"></div>` : ''}
+        <div style="padding-bottom:12px;">
+          ${l.name ? `<div class="listing-details-row"><span class="listing-details-lbl">Naziv</span><span class="listing-details-val">${esc(l.name)}</span></div>` : ''}
+          ${l.materialLabel ? `<div class="listing-details-row"><span class="listing-details-lbl">Material</span><span class="listing-details-val">${esc(l.materialLabel)}</span></div>` : ''}
+          ${typeLabels[l.type] ? `<div class="listing-details-row"><span class="listing-details-lbl">Tip</span><span class="listing-details-val">${typeLabels[l.type]}</span></div>` : ''}
+          ${l.shape ? `<div class="listing-details-row"><span class="listing-details-lbl">Oblika</span><span class="listing-details-val">${esc(shapeLabel[l.shape]||l.shape)}</span></div>` : ''}
+          ${weightDisplay ? `<div class="listing-details-row"><span class="listing-details-lbl">Teža</span><span class="listing-details-val">${esc(weightDisplay)}</span></div>` : ''}
+          ${l.sub ? `<div class="listing-details-row"><span class="listing-details-lbl">Opis</span><span class="listing-details-val">${esc(l.sub)}</span></div>` : ''}
+          ${price > 0 ? `<div class="listing-details-row"><span class="listing-details-lbl">Cena</span><span class="listing-details-val" style="color:var(--gold-lt);font-weight:700;">${sym}${price.toLocaleString('sl-SI')}</span></div>` : ''}
+        </div>
       </div>
       ${bottomSection}
       ${ownerBar}
     </div>`;
   }).join('');
 };
+
+function toggleListingDetails(dbId, btn) {
+  const panel = document.getElementById('details-' + dbId);
+  if (!panel) return;
+  const open = panel.classList.toggle('open');
+  btn.textContent = open ? '‹ Zapri' : '› Podrobnosti';
+}
 
 // ── AUCTION HELPERS ──────────────────────────────────────────────────────────
 
