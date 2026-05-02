@@ -4852,6 +4852,11 @@ async function submitBid() {
 async function showPaymentInfo(dbId, amount) {
   if (!currentUser) { openAuthModal('signin'); return; }
 
+  if (!currentUser.user_metadata?.marketplace_approved) {
+    alert('Vaš račun še čaka na odobritev administratorja. Ko bo odobren, boste prejeli obvestilo in bodo omogočene vse funkcije Marketplace-a.');
+    return;
+  }
+
   const listing = dbListings.find(l => l.dbId === dbId);
   if (!listing) return;
 

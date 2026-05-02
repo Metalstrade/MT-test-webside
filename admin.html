@@ -428,6 +428,8 @@
           ${isPending ? `
           <button class="btn-approve" id="reg-approve-${r.id}" onclick="reviewRegistration('${r.id}', true)">✓ Odobri dostop</button>
           <button class="btn-reject"  id="reg-reject-${r.id}"  onclick="reviewRegistration('${r.id}', false)">✕ Zavrni</button>
+          ` : r.status === 'rejected' ? `
+          <button class="btn-approve" id="reg-approve-${r.id}" onclick="reviewRegistration('${r.id}', true)">✓ Odobri dostop</button>
           ` : `<span style="font-size:11px;color:var(--muted);padding:8px;flex:1;text-align:center;">Že obdelano</span>`}
         </div>
       </div>`;
