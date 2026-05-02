@@ -4500,9 +4500,13 @@ async function submitListing() {
       if (!ALLOWED_MIME.includes(file.type)) { alert('Dovoljene so samo slike (JPG, PNG, WebP, GIF).'); continue; }
       if (file.size > 5 * 1024 * 1024) { alert('Slika je prevelika. Največja dovoljena velikost je 5 MB.'); continue; }
       const ext = { 'image/jpeg':'jpg', 'image/png':'png', 'image/webp':'webp', 'image/gif':'gif' }[file.type] || 'jpg';
-      const path = `${currentUser.id}/${Date.now()}-${i}.${ext}`;
+      const path = `${currentUser.id}/${Date.now()}-${Math.random().toString(36).slice(2,6)}-${i}.${ext}`;
       const { data: upData, error: upErr } = await sbM.storage.from('listing-images').upload(path, file, { cacheControl: '3600', upsert: false });
-      if (upErr) continue;
+      if (upErr) {
+        console.error(`Slika ${i+1} ni bila naložena:`, upErr.message);
+        alert(`Slika ${i+1} ni bila naložena: ${upErr.message}`);
+        continue;
+      }
       const { data: urlData } = sbM.storage.from('listing-images').getPublicUrl(upData.path);
       if (urlData?.publicUrl) imageUrls.push(urlData.publicUrl);
     }
