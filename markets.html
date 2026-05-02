@@ -842,11 +842,12 @@
     }
     .listing-details-panel.open { display: block; }
     .listing-details-imgs {
-      display: flex; gap: 6px; margin-bottom: 12px; overflow-x: auto;
+      display: grid; grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+      gap: 6px; margin-bottom: 12px;
     }
     .listing-details-imgs img {
-      width: 80px; height: 60px; object-fit: cover; border-radius: 2px;
-      border: 1px solid rgba(201,162,39,0.15); flex-shrink: 0;
+      width: 100%; height: 90px; object-fit: cover; border-radius: 2px;
+      border: 1px solid rgba(201,162,39,0.15);
     }
     .listing-details-row {
       display: flex; justify-content: space-between; font-size: 11px;
@@ -4810,8 +4811,7 @@ renderListings = function(list) {
         <button class="listing-details-toggle" onclick="event.stopPropagation(); toggleListingDetails('${l.dbId}', this)">› Podrobnosti</button>
       </div>
       <div class="listing-details-panel" id="details-${l.dbId}">
-        ${l.images && l.images.length > 1 ? `<div class="listing-details-imgs">${l.images.map(src => `<img src="${esc(src)}" alt="">`).join('')}</div>` : ''}
-        ${l.images && l.images.length === 1 ? `<div class="listing-details-imgs"><img src="${esc(l.images[0])}" alt="" style="width:100%;height:120px;"></div>` : ''}
+        ${l.images && l.images.length ? `<div class="listing-details-imgs">${l.images.map(src => `<img src="${esc(src)}" alt="">`).join('')}</div>` : ''}
         <div style="padding-bottom:12px;">
           ${l.name ? `<div class="listing-details-row"><span class="listing-details-lbl">Naziv</span><span class="listing-details-val">${esc(l.name)}</span></div>` : ''}
           ${l.materialLabel ? `<div class="listing-details-row"><span class="listing-details-lbl">Material</span><span class="listing-details-val">${esc(l.materialLabel)}</span></div>` : ''}
