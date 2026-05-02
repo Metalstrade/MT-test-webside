@@ -1206,6 +1206,16 @@
       <button id="nav-signin-btn" class="btn-outline nav-cta" onclick="openSignInModal()" data-i18n="nav_signin">Sign In</button>
       <button id="nav-reg-btn" class="btn-primary nav-cta" onclick="openRegModal()" data-i18n="nav_cta">Start Trading</button>
     </div>
+    <script>
+      // Instantly hide sign-in/register buttons if user was previously signed in.
+      // Prevents flash of unauthenticated state while Supabase loads the session.
+      if (localStorage.getItem('signed_in') === 'true') {
+        var _si = document.getElementById('nav-signin-btn');
+        var _rg = document.getElementById('nav-reg-btn');
+        if (_si) _si.style.visibility = 'hidden';
+        if (_rg) _rg.style.display = 'none';
+      }
+    </script>
 
     <!-- Hamburger dropdown -->
     <div class="nav-dropdown" id="nav-dropdown-wrapper">
@@ -2703,6 +2713,7 @@
     btn.dataset.i18n = 'nav_signed_in';
     const lang = localStorage.getItem('lang') || 'en';
     btn.textContent = i18n[lang].nav_signed_in;
+    btn.style.visibility = 'visible';
     btn.style.borderColor = 'var(--gold)';
     btn.style.color = 'var(--gold)';
     btn.style.cursor = 'default';
