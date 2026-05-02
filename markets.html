@@ -847,8 +847,27 @@
     }
     .listing-details-imgs img {
       width: 100%; height: 90px; object-fit: cover; border-radius: 2px;
-      border: 1px solid rgba(201,162,39,0.15);
+      border: 1px solid rgba(201,162,39,0.15); cursor: zoom-in;
+      transition: opacity 0.15s;
     }
+    .listing-details-imgs img:hover { opacity: 0.85; }
+    #lightbox-overlay {
+      display: none; position: fixed; inset: 0; z-index: 9999;
+      background: rgba(0,0,0,0.92); backdrop-filter: blur(8px);
+      align-items: center; justify-content: center; cursor: zoom-out;
+    }
+    #lightbox-overlay.open { display: flex; }
+    #lightbox-img {
+      max-width: 94vw; max-height: 88vh; object-fit: contain;
+      border-radius: 3px; box-shadow: 0 8px 60px rgba(0,0,0,0.8);
+      pointer-events: none;
+    }
+    #lightbox-close {
+      position: absolute; top: 16px; right: 20px;
+      background: none; border: none; color: rgba(255,255,255,0.7);
+      font-size: 28px; cursor: pointer; line-height: 1;
+    }
+    #lightbox-close:hover { color: #fff; }
     .listing-details-row {
       display: flex; justify-content: space-between; font-size: 11px;
       padding: 5px 0; border-bottom: 1px solid rgba(143,163,177,0.07);
@@ -4822,7 +4841,7 @@ renderListings = function(list) {
         <button class="listing-details-toggle" onclick="event.stopPropagation(); toggleListingDetails('${l.dbId}', this)">› Podrobnosti</button>
       </div>
       <div class="listing-details-panel" id="details-${l.dbId}">
-        ${l.images && l.images.length ? `<div class="listing-details-imgs">${l.images.map(src => `<img src="${esc(src)}" alt="">`).join('')}</div>` : ''}
+        ${l.images && l.images.length ? `<div class="listing-details-imgs">${l.images.map(src => `<img src="${esc(src)}" alt="" onclick="event.stopPropagation(); openLightbox('${esc(src)}')">`).join('')}</div>` : ''}
         <div style="padding-bottom:12px;">
           ${l.name ? `<div class="listing-details-row"><span class="listing-details-lbl">Naziv</span><span class="listing-details-val">${esc(l.name)}</span></div>` : ''}
           ${l.materialLabel ? `<div class="listing-details-row"><span class="listing-details-lbl">Material</span><span class="listing-details-val">${esc(l.materialLabel)}</span></div>` : ''}
@@ -4845,6 +4864,18 @@ function toggleListingDetails(dbId, btn) {
   const open = panel.classList.toggle('open');
   btn.textContent = open ? '‹ Zapri' : '› Podrobnosti';
 }
+
+function openLightbox(src) {
+  document.getElementById('lightbox-img').src = src;
+  document.getElementById('lightbox-overlay').classList.add('open');
+  document.body.style.overflow = 'hidden';
+}
+function closeLightbox() {
+  document.getElementById('lightbox-overlay').classList.remove('open');
+  document.getElementById('lightbox-img').src = '';
+  document.body.style.overflow = '';
+}
+document.addEventListener('keydown', e => { if (e.key === 'Escape') closeLightbox(); });
 
 // ── AUCTION HELPERS ──────────────────────────────────────────────────────────
 
@@ -5066,6 +5097,12 @@ function cookieChoice(type) {
   document.getElementById('cookie-banner').style.display = 'none';
 }
 </script>
+
+<!-- Lightbox -->
+<div id="lightbox-overlay" onclick="closeLightbox()">
+  <button id="lightbox-close" onclick="closeLightbox()">&#x2715;</button>
+  <img id="lightbox-img" src="" alt="" />
+</div>
 
 </body>
 </html>
