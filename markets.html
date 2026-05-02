@@ -4496,7 +4496,14 @@ async function submitListing() {
     const imageUrls = [];
     for (let i = 0; i < 3; i++) {
       const file = wiz.imageFiles[i];
-      if (!file) continue;
+      if (!file) {
+        // In edit mode: keep existing image URL if slot has a preview but no new file
+        const existing = wiz.imagePreviews[i];
+        if (existing && typeof existing === 'string' && existing.startsWith('http')) {
+          imageUrls.push(existing);
+        }
+        continue;
+      }
       if (!ALLOWED_MIME.includes(file.type)) { alert('Dovoljene so samo slike (JPG, PNG, WebP, GIF).'); continue; }
       if (file.size > 5 * 1024 * 1024) { alert('Slika je prevelika. Največja dovoljena velikost je 5 MB.'); continue; }
       const ext = { 'image/jpeg':'jpg', 'image/png':'png', 'image/webp':'webp', 'image/gif':'gif' }[file.type] || 'jpg';
