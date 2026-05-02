@@ -3840,7 +3840,10 @@ updateFilters();
       Rok plačila: <strong style="color:#C0CDD6;">5 delovnih dni</strong> od nakupa. Status posla sledite v svojem profilu pod <em>Moje Transakcije</em>.
     </div>
 
-    <button class="btn-close-payment" onclick="closeOverlay('payment-overlay')">Zapri</button>
+    <div style="display:flex;gap:10px;margin-top:4px;">
+      <button class="btn-close-payment" style="flex:1;" onclick="closeOverlay('payment-overlay')">Zapri</button>
+      <button class="btn-close-payment" id="btn-confirm-purchase" style="flex:2;background:rgba(72,199,142,0.15);border-color:rgba(72,199,142,0.4);color:rgba(72,199,142,1);font-weight:700;" onclick="confirmPurchase()">✓ Kupi izdelek</button>
+    </div>
   </div>
 </div>
 
@@ -4855,6 +4858,9 @@ async function submitBid() {
   }
 }
 
+// Pending purchase data — set in showPaymentInfo, consumed in confirmPurchase
+let _pendingPurchase = null;
+
 async function showPaymentInfo(dbId, amount) {
   if (!currentUser) { openAuthModal('signin'); return; }
 
@@ -4866,19 +4872,58 @@ async function showPaymentInfo(dbId, amount) {
   const listing = dbListings.find(l => l.dbId === dbId);
   if (!listing) return;
 
-  // Prevent buying own listing
   if (listing.user_id === currentUser.id) {
     alert('Ne morete kupiti lastnega oglasa.'); return;
   }
 
-  const base   = Number(amount);
-  const fee    = Math.round(base * 2) / 100;        // 2%
-  const total  = Math.round((base + fee) * 100) / 100;
-  const ref    = 'MT-' + new Date().getFullYear() + '-' + Math.random().toString(36).slice(2,8).toUpperCase();
-  const curr   = listing.currency || 'EUR';
-  const fmt    = (n) => `${curr} ${Number(n).toLocaleString('sl-SI', {minimumFractionDigits:2})}`;
+  const base  = Number(amount);
+  const fee   = Math.round(base * 2) / 100;
+  const total = Math.round((base + fee) * 100) / 100;
+  const curr  = listing.currency || 'EUR';
+  const fmt   = (n) => `${curr} ${Number(n).toLocaleString('sl-SI', {minimumFractionDigits:2})}`;
 
-  // Create transaction record
+  // Check for existing open transaction for this buyer + listing
+  const { data: existing } = await sbM.from('transactions')
+    .select('payment_ref, status')
+    .eq('buyer_id', currentUser.id)
+    .eq('listing_id', dbId)
+    .not('status', 'in', '("completed","cancelled")')
+    .maybeSingle();
+
+  const ref = existing ? existing.payment_ref
+    : 'MT-' + new Date().getFullYear() + '-' + Math.random().toString(36).slice(2,8).toUpperCase();
+
+  const confirmBtn = document.getElementById('btn-confirm-purchase');
+  if (existing) {
+    // Transaction already exists — hide confirm button, show info
+    confirmBtn.style.display = 'none';
+    document.getElementById('pay-listing-name').textContent = listing.name + ' — transakcija že obstaja';
+    _pendingPurchase = null;
+  } else {
+    confirmBtn.style.display = '';
+    confirmBtn.disabled = false;
+    confirmBtn.textContent = '✓ Kupi izdelek';
+    document.getElementById('pay-listing-name').textContent = listing.name;
+    _pendingPurchase = { dbId, listing, total, curr, fee, base, ref };
+  }
+
+  document.getElementById('pay-base-amount').textContent = fmt(base);
+  document.getElementById('pay-fee-amount').textContent  = fmt(fee);
+  document.getElementById('pay-amount').textContent      = fmt(total);
+  document.getElementById('pay-ref').textContent         = ref;
+  document.getElementById('pay-iban').textContent        = '— bančni podatki prihajajo kmalu —';
+  document.getElementById('pay-bic').textContent         = '—';
+
+  document.getElementById('payment-overlay').classList.add('open');
+}
+
+async function confirmPurchase() {
+  if (!_pendingPurchase) return;
+  const { dbId, listing, total, curr, ref } = _pendingPurchase;
+  const confirmBtn = document.getElementById('btn-confirm-purchase');
+  confirmBtn.disabled = true;
+  confirmBtn.textContent = 'Pošiljam…';
+
   const { error } = await sbM.from('transactions').insert({
     listing_id:    dbId,
     buyer_id:      currentUser.id,
@@ -4890,21 +4935,17 @@ async function showPaymentInfo(dbId, amount) {
     payment_ref:   ref,
     status:        'pending_payment'
   });
-  if (error && error.code !== '23505') { // ignore duplicate
-    console.error('Transaction insert error:', error);
+
+  if (error) {
+    confirmBtn.disabled = false;
+    confirmBtn.textContent = '✓ Kupi izdelek';
+    alert('Napaka pri ustvarjanju naročila: ' + error.message);
+    return;
   }
 
-  // Populate modal
-  document.getElementById('pay-listing-name').textContent = listing.name;
-  document.getElementById('pay-base-amount').textContent  = fmt(base);
-  document.getElementById('pay-fee-amount').textContent   = fmt(fee);
-  document.getElementById('pay-amount').textContent       = fmt(total);
-  document.getElementById('pay-ref').textContent          = ref;
-  // Bank details — update when IBAN is set
-  document.getElementById('pay-iban').textContent = '— bančni podatki prihajajo kmalu —';
-  document.getElementById('pay-bic').textContent  = '—';
-
-  document.getElementById('payment-overlay').classList.add('open');
+  _pendingPurchase = null;
+  confirmBtn.style.display = 'none';
+  document.getElementById('pay-listing-name').textContent = listing.name + ' — naročilo oddano ✓';
 }
 
 // Refresh countdowns every 60 seconds
