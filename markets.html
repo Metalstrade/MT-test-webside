@@ -3712,6 +3712,27 @@ updateFilters();
         <textarea class="wiz-textarea" id="wiz-description" placeholder="Dodatne informacije o materialu, kakovosti, poreklu…"></textarea>
       </div>
       <div class="wiz-field">
+        <label>Certifikati & sledljivost</label>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:4px;">
+          <label style="display:flex;align-items:center;gap:8px;font-size:12px;color:#C0CDD6;cursor:pointer;">
+            <input type="checkbox" id="wiz-cert-auth" style="accent-color:var(--gold);width:15px;height:15px;" />
+            Certifikat pristnosti
+          </label>
+          <label style="display:flex;align-items:center;gap:8px;font-size:12px;color:#C0CDD6;cursor:pointer;">
+            <input type="checkbox" id="wiz-cert-serial" style="accent-color:var(--gold);width:15px;height:15px;" />
+            Serijska številka
+          </label>
+          <label style="display:flex;align-items:center;gap:8px;font-size:12px;color:#C0CDD6;cursor:pointer;">
+            <input type="checkbox" id="wiz-cert-mint" style="accent-color:var(--gold);width:15px;height:15px;" />
+            Žig livarne
+          </label>
+          <label style="display:flex;align-items:center;gap:8px;font-size:12px;color:#C0CDD6;cursor:pointer;">
+            <input type="checkbox" id="wiz-cert-assay" style="accent-color:var(--gold);width:15px;height:15px;" />
+            Assay certifikat
+          </label>
+        </div>
+      </div>
+      <div class="wiz-field">
         <label>Način prodaje</label>
         <div class="sale-type-row">
           <button type="button" class="sale-type-btn active" id="btn-sale-spot" onclick="setSaleType('spot')">
@@ -4029,7 +4050,7 @@ function dbToListing(row) {
     priceEur: row.price_usd ? Math.round(row.price_usd * 0.92 * 100) / 100 : 0,
     premiumPct: 0,
     origin: '',
-    cert: { auth: false, serial: false, mint: false, assay: false },
+    cert: { auth: !!row.cert_auth, serial: !!row.cert_serial, mint: !!row.cert_mint, assay: !!row.cert_assay },
     images: row.images || [],
     fromDb: true,
     materialLabel: row.material_label || row.name,
@@ -4556,6 +4577,10 @@ async function submitListing() {
       reserve_price: wiz.saleType === 'auction' ? wiz.reservePrice : null,
       auction_end_at: auctionEndAt,
       current_bid: 0,
+      cert_auth:   document.getElementById('wiz-cert-auth').checked,
+      cert_serial: document.getElementById('wiz-cert-serial').checked,
+      cert_mint:   document.getElementById('wiz-cert-mint').checked,
+      cert_assay:  document.getElementById('wiz-cert-assay').checked,
     };
 
     let data, error;
@@ -4611,6 +4636,7 @@ async function openEditListing(dbId) {
   wiz.description = data.description || '';
   wiz.imageFiles = [null, null, null];
   wiz.imagePreviews = [null, null, null];
+  wiz.cert = { auth: !!data.cert_auth, serial: !!data.cert_serial, mint: !!data.cert_mint, assay: !!data.cert_assay };
 
   document.getElementById('wiz-title').textContent = 'Uredi oglas';
   document.querySelectorAll('.category-card').forEach(c => c.classList.remove('selected'));
@@ -4648,6 +4674,10 @@ function prefillDetailsEdit() {
   document.getElementById('wiz-price').value = wiz.priceUsd;
   document.getElementById('wiz-shape').value = wiz.shape;
   document.getElementById('wiz-description').value = wiz.description;
+  document.getElementById('wiz-cert-auth').checked   = wiz.cert?.auth   || false;
+  document.getElementById('wiz-cert-serial').checked = wiz.cert?.serial || false;
+  document.getElementById('wiz-cert-mint').checked   = wiz.cert?.mint   || false;
+  document.getElementById('wiz-cert-assay').checked  = wiz.cert?.assay  || false;
 }
 
 // ── DELETE LISTING ──
