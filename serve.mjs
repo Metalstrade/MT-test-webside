@@ -1,4 +1,5 @@
 import http from 'http';
+import https from 'https';
 import fs from 'fs';
 import path from 'path';
 import { fileURLToPath } from 'url';
@@ -26,6 +27,33 @@ const MIME = {
 
 const server = http.createServer((req, res) => {
   let urlPath = req.url.split('?')[0];
+
+  // Proxy /api/nh-proxy → NiceHash profcalc/devices (server-side, no CORS issue)
+  if (urlPath === '/api/nh-proxy') {
+    const nhReq = https.get(
+      'https://api2.nicehash.com/main/api/v2/public/profcalc/devices',
+      { headers: { 'User-Agent': 'Mozilla/5.0' } },
+      (nhRes) => {
+        const chunks = [];
+        nhRes.on('data', (c) => chunks.push(c));
+        nhRes.on('end', () => {
+          const body = Buffer.concat(chunks).toString();
+          res.writeHead(200, {
+            'Content-Type': 'application/json',
+            'Access-Control-Allow-Origin': '*',
+            'Cache-Control': 'public, max-age=300',
+          });
+          res.end(body);
+        });
+      }
+    );
+    nhReq.on('error', (e) => {
+      res.writeHead(500, { 'Content-Type': 'application/json' });
+      res.end(JSON.stringify({ error: String(e) }));
+    });
+    return;
+  }
+
   if (urlPath === '/') urlPath = '/index.html';
 
   const filePath = path.join(__dirname, urlPath);
