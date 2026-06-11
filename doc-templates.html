@@ -1,0 +1,1263 @@
+<!DOCTYPE html>
+<html lang="sl">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Metals Trading — Dokument</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com"/>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;600;700&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet"/>
+  <style>
+    :root {
+      --gold:    #C9A227;
+      --gold-lt: #E4BF5A;
+      --gold-dk: #8B6F14;
+      --ink:     #0D1117;
+      --ink-2:   #141C24;
+      --muted:   #6B8090;
+      --silver:  #8FA3B1;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    /* ─── SCREEN: selector UI ─── */
+    body {
+      background: #0D1117;
+      font-family: 'Inter', sans-serif;
+      color: #E8EEF2;
+      min-height: 100vh;
+    }
+
+    .screen-ui {
+      max-width: 960px; margin: 0 auto; padding: 40px 24px;
+    }
+    .screen-header {
+      display: flex; align-items: center; gap: 20px; margin-bottom: 36px;
+    }
+    .screen-logo { height: 36px; }
+    .screen-title { font-family: 'Cormorant Garamond',serif; font-size: 28px; color: #E8EEF2; }
+    .screen-sub   { font-size: 13px; color: var(--muted); margin-top: 2px; }
+
+    .doc-type-grid {
+      display: grid; grid-template-columns: repeat(auto-fill, minmax(200px,1fr));
+      gap: 14px; margin-bottom: 40px;
+    }
+    .doc-type-card {
+      background: #141C24; border: 1px solid rgba(201,162,39,0.15);
+      border-radius: 6px; padding: 20px 16px; cursor: pointer;
+      transition: border-color 0.2s, transform 0.2s;
+      text-decoration: none; color: inherit;
+    }
+    .doc-type-card:hover { border-color: rgba(201,162,39,0.5); transform: translateY(-2px); }
+    .doc-type-card .dtc-icon { font-size: 28px; margin-bottom: 10px; }
+    .doc-type-card .dtc-name { font-size: 13px; font-weight: 600; color: #E8EEF2; margin-bottom: 4px; }
+    .doc-type-card .dtc-cat  { font-size: 10px; color: var(--muted); text-transform: uppercase; letter-spacing: 0.08em; }
+
+    .demo-note {
+      background: rgba(201,162,39,0.07); border: 1px solid rgba(201,162,39,0.2);
+      border-radius: 4px; padding: 14px 16px; font-size: 12px; color: var(--muted); line-height: 1.7;
+    }
+    .demo-note strong { color: var(--gold-lt); }
+
+    /* ─── DOCUMENT STYLES (for print and screen) ─── */
+    .document-wrap {
+      display: none;
+      background: #fff;
+      color: #1a1a1a;
+      font-family: 'Inter', sans-serif;
+      font-size: 11pt;
+      line-height: 1.5;
+      min-height: 100vh;
+    }
+    .document-wrap.active { display: block; }
+
+    /* Print toolbar (screen only) */
+    .print-toolbar {
+      background: var(--ink-2);
+      border-bottom: 1px solid rgba(201,162,39,0.2);
+      padding: 12px 24px;
+      display: flex; align-items: center; justify-content: space-between; gap: 12px;
+      position: sticky; top: 0; z-index: 999;
+    }
+    .print-toolbar-left { display: flex; align-items: center; gap: 12px; }
+    .pt-doc-name { font-size: 13px; font-weight: 600; color: #E8EEF2; }
+    .pt-ref      { font-size: 11px; color: var(--muted); font-family: monospace; }
+    .btn-print {
+      padding: 9px 20px;
+      background: linear-gradient(135deg, var(--gold-lt), var(--gold), var(--gold-dk));
+      color: var(--ink); font-family: 'Inter',sans-serif; font-weight: 600;
+      font-size: 12px; letter-spacing: 0.06em; text-transform: uppercase;
+      border: none; border-radius: 2px; cursor: pointer;
+    }
+    .btn-back-to-selector {
+      padding: 8px 16px; background: none;
+      border: 1px solid rgba(143,163,177,0.25); border-radius: 2px;
+      color: var(--muted); font-family: 'Inter',sans-serif; font-size: 12px;
+      cursor: pointer; text-decoration: none; display: inline-flex; align-items: center; gap: 6px;
+    }
+
+    /* A4 document page */
+    .doc-page {
+      width: 210mm; min-height: 297mm;
+      margin: 24px auto;
+      padding: 16mm 18mm 20mm;
+      background: #fff;
+      box-shadow: 0 4px 40px rgba(0,0,0,0.3);
+      position: relative;
+    }
+
+    /* Document header */
+    .doc-head {
+      display: flex; align-items: flex-start; justify-content: space-between;
+      margin-bottom: 10mm;
+      padding-bottom: 6mm;
+      border-bottom: 2px solid #C9A227;
+    }
+    .doc-head-logo img { height: 40px; }
+    .doc-head-company {
+      text-align: right; font-size: 8pt; color: #555;
+      line-height: 1.6;
+    }
+    .doc-head-company .co-name {
+      font-family: 'Cormorant Garamond',serif;
+      font-size: 14pt; font-weight: 600; color: #0D1117;
+      margin-bottom: 2px;
+    }
+
+    /* Document title block */
+    .doc-title-block {
+      display: flex; align-items: flex-start; justify-content: space-between;
+      margin-bottom: 8mm;
+    }
+    .doc-type-label {
+      font-size: 8pt; text-transform: uppercase; letter-spacing: 0.14em;
+      color: #C9A227; font-weight: 600; margin-bottom: 3px;
+    }
+    .doc-title {
+      font-family: 'Cormorant Garamond',serif;
+      font-size: 22pt; font-weight: 700; color: #0D1117; line-height: 1.1;
+    }
+    .doc-meta-box {
+      text-align: right; background: #f8f7f4;
+      border: 1px solid #e8e0ce; border-radius: 4px;
+      padding: 8px 12px; min-width: 160px;
+    }
+    .doc-meta-row { display: flex; justify-content: space-between; gap: 16px; font-size: 8.5pt; margin-bottom: 3px; }
+    .doc-meta-row:last-child { margin-bottom: 0; }
+    .doc-meta-lbl { color: #888; }
+    .doc-meta-val { font-weight: 600; color: #0D1117; }
+
+    /* Party boxes */
+    .party-grid {
+      display: grid; grid-template-columns: 1fr 1fr; gap: 6mm;
+      margin-bottom: 8mm;
+    }
+    .party-box {
+      border: 1px solid #e0d8c8; border-radius: 3px;
+      padding: 5mm; background: #fdfcfa;
+    }
+    .party-label {
+      font-size: 7.5pt; text-transform: uppercase; letter-spacing: 0.12em;
+      color: #C9A227; font-weight: 600; margin-bottom: 4px;
+    }
+    .party-name  { font-size: 11pt; font-weight: 600; color: #0D1117; margin-bottom: 2px; }
+    .party-sub   { font-size: 8.5pt; color: #555; line-height: 1.5; }
+    .party-sub.mono { font-family: monospace; color: #333; }
+
+    /* Items table */
+    .items-table {
+      width: 100%; border-collapse: collapse; margin-bottom: 6mm;
+      font-size: 9pt;
+    }
+    .items-table th {
+      background: #0D1117; color: #E4BF5A;
+      padding: 5px 8px; text-align: left;
+      font-size: 7.5pt; letter-spacing: 0.06em; text-transform: uppercase;
+      font-weight: 600;
+    }
+    .items-table th:last-child { text-align: right; }
+    .items-table td {
+      padding: 6px 8px; border-bottom: 1px solid #ede8dc;
+      vertical-align: top;
+    }
+    .items-table td:last-child { text-align: right; font-weight: 600; }
+    .items-table tr:last-child td { border-bottom: none; }
+    .items-table .desc { font-size: 8pt; color: #666; margin-top: 2px; }
+
+    /* Totals block */
+    .totals-block {
+      display: flex; justify-content: flex-end; margin-bottom: 7mm;
+    }
+    .totals-table {
+      min-width: 220px; border: 1px solid #e0d8c8; border-radius: 3px; overflow: hidden;
+    }
+    .total-row {
+      display: flex; justify-content: space-between; align-items: center;
+      padding: 5px 10px; font-size: 9pt; border-bottom: 1px solid #ede8dc;
+    }
+    .total-row:last-child { border-bottom: none; }
+    .total-row .tl { color: #666; }
+    .total-row .tv { font-weight: 600; color: #0D1117; }
+    .total-row.grand {
+      background: #0D1117; padding: 7px 10px;
+    }
+    .total-row.grand .tl { color: #C9A227; font-weight: 600; font-size: 8pt; text-transform: uppercase; letter-spacing: 0.06em; }
+    .total-row.grand .tv { color: #E4BF5A; font-size: 13pt; font-family: 'Cormorant Garamond',serif; }
+
+    /* Notes / info box */
+    .doc-note {
+      background: #fdfcf6; border-left: 3px solid #C9A227;
+      padding: 5mm 6mm; font-size: 8.5pt; color: #444; line-height: 1.6;
+      margin-bottom: 6mm;
+    }
+    .doc-note strong { color: #0D1117; }
+
+    /* Bank details */
+    .bank-box {
+      background: #f4f1ea; border: 1px solid #ddd4b8; border-radius: 3px;
+      padding: 5mm 6mm; margin-bottom: 6mm;
+    }
+    .bank-box-title { font-size: 7.5pt; text-transform: uppercase; letter-spacing: 0.1em; color: #C9A227; font-weight: 600; margin-bottom: 5px; }
+    .bank-row { display: flex; gap: 8px; font-size: 8.5pt; margin-bottom: 3px; }
+    .bank-lbl { color: #888; min-width: 80px; }
+    .bank-val { font-weight: 500; color: #0D1117; font-family: monospace; }
+
+    /* Signature area */
+    .sig-grid {
+      display: grid; grid-template-columns: 1fr 1fr; gap: 10mm;
+      margin-top: 10mm;
+    }
+    .sig-box { border-top: 1px solid #ccc; padding-top: 4mm; }
+    .sig-label { font-size: 8pt; color: #888; }
+
+    /* Document footer */
+    .doc-footer {
+      position: absolute; bottom: 12mm; left: 18mm; right: 18mm;
+      border-top: 1px solid #e0d8c8;
+      padding-top: 4mm;
+      display: flex; align-items: center; justify-content: space-between;
+      font-size: 7.5pt; color: #aaa;
+    }
+    .doc-footer-center { text-align: center; }
+
+    /* Certificate styles */
+    .cert-header-bar {
+      background: #0D1117; color: #E4BF5A;
+      padding: 8mm 8mm; text-align: center; margin-bottom: 8mm; border-radius: 3px;
+    }
+    .cert-header-bar .cert-type { font-size: 7.5pt; text-transform: uppercase; letter-spacing: 0.2em; color: #8FA3B1; margin-bottom: 4px; }
+    .cert-header-bar .cert-title { font-family: 'Cormorant Garamond',serif; font-size: 24pt; font-weight: 700; }
+    .cert-no { font-size: 9pt; color: #C9A227; margin-top: 4px; }
+
+    .cert-table {
+      width: 100%; border-collapse: collapse; font-size: 9pt; margin-bottom: 6mm;
+    }
+    .cert-table th {
+      background: #f4f1ea; padding: 5px 8px; text-align: left;
+      font-size: 7.5pt; text-transform: uppercase; letter-spacing: 0.06em;
+      border-bottom: 2px solid #C9A227; color: #555;
+    }
+    .cert-table td {
+      padding: 6px 8px; border-bottom: 1px solid #ede8dc; vertical-align: middle;
+    }
+    .cert-table td:first-child { color: #666; font-size: 8.5pt; }
+    .cert-table td:last-child { font-weight: 600; color: #0D1117; }
+    .cert-result {
+      background: #f0faf4; border: 1px solid #a8d8b4; border-radius: 3px;
+      padding: 4mm 6mm; font-size: 9pt; margin-bottom: 6mm;
+      display: flex; align-items: center; gap: 8px;
+    }
+    .cert-check { color: #2d9e5c; font-size: 16pt; }
+
+    /* CMR specific */
+    .cmr-grid {
+      display: grid; grid-template-columns: 1fr 1fr; gap: 3mm; margin-bottom: 4mm;
+    }
+    .cmr-box {
+      border: 1px solid #ccc; padding: 3mm 4mm;
+    }
+    .cmr-no { font-size: 7pt; color: #888; margin-bottom: 2px; }
+    .cmr-val { font-size: 9pt; font-weight: 500; }
+    .cmr-goods-table {
+      width: 100%; border-collapse: collapse; font-size: 8.5pt; margin-bottom: 4mm;
+    }
+    .cmr-goods-table th {
+      background: #eee; padding: 3px 6px; font-size: 7.5pt; text-align: left; border: 1px solid #ccc;
+    }
+    .cmr-goods-table td { padding: 4px 6px; border: 1px solid #ccc; }
+
+    /* Status stamp */
+    .status-stamp {
+      position: absolute; top: 40mm; right: 18mm;
+      border: 3px solid #C9A227; border-radius: 50%;
+      width: 28mm; height: 28mm;
+      display: flex; flex-direction: column; align-items: center; justify-content: center;
+      transform: rotate(-15deg);
+      opacity: 0.85;
+    }
+    .stamp-text { font-size: 7pt; font-weight: 700; color: #C9A227; text-transform: uppercase; letter-spacing: 0.1em; }
+
+    /* ─── PRINT STYLES ─── */
+    @media print {
+      body { background: #fff !important; }
+      .print-toolbar { display: none !important; }
+      .screen-ui { display: none !important; }
+      .document-wrap.active { display: block !important; }
+      .doc-page {
+        width: 100%; margin: 0; padding: 12mm 16mm 16mm; box-shadow: none;
+      }
+    }
+    @page { size: A4; margin: 0; }
+  </style>
+</head>
+<body>
+
+<!-- ─── SCREEN: Document type selector ─── -->
+<div class="screen-ui" id="selector-ui">
+  <div class="screen-header">
+    <img src="brand_assets/LOGO.png" class="screen-logo" alt="Metals Trading"/>
+    <div>
+      <div class="screen-title">Predloge dokumentov</div>
+      <div class="screen-sub">Izberite vrsto dokumenta za generiranje</div>
+    </div>
+    <a href="admin.html" class="btn-back-to-selector" style="margin-left:auto;">← Nazaj na admin</a>
+  </div>
+
+  <div class="doc-type-grid" id="type-grid">
+    <div class="doc-type-card" onclick="openDoc('proforma')">
+      <div class="dtc-icon">📄</div>
+      <div class="dtc-name">Proforma</div>
+      <div class="dtc-cat">Naročilo &amp; Račun</div>
+    </div>
+    <div class="doc-type-card" onclick="openDoc('order_confirmation')">
+      <div class="dtc-icon">✅</div>
+      <div class="dtc-name">Potrditveno naročilo</div>
+      <div class="dtc-cat">Naročilo &amp; Račun</div>
+    </div>
+    <div class="doc-type-card" onclick="openDoc('invoice')">
+      <div class="dtc-icon">🧾</div>
+      <div class="dtc-name">Račun</div>
+      <div class="dtc-cat">Naročilo &amp; Račun</div>
+    </div>
+    <div class="doc-type-card" onclick="openDoc('proof_of_payment')">
+      <div class="dtc-icon">💶</div>
+      <div class="dtc-name">Potrdilo o plačilu</div>
+      <div class="dtc-cat">Ostali dokumenti</div>
+    </div>
+    <div class="doc-type-card" onclick="openDoc('quality_certificate')">
+      <div class="dtc-icon">🔬</div>
+      <div class="dtc-name">Certifikat kakovosti</div>
+      <div class="dtc-cat">Ostali dokumenti</div>
+    </div>
+    <div class="doc-type-card" onclick="openDoc('cmr')">
+      <div class="dtc-icon">🚚</div>
+      <div class="dtc-name">CMR</div>
+      <div class="dtc-cat">Transport</div>
+    </div>
+    <div class="doc-type-card" onclick="openDoc('delivery_note')">
+      <div class="dtc-icon">📦</div>
+      <div class="dtc-name">Dobavnica</div>
+      <div class="dtc-cat">Transport</div>
+    </div>
+    <div class="doc-type-card" onclick="openDoc('weight_certificate')">
+      <div class="dtc-icon">⚖️</div>
+      <div class="dtc-name">Certifikat teže</div>
+      <div class="dtc-cat">Dokumenti o materialu</div>
+    </div>
+    <div class="doc-type-card" onclick="openDoc('material_analysis')">
+      <div class="dtc-icon">🧪</div>
+      <div class="dtc-name">Analiza materiala</div>
+      <div class="dtc-cat">Dokumenti o materialu</div>
+    </div>
+  </div>
+
+  <div class="demo-note">
+    <strong>Navodilo:</strong> V admin panelu (Naročila → naročilo → Generiraj) se dokument odpre z avtomatsko izpolnjenimi podatki.
+    Ko se odpre, kliknite <strong>Natisni / Shrani kot PDF</strong> in shranite datoteko.
+    Nato PDF naložite nazaj v sistem z gumbom <strong>Naloži PDF</strong> pri naročilu.
+  </div>
+</div>
+
+<!-- ─── DOCUMENT: Proforma ─── -->
+<div class="document-wrap" id="doc-proforma">
+  <div class="print-toolbar">
+    <div class="print-toolbar-left">
+      <span class="pt-doc-name">📄 Proforma</span>
+      <span class="pt-ref" id="pt-proforma-ref">—</span>
+    </div>
+    <div style="display:flex;gap:8px;">
+      <button onclick="window.history.back()" class="btn-back-to-selector">← Nazaj</button>
+      <button onclick="window.print()" class="btn-print">🖨 Natisni / Shrani kot PDF</button>
+    </div>
+  </div>
+  <div class="doc-page">
+    <div class="doc-head">
+      <div class="doc-head-logo"><img src="brand_assets/LOGO.png" alt="Metals Trading"/></div>
+      <div class="doc-head-company">
+        <div class="co-name">Metals Trading</div>
+        metals-trade.com<br/>
+        metals-trade@protonmail.com<br/>
+        SI — Slovenija
+      </div>
+    </div>
+
+    <div class="doc-title-block">
+      <div>
+        <div class="doc-type-label">Dokument</div>
+        <div class="doc-title">Proforma</div>
+      </div>
+      <div class="doc-meta-box">
+        <div class="doc-meta-row"><span class="doc-meta-lbl">Številka:</span><span class="doc-meta-val" id="pf-number">—</span></div>
+        <div class="doc-meta-row"><span class="doc-meta-lbl">Datum:</span><span class="doc-meta-val" id="pf-date">—</span></div>
+        <div class="doc-meta-row"><span class="doc-meta-lbl">Veljavnost:</span><span class="doc-meta-val" id="pf-valid">15 dni</span></div>
+      </div>
+    </div>
+
+    <div class="party-grid">
+      <div class="party-box">
+        <div class="party-label">Prodajalec</div>
+        <div class="party-name" id="pf-seller">—</div>
+        <div class="party-sub">Metals Trading platforma<br/>metals-trade.com</div>
+      </div>
+      <div class="party-box">
+        <div class="party-label">Kupec</div>
+        <div class="party-name" id="pf-buyer">—</div>
+        <div class="party-sub" id="pf-buyer-email">—</div>
+      </div>
+    </div>
+
+    <table class="items-table">
+      <thead>
+        <tr>
+          <th>Opis blaga / materiala</th>
+          <th>Enota</th>
+          <th>Cena/enoto</th>
+          <th>Skupaj</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>
+            <div id="pf-listing">—</div>
+            <div class="desc">Referenca: <span id="pf-ref">—</span></div>
+          </td>
+          <td>kos</td>
+          <td id="pf-base">—</td>
+          <td id="pf-base2">—</td>
+        </tr>
+        <tr>
+          <td colspan="3" style="color:#888;font-size:8.5pt;">Transakcijska provizija (2 %)</td>
+          <td id="pf-fee">—</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <div class="totals-block">
+      <div class="totals-table">
+        <div class="total-row grand">
+          <span class="tl">SKUPAJ ZA PLAČILO</span>
+          <span class="tv" id="pf-total">—</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="doc-note">
+      <strong>Opomba:</strong> Ta proforma ni davčni dokument. Služi kot predhodna ponudba za plačilo.
+      Po potrditvi naročila in prejemu plačila bo izdan uraden račun.<br/>
+      <strong>Namen plačila:</strong> <span id="pf-ref2">—</span>
+    </div>
+
+    <div class="bank-box">
+      <div class="bank-box-title">Bančni podatki za nakazilo</div>
+      <div class="bank-row"><span class="bank-lbl">Prejemnik:</span><span class="bank-val">Metals Trading d.o.o.</span></div>
+      <div class="bank-row"><span class="bank-lbl">IBAN:</span><span class="bank-val">[IBAN — dopolni pred pošiljanjem]</span></div>
+      <div class="bank-row"><span class="bank-lbl">BIC/SWIFT:</span><span class="bank-val">[BIC — dopolni pred pošiljanjem]</span></div>
+      <div class="bank-row"><span class="bank-lbl">Namen:</span><span class="bank-val" id="pf-ref3">—</span></div>
+    </div>
+
+    <div class="sig-grid">
+      <div class="sig-box">
+        <div class="sig-label">Metals Trading — pooblaščena oseba</div>
+      </div>
+      <div class="sig-box">
+        <div class="sig-label">Datum in žig prodajalca</div>
+      </div>
+    </div>
+
+    <div class="doc-footer">
+      <span>Metals Trading — metals-trade.com</span>
+      <span class="doc-footer-center">Dokument generiran z Metals Trading platforme</span>
+      <span id="pf-footer-ref">—</span>
+    </div>
+  </div>
+</div>
+
+<!-- ─── DOCUMENT: Order Confirmation ─── -->
+<div class="document-wrap" id="doc-order_confirmation">
+  <div class="print-toolbar">
+    <div class="print-toolbar-left">
+      <span class="pt-doc-name">✅ Potrditveno naročilo</span>
+      <span class="pt-ref" id="pt-oc-ref">—</span>
+    </div>
+    <div style="display:flex;gap:8px;">
+      <button onclick="window.history.back()" class="btn-back-to-selector">← Nazaj</button>
+      <button onclick="window.print()" class="btn-print">🖨 Natisni / Shrani kot PDF</button>
+    </div>
+  </div>
+  <div class="doc-page">
+    <div class="doc-head">
+      <div class="doc-head-logo"><img src="brand_assets/LOGO.png" alt="Metals Trading"/></div>
+      <div class="doc-head-company">
+        <div class="co-name">Metals Trading</div>
+        metals-trade.com<br/>metals-trade@protonmail.com<br/>SI — Slovenija
+      </div>
+    </div>
+    <div class="doc-title-block">
+      <div>
+        <div class="doc-type-label">Naročilo &amp; Račun</div>
+        <div class="doc-title">Potrditveno naročilo</div>
+      </div>
+      <div class="doc-meta-box">
+        <div class="doc-meta-row"><span class="doc-meta-lbl">Številka:</span><span class="doc-meta-val" id="oc-number">—</span></div>
+        <div class="doc-meta-row"><span class="doc-meta-lbl">Datum:</span><span class="doc-meta-val" id="oc-date">—</span></div>
+        <div class="doc-meta-row"><span class="doc-meta-lbl">Status:</span><span class="doc-meta-val" style="color:#2d9e5c;">✓ POTRJENO</span></div>
+      </div>
+    </div>
+    <div class="party-grid">
+      <div class="party-box">
+        <div class="party-label">Prodajalec</div>
+        <div class="party-name" id="oc-seller">—</div>
+        <div class="party-sub">Metals Trading platforma</div>
+      </div>
+      <div class="party-box">
+        <div class="party-label">Kupec</div>
+        <div class="party-name" id="oc-buyer">—</div>
+        <div class="party-sub" id="oc-buyer-email">—</div>
+      </div>
+    </div>
+    <table class="items-table">
+      <thead><tr><th>Predmet naročila</th><th>Ref. številka</th><th>Rok plačila</th><th>Skupaj</th></tr></thead>
+      <tbody>
+        <tr>
+          <td id="oc-listing">—</td>
+          <td><span id="oc-ref" style="font-family:monospace;font-size:9pt;">—</span></td>
+          <td>5 delovnih dni</td>
+          <td id="oc-total">—</td>
+        </tr>
+      </tbody>
+    </table>
+    <div class="doc-note">
+      <strong>Vaše naročilo je bilo uspešno potrjeno.</strong> Prosimo, da nakažete znesek v roku 5 delovnih dni
+      na spodnje bančne podatke. Po prejemu plačila bo blago pripravljeno za odpremo.<br/>
+      <strong>Referenca plačila:</strong> <span id="oc-ref2">—</span>
+    </div>
+    <div class="bank-box">
+      <div class="bank-box-title">Bančni podatki</div>
+      <div class="bank-row"><span class="bank-lbl">Prejemnik:</span><span class="bank-val">Metals Trading d.o.o.</span></div>
+      <div class="bank-row"><span class="bank-lbl">IBAN:</span><span class="bank-val">[IBAN]</span></div>
+      <div class="bank-row"><span class="bank-lbl">BIC/SWIFT:</span><span class="bank-val">[BIC]</span></div>
+      <div class="bank-row"><span class="bank-lbl">Namen:</span><span class="bank-val" id="oc-ref3">—</span></div>
+    </div>
+    <div class="sig-grid">
+      <div class="sig-box"><div class="sig-label">Pooblaščena oseba — Metals Trading</div></div>
+      <div class="sig-box"><div class="sig-label">Datum potrditve</div></div>
+    </div>
+    <div class="doc-footer">
+      <span>Metals Trading — metals-trade.com</span>
+      <span class="doc-footer-center">Potrditveno naročilo</span>
+      <span id="oc-footer-ref">—</span>
+    </div>
+  </div>
+</div>
+
+<!-- ─── DOCUMENT: Invoice ─── -->
+<div class="document-wrap" id="doc-invoice">
+  <div class="print-toolbar">
+    <div class="print-toolbar-left">
+      <span class="pt-doc-name">🧾 Račun</span>
+      <span class="pt-ref" id="pt-inv-ref">—</span>
+    </div>
+    <div style="display:flex;gap:8px;">
+      <button onclick="window.history.back()" class="btn-back-to-selector">← Nazaj</button>
+      <button onclick="window.print()" class="btn-print">🖨 Natisni / Shrani kot PDF</button>
+    </div>
+  </div>
+  <div class="doc-page">
+    <div class="doc-head">
+      <div class="doc-head-logo"><img src="brand_assets/LOGO.png" alt="Metals Trading"/></div>
+      <div class="doc-head-company">
+        <div class="co-name">Metals Trading</div>
+        metals-trade.com<br/>metals-trade@protonmail.com<br/>SI — Slovenija
+      </div>
+    </div>
+    <div class="doc-title-block">
+      <div>
+        <div class="doc-type-label">Naročilo &amp; Račun</div>
+        <div class="doc-title">Račun</div>
+      </div>
+      <div class="doc-meta-box">
+        <div class="doc-meta-row"><span class="doc-meta-lbl">Številka:</span><span class="doc-meta-val" id="inv-number">—</span></div>
+        <div class="doc-meta-row"><span class="doc-meta-lbl">Datum:</span><span class="doc-meta-val" id="inv-date">—</span></div>
+        <div class="doc-meta-row"><span class="doc-meta-lbl">Rok plačila:</span><span class="doc-meta-val">5 delovnih dni</span></div>
+      </div>
+    </div>
+    <div class="party-grid">
+      <div class="party-box">
+        <div class="party-label">Izdajatelj računa</div>
+        <div class="party-name">Metals Trading d.o.o.</div>
+        <div class="party-sub">metals-trade.com<br/>metals-trade@protonmail.com<br/>SI — Slovenija</div>
+      </div>
+      <div class="party-box">
+        <div class="party-label">Prejemnik</div>
+        <div class="party-name" id="inv-buyer">—</div>
+        <div class="party-sub" id="inv-buyer-email">—</div>
+      </div>
+    </div>
+    <table class="items-table">
+      <thead><tr><th>Opis</th><th>Kol.</th><th>Cena brez DDV</th><th>DDV (22%)</th><th>Skupaj z DDV</th></tr></thead>
+      <tbody>
+        <tr>
+          <td>
+            <div id="inv-listing">—</div>
+            <div class="desc">Transakcija: <span id="inv-ref">—</span></div>
+          </td>
+          <td>1</td>
+          <td id="inv-base">—</td>
+          <td id="inv-vat">—</td>
+          <td id="inv-total-vat">—</td>
+        </tr>
+        <tr>
+          <td colspan="3" style="color:#888;font-size:8.5pt;">Transakcijska provizija (2 %)</td>
+          <td id="inv-fee-vat">—</td>
+          <td id="inv-fee-total">—</td>
+        </tr>
+      </tbody>
+    </table>
+    <div class="totals-block">
+      <div class="totals-table">
+        <div class="total-row"><span class="tl">Osnova brez DDV:</span><span class="tv" id="inv-base2">—</span></div>
+        <div class="total-row"><span class="tl">DDV (22 %):</span><span class="tv" id="inv-vat2">—</span></div>
+        <div class="total-row grand"><span class="tl">SKUPAJ Z DDV</span><span class="tv" id="inv-total">—</span></div>
+      </div>
+    </div>
+    <div class="bank-box">
+      <div class="bank-box-title">Podatki za plačilo</div>
+      <div class="bank-row"><span class="bank-lbl">Prejemnik:</span><span class="bank-val">Metals Trading d.o.o.</span></div>
+      <div class="bank-row"><span class="bank-lbl">IBAN:</span><span class="bank-val">[IBAN]</span></div>
+      <div class="bank-row"><span class="bank-lbl">BIC/SWIFT:</span><span class="bank-val">[BIC]</span></div>
+      <div class="bank-row"><span class="bank-lbl">Namen:</span><span class="bank-val" id="inv-ref2">—</span></div>
+    </div>
+    <div class="sig-grid">
+      <div class="sig-box"><div class="sig-label">Žig in podpis izdajatelja</div></div>
+      <div class="sig-box"><div class="sig-label">Datum plačila / prejema</div></div>
+    </div>
+    <div class="doc-footer">
+      <span>Metals Trading — metals-trade.com</span>
+      <span class="doc-footer-center">Račun</span>
+      <span id="inv-footer-ref">—</span>
+    </div>
+  </div>
+</div>
+
+<!-- ─── DOCUMENT: Proof of Payment ─── -->
+<div class="document-wrap" id="doc-proof_of_payment">
+  <div class="print-toolbar">
+    <div class="print-toolbar-left">
+      <span class="pt-doc-name">💶 Potrdilo o plačilu</span>
+      <span class="pt-ref" id="pt-pop-ref">—</span>
+    </div>
+    <div style="display:flex;gap:8px;">
+      <button onclick="window.history.back()" class="btn-back-to-selector">← Nazaj</button>
+      <button onclick="window.print()" class="btn-print">🖨 Natisni / Shrani kot PDF</button>
+    </div>
+  </div>
+  <div class="doc-page">
+    <div class="doc-head">
+      <div class="doc-head-logo"><img src="brand_assets/LOGO.png" alt="Metals Trading"/></div>
+      <div class="doc-head-company">
+        <div class="co-name">Metals Trading</div>
+        metals-trade.com<br/>metals-trade@protonmail.com
+      </div>
+    </div>
+    <div class="doc-title-block">
+      <div>
+        <div class="doc-type-label">Ostali dokumenti</div>
+        <div class="doc-title">Potrdilo o plačilu</div>
+      </div>
+      <div class="doc-meta-box">
+        <div class="doc-meta-row"><span class="doc-meta-lbl">Številka:</span><span class="doc-meta-val" id="pop-number">—</span></div>
+        <div class="doc-meta-row"><span class="doc-meta-lbl">Datum:</span><span class="doc-meta-val" id="pop-date">—</span></div>
+      </div>
+    </div>
+    <div class="cert-result" style="margin:6mm 0;">
+      <span class="cert-check">✓</span>
+      <div>
+        <strong>Plačilo prejeto</strong><br/>
+        <span style="font-size:8.5pt;color:#555;">Plačilo za naročilo <span id="pop-ref">—</span> je bilo uspešno prejeto.</span>
+      </div>
+    </div>
+    <div class="party-grid">
+      <div class="party-box">
+        <div class="party-label">Plačnik</div>
+        <div class="party-name" id="pop-buyer">—</div>
+        <div class="party-sub" id="pop-buyer-email">—</div>
+      </div>
+      <div class="party-box">
+        <div class="party-label">Prejemnik plačila</div>
+        <div class="party-name">Metals Trading d.o.o.</div>
+        <div class="party-sub">metals-trade.com</div>
+      </div>
+    </div>
+    <table class="items-table">
+      <thead><tr><th>Predmet</th><th>Referenca</th><th>Datum plačila</th><th>Znesek</th></tr></thead>
+      <tbody>
+        <tr>
+          <td id="pop-listing">—</td>
+          <td><span id="pop-ref2" style="font-family:monospace;">—</span></td>
+          <td id="pop-date2">—</td>
+          <td id="pop-total">—</td>
+        </tr>
+      </tbody>
+    </table>
+    <div class="doc-note">
+      Ta dokument potrjuje prejem plačila za navedeno naročilo. Blago bo pripravljeno za odpremo.
+      Metals Trading bo kupca obvestil o statusu pošiljanja.
+    </div>
+    <div class="sig-grid">
+      <div class="sig-box"><div class="sig-label">Pooblaščena oseba — Metals Trading</div></div>
+      <div class="sig-box"><div class="sig-label">Datum in žig</div></div>
+    </div>
+    <div class="doc-footer">
+      <span>Metals Trading — metals-trade.com</span>
+      <span class="doc-footer-center">Potrdilo o plačilu</span>
+      <span id="pop-footer-ref">—</span>
+    </div>
+  </div>
+</div>
+
+<!-- ─── DOCUMENT: Quality Certificate ─── -->
+<div class="document-wrap" id="doc-quality_certificate">
+  <div class="print-toolbar">
+    <div class="print-toolbar-left">
+      <span class="pt-doc-name">🔬 Certifikat kakovosti</span>
+      <span class="pt-ref" id="pt-qc-ref">—</span>
+    </div>
+    <div style="display:flex;gap:8px;">
+      <button onclick="window.history.back()" class="btn-back-to-selector">← Nazaj</button>
+      <button onclick="window.print()" class="btn-print">🖨 Natisni / Shrani kot PDF</button>
+    </div>
+  </div>
+  <div class="doc-page">
+    <div class="doc-head">
+      <div class="doc-head-logo"><img src="brand_assets/LOGO.png" alt="Metals Trading"/></div>
+      <div class="doc-head-company">
+        <div class="co-name">Metals Trading</div>
+        metals-trade.com<br/>metals-trade@protonmail.com
+      </div>
+    </div>
+    <div class="cert-header-bar">
+      <div class="cert-type">Metals Trading — Certifikat</div>
+      <div class="cert-title">Certifikat kakovosti materiala</div>
+      <div class="cert-no">Certifikat št.: <span id="qc-number">—</span></div>
+    </div>
+    <table class="cert-table" style="margin-bottom:5mm;">
+      <thead><tr><th colspan="2">Podatki o naročilu in materialu</th></tr></thead>
+      <tbody>
+        <tr><td>Referenca naročila</td><td id="qc-ref" style="font-family:monospace;">—</td></tr>
+        <tr><td>Opis materiala / blaga</td><td id="qc-listing">—</td></tr>
+        <tr><td>Kupec</td><td id="qc-buyer">—</td></tr>
+        <tr><td>Prodajalec</td><td id="qc-seller">—</td></tr>
+        <tr><td>Datum certifikata</td><td id="qc-date">—</td></tr>
+      </tbody>
+    </table>
+    <table class="cert-table" style="margin-bottom:5mm;">
+      <thead><tr><th>Parameter</th><th>Vrednost</th><th>Standard</th><th>Rezultat</th></tr></thead>
+      <tbody>
+        <tr><td>Čistost materiala</td><td id="qc-purity">≥ 99 %</td><td>ISO 4943</td><td style="color:#2d9e5c;">✓ Ustreza</td></tr>
+        <tr><td>Teža (bruto)</td><td id="qc-weight">—</td><td>ISO 8258</td><td style="color:#2d9e5c;">✓ Ustreza</td></tr>
+        <tr><td>Videz in stanje</td><td>Brez poškodb</td><td>Vizualni pregled</td><td style="color:#2d9e5c;">✓ Ustreza</td></tr>
+        <tr><td>Sledljivost</td><td>Dokumentirana</td><td>EN 15129</td><td style="color:#2d9e5c;">✓ Ustreza</td></tr>
+      </tbody>
+    </table>
+    <div class="cert-result">
+      <span class="cert-check">✓</span>
+      <div>
+        <strong>Material ustreza standardom kakovosti</strong><br/>
+        <span style="font-size:8.5pt;color:#555;">Metals Trading potrjuje, da opisani material ustreza navedenim specifikacijam in standardom.</span>
+      </div>
+    </div>
+    <div class="sig-grid" style="margin-top:8mm;">
+      <div class="sig-box"><div class="sig-label">Pooblaščena oseba — Metals Trading<br/><br/><br/>_______________________________</div></div>
+      <div class="sig-box"><div class="sig-label">Datum in žig<br/><br/><br/>_______________________________</div></div>
+    </div>
+    <div class="doc-footer">
+      <span>Metals Trading — metals-trade.com</span>
+      <span class="doc-footer-center">Certifikat kakovosti materiala</span>
+      <span id="qc-footer-ref">—</span>
+    </div>
+  </div>
+</div>
+
+<!-- ─── DOCUMENT: CMR ─── -->
+<div class="document-wrap" id="doc-cmr">
+  <div class="print-toolbar">
+    <div class="print-toolbar-left">
+      <span class="pt-doc-name">🚚 CMR — Tovorni list</span>
+      <span class="pt-ref" id="pt-cmr-ref">—</span>
+    </div>
+    <div style="display:flex;gap:8px;">
+      <button onclick="window.history.back()" class="btn-back-to-selector">← Nazaj</button>
+      <button onclick="window.print()" class="btn-print">🖨 Natisni / Shrani kot PDF</button>
+    </div>
+  </div>
+  <div class="doc-page">
+    <div class="doc-head">
+      <div class="doc-head-logo"><img src="brand_assets/LOGO.png" alt="Metals Trading"/></div>
+      <div class="doc-head-company">
+        <div class="co-name">CMR — Mednarodni tovorni list</div>
+        Konvencija CMR (Ženeva, 1956)<br/>Metals Trading — metals-trade.com
+      </div>
+    </div>
+    <div class="doc-title-block" style="margin-bottom:4mm;">
+      <div>
+        <div class="doc-type-label">Transport</div>
+        <div class="doc-title">Tovorni list (CMR)</div>
+      </div>
+      <div class="doc-meta-box">
+        <div class="doc-meta-row"><span class="doc-meta-lbl">CMR št.:</span><span class="doc-meta-val" id="cmr-number">—</span></div>
+        <div class="doc-meta-row"><span class="doc-meta-lbl">Datum:</span><span class="doc-meta-val" id="cmr-date">—</span></div>
+        <div class="doc-meta-row"><span class="doc-meta-lbl">Ref. naročila:</span><span class="doc-meta-val" id="cmr-ref" style="font-family:monospace;font-size:8pt;">—</span></div>
+      </div>
+    </div>
+    <div class="cmr-grid">
+      <div class="cmr-box">
+        <div class="cmr-no">1. Pošiljatelj (ime, naslov, država)</div>
+        <div class="cmr-val" id="cmr-sender">Metals Trading d.o.o.<br/>metals-trade.com, SI — Slovenija</div>
+      </div>
+      <div class="cmr-box">
+        <div class="cmr-no">2. Prevoznik (ime, naslov, država)</div>
+        <div class="cmr-val" id="cmr-carrier">_______________________________<br/>_______________________________</div>
+      </div>
+      <div class="cmr-box">
+        <div class="cmr-no">3. Prejemnik (ime, naslov, država)</div>
+        <div class="cmr-val" id="cmr-receiver">—</div>
+      </div>
+      <div class="cmr-box">
+        <div class="cmr-no">4. Kraj in datum prevzema blaga</div>
+        <div class="cmr-val" id="cmr-pickup">—</div>
+      </div>
+    </div>
+    <table class="cmr-goods-table">
+      <thead>
+        <tr>
+          <th>Opis blaga / materiala</th>
+          <th>Vrsta embalaže</th>
+          <th>Bruto teža (kg)</th>
+          <th>Ref. naročila</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td id="cmr-goods">—</td>
+          <td>—</td>
+          <td id="cmr-weight">—</td>
+          <td id="cmr-ref2" style="font-family:monospace;font-size:8pt;">—</td>
+        </tr>
+      </tbody>
+    </table>
+    <div class="doc-note" style="font-size:8pt;">
+      <strong>Nevarne snovi:</strong> NIZ. Blago ni razvrščeno kot nevarno blago po ADR/IATA.<br/>
+      <strong>Posebne instrukce:</strong> Ravnati skrbno. Zaščititi pred vlago in mehanskimi poškodbami.
+    </div>
+    <div class="cmr-grid" style="margin-top:4mm;">
+      <div class="cmr-box" style="min-height:24mm;">
+        <div class="cmr-no">Podpis pošiljatelja — Datum</div>
+        <div style="margin-top:12mm; border-top:1px solid #ccc; font-size:8pt; color:#888; padding-top:2mm;">Metals Trading d.o.o.</div>
+      </div>
+      <div class="cmr-box" style="min-height:24mm;">
+        <div class="cmr-no">Podpis prevoznika — Datum</div>
+        <div style="margin-top:12mm; border-top:1px solid #ccc; font-size:8pt; color:#888; padding-top:2mm;"></div>
+      </div>
+      <div class="cmr-box" style="min-height:24mm;">
+        <div class="cmr-no">Podpis prejemnika — Datum</div>
+        <div style="margin-top:12mm; border-top:1px solid #ccc; font-size:8pt; color:#888; padding-top:2mm;"></div>
+      </div>
+      <div class="cmr-box" style="min-height:24mm;">
+        <div class="cmr-no">Carinski organ — Žig</div>
+        <div style="margin-top:12mm; border-top:1px solid #ccc; font-size:8pt; color:#888; padding-top:2mm;"></div>
+      </div>
+    </div>
+    <div class="doc-footer">
+      <span>Metals Trading — metals-trade.com</span>
+      <span class="doc-footer-center">Tovorni list CMR — Mednarodni prevoz blaga</span>
+      <span id="cmr-footer-ref">—</span>
+    </div>
+  </div>
+</div>
+
+<!-- ─── DOCUMENT: Delivery Note ─── -->
+<div class="document-wrap" id="doc-delivery_note">
+  <div class="print-toolbar">
+    <div class="print-toolbar-left">
+      <span class="pt-doc-name">📦 Dobavnica</span>
+      <span class="pt-ref" id="pt-dn-ref">—</span>
+    </div>
+    <div style="display:flex;gap:8px;">
+      <button onclick="window.history.back()" class="btn-back-to-selector">← Nazaj</button>
+      <button onclick="window.print()" class="btn-print">🖨 Natisni / Shrani kot PDF</button>
+    </div>
+  </div>
+  <div class="doc-page">
+    <div class="doc-head">
+      <div class="doc-head-logo"><img src="brand_assets/LOGO.png" alt="Metals Trading"/></div>
+      <div class="doc-head-company">
+        <div class="co-name">Metals Trading</div>
+        metals-trade.com<br/>metals-trade@protonmail.com
+      </div>
+    </div>
+    <div class="doc-title-block">
+      <div>
+        <div class="doc-type-label">Transport</div>
+        <div class="doc-title">Dobavnica</div>
+      </div>
+      <div class="doc-meta-box">
+        <div class="doc-meta-row"><span class="doc-meta-lbl">Številka:</span><span class="doc-meta-val" id="dn-number">—</span></div>
+        <div class="doc-meta-row"><span class="doc-meta-lbl">Datum:</span><span class="doc-meta-val" id="dn-date">—</span></div>
+        <div class="doc-meta-row"><span class="doc-meta-lbl">Ref.:</span><span class="doc-meta-val" id="dn-ref" style="font-family:monospace;font-size:8pt;">—</span></div>
+      </div>
+    </div>
+    <div class="party-grid">
+      <div class="party-box">
+        <div class="party-label">Pošiljatelj</div>
+        <div class="party-name" id="dn-sender">Metals Trading d.o.o.</div>
+        <div class="party-sub">metals-trade.com, SI — Slovenija</div>
+      </div>
+      <div class="party-box">
+        <div class="party-label">Prejemnik</div>
+        <div class="party-name" id="dn-buyer">—</div>
+        <div class="party-sub" id="dn-buyer-email">—</div>
+      </div>
+    </div>
+    <table class="items-table">
+      <thead><tr><th>Opis blaga / materiala</th><th>Količina</th><th>Enota</th><th>Opomba</th></tr></thead>
+      <tbody>
+        <tr>
+          <td>
+            <div id="dn-listing">—</div>
+            <div class="desc">Ref.: <span id="dn-ref2">—</span></div>
+          </td>
+          <td>1</td>
+          <td>kos/lot</td>
+          <td>Novo / kot opisano</td>
+        </tr>
+      </tbody>
+    </table>
+    <div class="doc-note">
+      <strong>Pogoji dostave:</strong> Blago je bilo skrbno pakirano in predano prevozniku v navedenem stanju.
+      V primeru vidnih poškodb pri prevzemu, prosimo takoj obvestite Metals Trading na metals-trade@protonmail.com.
+    </div>
+    <div class="sig-grid" style="margin-top:10mm;">
+      <div class="sig-box">
+        <div class="sig-label">Pošiljatelj — datum odpreme<br/><br/><br/>_______________________________<br/>Metals Trading d.o.o.</div>
+      </div>
+      <div class="sig-box">
+        <div class="sig-label">Kupec — datum in podpis ob prevzemu<br/><br/><br/>_______________________________</div>
+      </div>
+    </div>
+    <div class="doc-footer">
+      <span>Metals Trading — metals-trade.com</span>
+      <span class="doc-footer-center">Dobavnica</span>
+      <span id="dn-footer-ref">—</span>
+    </div>
+  </div>
+</div>
+
+<!-- ─── DOCUMENT: Weight Certificate ─── -->
+<div class="document-wrap" id="doc-weight_certificate">
+  <div class="print-toolbar">
+    <div class="print-toolbar-left">
+      <span class="pt-doc-name">⚖️ Certifikat teže</span>
+      <span class="pt-ref" id="pt-wc-ref">—</span>
+    </div>
+    <div style="display:flex;gap:8px;">
+      <button onclick="window.history.back()" class="btn-back-to-selector">← Nazaj</button>
+      <button onclick="window.print()" class="btn-print">🖨 Natisni / Shrani kot PDF</button>
+    </div>
+  </div>
+  <div class="doc-page">
+    <div class="doc-head">
+      <div class="doc-head-logo"><img src="brand_assets/LOGO.png" alt="Metals Trading"/></div>
+      <div class="doc-head-company">
+        <div class="co-name">Metals Trading</div>
+        metals-trade.com<br/>metals-trade@protonmail.com
+      </div>
+    </div>
+    <div class="cert-header-bar">
+      <div class="cert-type">Metals Trading — Tehtalni certifikat</div>
+      <div class="cert-title">Certifikat teže</div>
+      <div class="cert-no">Certifikat št.: <span id="wc-number">—</span></div>
+    </div>
+    <table class="cert-table" style="margin-bottom:5mm;">
+      <thead><tr><th colspan="2">Podatki o tehtnemu pregledu</th></tr></thead>
+      <tbody>
+        <tr><td>Referenca naročila</td><td id="wc-ref" style="font-family:monospace;">—</td></tr>
+        <tr><td>Opis materiala</td><td id="wc-listing">—</td></tr>
+        <tr><td>Kupec</td><td id="wc-buyer">—</td></tr>
+        <tr><td>Datum tehtanja</td><td id="wc-date">—</td></tr>
+        <tr><td>Kraj tehtanja</td><td>Skladišče Metals Trading, SI</td></tr>
+      </tbody>
+    </table>
+    <table class="cert-table" style="margin-bottom:5mm;">
+      <thead><tr><th>Meritev</th><th>Rezultat</th><th>Enota</th><th>Metoda</th></tr></thead>
+      <tbody>
+        <tr><td>Bruto teža</td><td id="wc-gross">—</td><td>kg / g</td><td>ISO 8258</td></tr>
+        <tr><td>Tara (embalaža)</td><td id="wc-tare">—</td><td>kg</td><td>ISO 8258</td></tr>
+        <tr><td><strong>Neto teža</strong></td><td id="wc-net"><strong>—</strong></td><td>kg / g</td><td>ISO 8258</td></tr>
+      </tbody>
+    </table>
+    <div class="doc-note" style="margin-bottom:5mm;">
+      <strong>Tehtalna naprava:</strong> Kalibrirana industrijska tehtnica (razred točnosti III).<br/>
+      Zadnja kalibracija: [datum] | Certifikat kalibracije: [številka]
+    </div>
+    <div class="cert-result">
+      <span class="cert-check">⚖</span>
+      <div>
+        <strong>Tehtanje izvedeno v skladu z ISO 8258</strong><br/>
+        <span style="font-size:8.5pt;color:#555;">Rezultati tehtanja so verodostojni in certificirani s strani Metals Trading.</span>
+      </div>
+    </div>
+    <div class="sig-grid" style="margin-top:8mm;">
+      <div class="sig-box"><div class="sig-label">Pooblaščena oseba — Metals Trading<br/><br/><br/>_______________________________</div></div>
+      <div class="sig-box"><div class="sig-label">Datum in žig<br/><br/><br/>_______________________________</div></div>
+    </div>
+    <div class="doc-footer">
+      <span>Metals Trading — metals-trade.com</span>
+      <span class="doc-footer-center">Certifikat teže</span>
+      <span id="wc-footer-ref">—</span>
+    </div>
+  </div>
+</div>
+
+<!-- ─── DOCUMENT: Material Analysis ─── -->
+<div class="document-wrap" id="doc-material_analysis">
+  <div class="print-toolbar">
+    <div class="print-toolbar-left">
+      <span class="pt-doc-name">🧪 Analiza materiala</span>
+      <span class="pt-ref" id="pt-ma-ref">—</span>
+    </div>
+    <div style="display:flex;gap:8px;">
+      <button onclick="window.history.back()" class="btn-back-to-selector">← Nazaj</button>
+      <button onclick="window.print()" class="btn-print">🖨 Natisni / Shrani kot PDF</button>
+    </div>
+  </div>
+  <div class="doc-page">
+    <div class="doc-head">
+      <div class="doc-head-logo"><img src="brand_assets/LOGO.png" alt="Metals Trading"/></div>
+      <div class="doc-head-company">
+        <div class="co-name">Metals Trading</div>
+        metals-trade.com<br/>metals-trade@protonmail.com
+      </div>
+    </div>
+    <div class="cert-header-bar">
+      <div class="cert-type">Metals Trading — Laboratorijsko poročilo</div>
+      <div class="cert-title">Analiza materiala</div>
+      <div class="cert-no">Poročilo št.: <span id="ma-number">—</span></div>
+    </div>
+    <table class="cert-table" style="margin-bottom:5mm;">
+      <thead><tr><th colspan="2">Vzorec in naročilo</th></tr></thead>
+      <tbody>
+        <tr><td>Referenca naročila</td><td id="ma-ref" style="font-family:monospace;">—</td></tr>
+        <tr><td>Opis vzorca / materiala</td><td id="ma-listing">—</td></tr>
+        <tr><td>Kupec</td><td id="ma-buyer">—</td></tr>
+        <tr><td>Prodajalec</td><td id="ma-seller">—</td></tr>
+        <tr><td>Datum analize</td><td id="ma-date">—</td></tr>
+        <tr><td>Metoda analize</td><td>XRF (rentgenska fluorescenca) / Wet chemistry</td></tr>
+      </tbody>
+    </table>
+    <table class="cert-table" style="margin-bottom:5mm;">
+      <thead><tr><th>Element</th><th>Izmerjeno (%)</th><th>Zahtevano (%)</th><th>Status</th></tr></thead>
+      <tbody>
+        <tr><td id="ma-element1">Glavni element</td><td id="ma-pct1">≥ 99,0</td><td id="ma-req1">≥ 99,0</td><td style="color:#2d9e5c;">✓ Ustreza</td></tr>
+        <tr><td>Kisik (O)</td><td>&lt; 0,02</td><td>&lt; 0,05</td><td style="color:#2d9e5c;">✓ Ustreza</td></tr>
+        <tr><td>Sulfur (S)</td><td>&lt; 0,01</td><td>&lt; 0,02</td><td style="color:#2d9e5c;">✓ Ustreza</td></tr>
+        <tr><td>Fosfor (P)</td><td>&lt; 0,005</td><td>&lt; 0,01</td><td style="color:#2d9e5c;">✓ Ustreza</td></tr>
+        <tr><td>Ostale nečistoče</td><td>&lt; 0,03</td><td>&lt; 0,05</td><td style="color:#2d9e5c;">✓ Ustreza</td></tr>
+      </tbody>
+    </table>
+    <div class="cert-result">
+      <span class="cert-check">✓</span>
+      <div>
+        <strong>Material ustreza specifikacijam</strong><br/>
+        <span style="font-size:8.5pt;color:#555;">Kemična sestava vzorca je bila analizirana in ustreza zahtevam za navedeno naročilo.</span>
+      </div>
+    </div>
+    <div class="doc-note">
+      <strong>Opomba:</strong> Ta analiza velja izključno za navedeni vzorec/naročilo.
+      Za detajlno laboratorijsko poročilo kontaktirajte Metals Trading.
+    </div>
+    <div class="sig-grid" style="margin-top:8mm;">
+      <div class="sig-box"><div class="sig-label">Laboratorij / Pooblaščena oseba<br/><br/><br/>_______________________________</div></div>
+      <div class="sig-box"><div class="sig-label">Datum, kraj in žig<br/><br/><br/>_______________________________</div></div>
+    </div>
+    <div class="doc-footer">
+      <span>Metals Trading — metals-trade.com</span>
+      <span class="doc-footer-center">Analiza materiala — Laboratorijsko poročilo</span>
+      <span id="ma-footer-ref">—</span>
+    </div>
+  </div>
+</div>
+
+<script>
+// ─── URL param helpers ───
+function p(name, fallback = '—') {
+  return new URLSearchParams(window.location.search).get(name) || fallback;
+}
+function fmtDate(iso) {
+  if (!iso || iso === '—') return new Date().toLocaleDateString('sl-SI',{day:'2-digit',month:'2-digit',year:'numeric'});
+  return new Date(iso).toLocaleDateString('sl-SI',{day:'2-digit',month:'2-digit',year:'numeric'});
+}
+function docNum(type, ref) {
+  const prefixes = {
+    proforma:'PF', order_confirmation:'NO', invoice:'R', proof_of_payment:'PP',
+    quality_certificate:'CK', cmr:'CMR', delivery_note:'DO', weight_certificate:'CT', material_analysis:'AM'
+  };
+  const pr = prefixes[type] || 'MT';
+  const suffix = ref && ref !== '—' ? '-' + ref.replace('MT-','') : '-' + new Date().getFullYear() + '-' + Math.random().toString(36).slice(2,6).toUpperCase();
+  return pr + suffix;
+}
+function calcVAT(amount, vatRate = 0.22) {
+  const num = parseFloat(amount.replace(/[^0-9.,]/g,'').replace(',','.')) || 0;
+  return num * vatRate;
+}
+function setText(id, val) {
+  const el = document.getElementById(id);
+  if (el) el.textContent = val;
+}
+
+// ─── Open doc without page reload ───
+function openDoc(type) {
+  const params = new URLSearchParams(window.location.search);
+  params.set('type', type);
+  window.location.search = params.toString();
+}
+
+// ─── Fill document on load ───
+(function init() {
+  const type    = p('type', '');
+  const ref     = p('ref');
+  const listing = p('listing');
+  const amount  = p('amount');
+  const currency = p('currency', 'EUR');
+  const buyer   = p('buyer');
+  const buyerEmail = p('buyer_email');
+  const seller  = p('seller');
+  const date    = p('date');
+
+  if (!type) {
+    document.getElementById('selector-ui').style.display = 'block';
+    return;
+  }
+
+  // Hide selector, show document
+  document.getElementById('selector-ui').style.display = 'none';
+  const wrap = document.getElementById('doc-' + type);
+  if (!wrap) { document.getElementById('selector-ui').style.display='block'; return; }
+  wrap.classList.add('active');
+
+  const dn  = docNum(type, ref);
+  const dt  = fmtDate(date);
+  const amt = currency + ' ' + amount;
+
+  // Calculate fee (2%) and totals
+  const amtNum = parseFloat(amount.replace(',','.')) || 0;
+  const fee    = (amtNum * 0.02).toFixed(2);
+  const fmtNum = (n) => currency + ' ' + Number(n).toLocaleString('sl-SI',{minimumFractionDigits:2});
+
+  // ── Fill each document type ──
+  if (type === 'proforma') {
+    setText('pt-proforma-ref', ref);
+    setText('pf-number', dn); setText('pf-date', dt);
+    setText('pf-seller', seller); setText('pf-buyer', buyer); setText('pf-buyer-email', buyerEmail);
+    setText('pf-listing', listing);
+    setText('pf-ref', ref); setText('pf-ref2', ref); setText('pf-ref3', ref); setText('pf-footer-ref', ref);
+    setText('pf-base', fmtNum(amtNum - amtNum*0.02));
+    setText('pf-base2', fmtNum(amtNum - amtNum*0.02));
+    setText('pf-fee', fmtNum(fee));
+    setText('pf-total', fmtNum(amtNum));
+  }
+  else if (type === 'order_confirmation') {
+    setText('pt-oc-ref', ref);
+    setText('oc-number', dn); setText('oc-date', dt);
+    setText('oc-seller', seller); setText('oc-buyer', buyer);
+    setText('oc-listing', listing);
+    setText('oc-ref', ref); setText('oc-ref2', ref); setText('oc-ref3', ref); setText('oc-footer-ref', ref);
+    setText('oc-total', fmtNum(amtNum));
+  }
+  else if (type === 'invoice') {
+    const base = amtNum / 1.22;
+    const vat  = amtNum - base;
+    setText('pt-inv-ref', ref);
+    setText('inv-number', dn); setText('inv-date', dt);
+    setText('inv-buyer', buyer); setText('inv-buyer-email', buyerEmail);
+    setText('inv-listing', listing);
+    setText('inv-ref', ref); setText('inv-ref2', ref); setText('inv-footer-ref', ref);
+    setText('inv-base', fmtNum(base));
+    setText('inv-vat', fmtNum(vat));
+    setText('inv-total-vat', fmtNum(amtNum));
+    setText('inv-fee-vat', '—'); setText('inv-fee-total', '—');
+    setText('inv-base2', fmtNum(base));
+    setText('inv-vat2', fmtNum(vat));
+    setText('inv-total', fmtNum(amtNum));
+  }
+  else if (type === 'proof_of_payment') {
+    setText('pt-pop-ref', ref);
+    setText('pop-number', dn); setText('pop-date', dt); setText('pop-date2', dt);
+    setText('pop-buyer', buyer); setText('pop-buyer-email', buyerEmail);
+    setText('pop-listing', listing);
+    setText('pop-ref', ref); setText('pop-ref2', ref); setText('pop-footer-ref', ref);
+    setText('pop-total', fmtNum(amtNum));
+  }
+  else if (type === 'quality_certificate') {
+    setText('pt-qc-ref', ref);
+    setText('qc-number', dn); setText('qc-date', dt);
+    setText('qc-buyer', buyer); setText('qc-seller', seller);
+    setText('qc-listing', listing);
+    setText('qc-ref', ref); setText('qc-footer-ref', ref);
+  }
+  else if (type === 'cmr') {
+    setText('pt-cmr-ref', ref);
+    setText('cmr-number', dn); setText('cmr-date', dt);
+    setText('cmr-goods', listing);
+    setText('cmr-receiver', buyer);
+    setText('cmr-pickup', 'SI — Slovenija, ' + dt);
+    setText('cmr-ref', ref); setText('cmr-ref2', ref); setText('cmr-footer-ref', ref);
+    setText('cmr-weight', p('weight', '—'));
+  }
+  else if (type === 'delivery_note') {
+    setText('pt-dn-ref', ref);
+    setText('dn-number', dn); setText('dn-date', dt);
+    setText('dn-buyer', buyer); setText('dn-buyer-email', buyerEmail);
+    setText('dn-listing', listing);
+    setText('dn-ref', ref); setText('dn-ref2', ref); setText('dn-footer-ref', ref);
+  }
+  else if (type === 'weight_certificate') {
+    setText('pt-wc-ref', ref);
+    setText('wc-number', dn); setText('wc-date', dt);
+    setText('wc-buyer', buyer);
+    setText('wc-listing', listing);
+    setText('wc-ref', ref); setText('wc-footer-ref', ref);
+    const wt = p('weight', '—');
+    setText('wc-gross', wt); setText('wc-net', wt); setText('wc-tare', '—');
+  }
+  else if (type === 'material_analysis') {
+    setText('pt-ma-ref', ref);
+    setText('ma-number', dn); setText('ma-date', dt);
+    setText('ma-buyer', buyer); setText('ma-seller', seller);
+    setText('ma-listing', listing);
+    setText('ma-ref', ref); setText('ma-footer-ref', ref);
+    const mat = listing.split(' ')[0];
+    setText('ma-element1', mat || 'Gl. element');
+  }
+})();
+</script>
+</body>
+</html>

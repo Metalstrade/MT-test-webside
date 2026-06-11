@@ -599,6 +599,138 @@
       .page-header { padding: 12px 20px; }
     }
 
+    /* ── PAGE TABS ── */
+    .page-tabs {
+      position: sticky; top: 68px; z-index: 90;
+      display: flex; align-items: center; gap: 0;
+      background: rgba(13,17,23,0.95); backdrop-filter: blur(12px);
+      border-bottom: 1px solid rgba(201,162,39,0.1);
+      padding: 0 48px;
+    }
+    @media (max-width: 900px) { .page-tabs { padding: 0 20px; } }
+    .page-tab {
+      padding: 12px 20px 10px; background: none; border: none; border-bottom: 2px solid transparent;
+      font-family: 'Inter', sans-serif; font-size: 13px; font-weight: 500;
+      color: var(--muted); cursor: pointer; letter-spacing: 0.03em;
+      transition: color 0.15s, border-color 0.15s;
+      display: flex; align-items: center; gap: 7px; white-space: nowrap;
+    }
+    .page-tab:hover { color: var(--silver-lt); }
+    .page-tab.active { color: var(--gold-lt); border-bottom-color: var(--gold); }
+    .page-tab .tab-badge {
+      background: rgba(201,162,39,0.75); color: var(--ink);
+      font-size: 9px; font-weight: 700; padding: 1px 5px; border-radius: 100px;
+    }
+
+    /* ── MOJI DOKUMENTI ── */
+    #section-moji-dokumenti {
+      display: none; padding: 28px 48px; min-height: calc(100vh - 68px - 44px);
+    }
+    @media (max-width: 900px) { #section-moji-dokumenti { padding: 20px; } }
+
+    .my-docs-layout {
+      display: grid; grid-template-columns: 220px 1fr; gap: 24px;
+    }
+    @media (max-width: 900px) { .my-docs-layout { grid-template-columns: 1fr; } }
+
+    .my-docs-sidebar {
+      background: var(--ink-2); border: 1px solid rgba(143,163,177,0.08);
+      border-radius: 4px; padding: 16px; height: fit-content;
+      position: sticky; top: 112px;
+    }
+    .my-docs-sidebar-title {
+      font-size: 10px; letter-spacing: 0.12em; text-transform: uppercase;
+      color: var(--muted); font-weight: 500; margin-bottom: 14px;
+    }
+    .docs-filter-section { margin-bottom: 16px; }
+    .docs-filter-label {
+      font-size: 10px; letter-spacing: 0.1em; text-transform: uppercase;
+      color: var(--steel); font-weight: 500; margin-bottom: 6px;
+    }
+    .docs-chip-group { display: flex; flex-direction: column; gap: 4px; }
+    .docs-chip {
+      padding: 5px 10px; border: 1px solid rgba(143,163,177,0.15);
+      border-radius: 3px; font-size: 11px; font-weight: 500;
+      color: var(--muted); background: transparent; cursor: pointer;
+      font-family: 'Inter', sans-serif; text-align: left;
+      transition: border-color 0.15s, color 0.15s, background 0.15s;
+    }
+    .docs-chip:hover { border-color: rgba(201,162,39,0.3); color: var(--gold-lt); }
+    .docs-chip.active { border-color: var(--gold); background: rgba(201,162,39,0.1); color: var(--gold-lt); }
+
+    .my-docs-main {}
+    .my-docs-header {
+      display: flex; align-items: center; justify-content: space-between; margin-bottom: 20px;
+    }
+    .my-docs-title { font-family: 'Cormorant Garamond',serif; font-size: 26px; color: #E8EEF2; }
+    .my-docs-sub   { font-size: 12px; color: var(--muted); margin-top: 2px; }
+    .docs-count    { font-size: 12px; color: var(--muted); }
+
+    /* Order group */
+    .order-doc-group {
+      background: var(--ink-2); border: 1px solid rgba(143,163,177,0.08);
+      border-radius: 4px; overflow: hidden; margin-bottom: 14px;
+    }
+    .order-doc-group-hdr {
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 14px 18px; cursor: pointer;
+      border-bottom: 1px solid rgba(143,163,177,0.08);
+      transition: background 0.15s;
+    }
+    .order-doc-group-hdr:hover { background: rgba(255,255,255,0.02); }
+    .order-doc-group-hdr.open { background: rgba(201,162,39,0.04); }
+    .odg-left  {}
+    .odg-title { font-size: 14px; font-weight: 600; color: #E8EEF2; margin-bottom: 3px; }
+    .odg-meta  { font-size: 11px; color: var(--muted); }
+    .odg-meta span { font-family: monospace; color: var(--gold-lt); }
+    .odg-right { display: flex; align-items: center; gap: 12px; }
+    .odg-count { font-size: 11px; color: var(--muted); }
+    .odg-chev  {
+      width: 14px; height: 14px; color: var(--muted);
+      transition: transform 0.2s cubic-bezier(0.4,0,0.2,1);
+    }
+    .order-doc-group-hdr.open .odg-chev { transform: rotate(90deg); }
+
+    .order-doc-group-body { display: none; }
+    .order-doc-group-body.open { display: block; }
+
+    /* Document category inside group */
+    .doc-category-section { padding: 12px 18px; border-bottom: 1px solid rgba(143,163,177,0.05); }
+    .doc-category-section:last-child { border-bottom: none; }
+    .doc-cat-label {
+      font-size: 9px; letter-spacing: 0.14em; text-transform: uppercase;
+      color: var(--steel); font-weight: 600; margin-bottom: 8px;
+      display: flex; align-items: center; gap: 6px;
+    }
+    .doc-cat-label::after { content:''; flex:1; height:1px; background:rgba(143,163,177,0.1); }
+
+    /* Document file row */
+    .doc-file-row {
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 7px 0; border-bottom: 1px solid rgba(143,163,177,0.04);
+    }
+    .doc-file-row:last-child { border-bottom: none; }
+    .doc-file-left { display: flex; align-items: center; gap: 10px; }
+    .doc-file-icon { font-size: 15px; flex-shrink: 0; }
+    .doc-file-name { font-size: 12px; font-weight: 500; color: var(--gold-lt); text-decoration: none; cursor: pointer; }
+    .doc-file-name:hover { text-decoration: underline; }
+    .doc-file-meta { font-size: 10px; color: var(--muted); margin-top: 1px; }
+    .doc-file-right {}
+    .btn-doc-download {
+      padding: 4px 12px; border-radius: 2px; font-size: 10px; font-weight: 600;
+      cursor: pointer; background: rgba(201,162,39,0.08);
+      border: 1px solid rgba(201,162,39,0.2); color: var(--gold-lt);
+      font-family: 'Inter', sans-serif;
+      transition: background 0.15s;
+    }
+    .btn-doc-download:hover { background: rgba(201,162,39,0.16); }
+
+    .docs-empty-state {
+      text-align: center; padding: 60px 24px;
+    }
+    .docs-empty-state h3 { font-family:'Cormorant Garamond',serif; font-size:22px; color:var(--steel); margin-bottom:8px; }
+    .docs-empty-state p  { font-size:13px; color:var(--muted); }
+
     /* ── FAB ── */
     .fab-post {
       position: fixed; bottom: 32px; right: 32px; z-index: 200;
@@ -1026,8 +1158,17 @@
   </a>
 </nav>
 
+<!-- ── PAGE TABS ── -->
+<div class="page-tabs" id="page-tabs">
+  <button class="page-tab active" id="tab-market" onclick="switchPageTab('market')">🏛 Trg kovin</button>
+  <button class="page-tab" id="tab-documents" onclick="switchPageTab('documents')">
+    📄 Moji dokumenti
+    <span class="tab-badge" id="docs-tab-badge" style="display:none;"></span>
+  </button>
+</div>
+
 <!-- ── PAGE HEADER ── -->
-<div class="page-header">
+<div class="page-header" id="section-market-header">
   <div style="display:flex; align-items:flex-start; justify-content:space-between; flex-wrap:wrap; gap:20px;">
     <div>
       <div class="page-header-eyebrow" data-i18n="page_eyebrow">Trg kovin</div>
@@ -1047,8 +1188,53 @@
   </div>
 </div>
 
+<!-- ── MOJI DOKUMENTI ── -->
+<div id="section-moji-dokumenti">
+  <div class="my-docs-layout">
+    <!-- Sidebar filter -->
+    <aside class="my-docs-sidebar">
+      <div class="my-docs-sidebar-title">Filtriraj po</div>
+      <div class="docs-filter-section">
+        <div class="docs-filter-label">Datum</div>
+        <div class="docs-chip-group">
+          <button class="docs-chip active" data-docs-date="all" onclick="filterDocs(this,'date','all')">Vsi</button>
+          <button class="docs-chip" data-docs-date="6m" onclick="filterDocs(this,'date','6m')">Zadnjih 6 mesecev</button>
+          <button class="docs-chip" data-docs-date="1y" onclick="filterDocs(this,'date','1y')">Zadnje leto</button>
+        </div>
+      </div>
+      <div class="docs-filter-section">
+        <div class="docs-filter-label">Vrsta dokumenta</div>
+        <div class="docs-chip-group" id="docs-type-filter">
+          <button class="docs-chip active" data-docs-type="all" onclick="filterDocs(this,'type','all')">Vsi</button>
+          <button class="docs-chip" data-docs-type="order_invoice" onclick="filterDocs(this,'type','order_invoice')">📋 Naročilo &amp; Račun</button>
+          <button class="docs-chip" data-docs-type="other" onclick="filterDocs(this,'type','other')">📎 Ostali</button>
+          <button class="docs-chip" data-docs-type="transport" onclick="filterDocs(this,'type','transport')">🚚 Transport</button>
+          <button class="docs-chip" data-docs-type="material" onclick="filterDocs(this,'type','material')">🔬 Material</button>
+        </div>
+      </div>
+    </aside>
+
+    <!-- Main content -->
+    <div class="my-docs-main">
+      <div class="my-docs-header">
+        <div>
+          <div class="my-docs-title">Moji dokumenti</div>
+          <div class="my-docs-sub">Vsi vaši dokumenti po naročilih</div>
+        </div>
+        <div class="docs-count" id="docs-count"></div>
+      </div>
+      <div id="docs-groups-container">
+        <div class="docs-empty-state">
+          <h3>Nalagam dokumente…</h3>
+          <p>Prosimo počakajte.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
 <!-- ── MAIN LAYOUT ── -->
-<div class="market-layout">
+<div class="market-layout" id="section-market-layout">
 
   <!-- ── FILTER PANEL ── -->
   <aside class="filter-panel">
@@ -3838,8 +4024,8 @@ updateFilters();
 
     <!-- Header -->
     <div style="display:flex;align-items:center;gap:10px;margin-bottom:6px;">
-      <div style="width:32px;height:32px;border-radius:50%;background:rgba(72,199,142,0.15);border:1px solid rgba(72,199,142,0.3);display:flex;align-items:center;justify-content:center;font-size:15px;">✓</div>
-      <h3 class="payment-modal-title" style="margin:0;">Navodila za plačilo</h3>
+      <div style="width:32px;height:32px;border-radius:50%;background:rgba(201,162,39,0.12);border:1px solid rgba(201,162,39,0.3);display:flex;align-items:center;justify-content:center;font-size:15px;">🛒</div>
+      <h3 class="payment-modal-title" style="margin:0;color:var(--gold-lt);" id="pay-modal-title">Potrdi nakup</h3>
     </div>
     <p class="payment-modal-sub" id="pay-listing-name" style="margin-bottom:20px;">—</p>
 
@@ -3860,58 +4046,45 @@ updateFilters();
       </div>
     </div>
 
-    <!-- Bančni podatki -->
-    <div style="background:rgba(13,17,23,0.6);border:1px solid rgba(143,163,177,0.12);border-radius:4px;padding:16px;margin-bottom:16px;">
-      <div style="font-size:10px;letter-spacing:0.1em;text-transform:uppercase;color:var(--gold);margin-bottom:12px;font-weight:600;">Bančni podatki prejemnika</div>
-      <div class="payment-row" style="margin-bottom:8px;">
-        <span class="payment-label">Prejemnik</span>
-        <span class="payment-value">Metals Trading d.o.o.</span>
-      </div>
-      <div class="payment-row" style="margin-bottom:8px;">
-        <span class="payment-label">IBAN</span>
-        <span class="payment-value" style="font-family:monospace;letter-spacing:0.05em;" id="pay-iban">— prihaja kmalu —</span>
-      </div>
-      <div class="payment-row" style="margin-bottom:8px;">
-        <span class="payment-label">BIC / SWIFT</span>
-        <span class="payment-value" id="pay-bic">— prihaja kmalu —</span>
-      </div>
-      <div class="payment-row" style="margin-bottom:0;">
-        <span class="payment-label">Namen plačila</span>
-        <span class="payment-value" id="pay-ref" style="font-family:monospace;color:var(--gold-lt);">—</span>
-      </div>
-    </div>
+    <!-- Skriti elementi za interno rabo (ref, iban, bic) -->
+    <span id="pay-ref" style="display:none;">—</span>
+    <span id="pay-iban" style="display:none;">—</span>
+    <span id="pay-bic" style="display:none;">—</span>
 
-    <!-- Escrow pojasnilo -->
     <div style="background:rgba(143,163,177,0.05);border:1px solid rgba(143,163,177,0.1);border-radius:4px;padding:14px;margin-bottom:16px;">
-      <div style="font-size:10px;letter-spacing:0.1em;text-transform:uppercase;color:var(--muted);margin-bottom:8px;font-weight:600;">Kako deluje escrow zaščita</div>
-      <div style="display:flex;flex-direction:column;gap:6px;">
-        <div style="display:flex;gap:10px;align-items:flex-start;font-size:12px;color:#8FA3B1;">
-          <span style="color:var(--gold);font-weight:700;min-width:18px;">1.</span>
-          <span>Nakažete znesek na zgornji račun z navedeno referenco</span>
-        </div>
-        <div style="display:flex;gap:10px;align-items:flex-start;font-size:12px;color:#8FA3B1;">
-          <span style="color:var(--gold);font-weight:700;min-width:18px;">2.</span>
-          <span>Potrdimo prejem plačila in obvestimo prodajalca</span>
-        </div>
-        <div style="display:flex;gap:10px;align-items:flex-start;font-size:12px;color:#8FA3B1;">
-          <span style="color:var(--gold);font-weight:700;min-width:18px;">3.</span>
-          <span>Prodajalec odpremi blago — vi potrdite prejem</span>
-        </div>
-        <div style="display:flex;gap:10px;align-items:flex-start;font-size:12px;color:#8FA3B1;">
-          <span style="color:var(--gold);font-weight:700;min-width:18px;">4.</span>
-          <span>Prodajalcu nakažemo dogovorjeni znesek (minus 2% provizija)</span>
-        </div>
+      <div style="display:flex;gap:10px;align-items:flex-start;font-size:12px;color:#8FA3B1;">
+        <span style="color:var(--gold);font-weight:700;font-size:18px;line-height:1;">✉</span>
+        <span>Po potrditvi nakupa boste na vaš e-naslov prejeli plačilna navodila z bančnimi podatki za nakazilo.</span>
       </div>
     </div>
 
     <div style="font-size:11px;color:var(--muted);margin-bottom:16px;">
-      Rok plačila: <strong style="color:#C0CDD6;">5 delovnih dni</strong> od nakupa. Status posla sledite v svojem profilu pod <em>Moje Transakcije</em>.
+      Status nakupa sledite v svojem profilu pod <em>Moje Transakcije</em>.
     </div>
 
     <div style="display:flex;gap:10px;margin-top:4px;">
-      <button class="btn-close-payment" style="flex:1;" onclick="closeOverlay('payment-overlay')">Zapri</button>
-      <button class="btn-close-payment" id="btn-confirm-purchase" style="flex:2;background:rgba(72,199,142,0.15);border-color:rgba(72,199,142,0.4);color:rgba(72,199,142,1);font-weight:700;" onclick="confirmPurchase()">✓ Kupi izdelek</button>
+      <button class="btn-close-payment" style="flex:1;" onclick="closeOverlay('payment-overlay')">Prekliči</button>
+      <button class="btn-close-payment" id="btn-confirm-purchase" style="flex:2;background:rgba(72,199,142,0.15);border-color:rgba(72,199,142,0.4);color:rgba(72,199,142,1);font-weight:700;" onclick="confirmPurchase()">✓ Potrdi nakup</button>
     </div>
+  </div>
+</div>
+
+<!-- SUCCESS OVERLAY — shown after confirmed purchase / auction win -->
+<div class="modal-overlay" id="success-overlay" onclick="overlayClickClose(event,'success-overlay')">
+  <div class="payment-modal-box" style="max-width:440px;text-align:center;">
+    <button class="modal-close" onclick="closeOverlay('success-overlay')">×</button>
+    <div style="width:64px;height:64px;border-radius:50%;background:rgba(72,199,142,0.15);border:2px solid rgba(72,199,142,0.4);display:flex;align-items:center;justify-content:center;font-size:28px;margin:0 auto 20px;">✓</div>
+    <h3 id="success-headline" style="font-family:'Cormorant Garamond',serif;font-size:24px;color:rgba(72,199,142,0.9);margin:0 0 8px;"></h3>
+    <p id="success-listing-name" style="font-size:13px;color:var(--gold-lt);font-weight:600;margin:0 0 16px;"></p>
+    <p style="font-size:13px;color:#8FA3B1;line-height:1.6;margin:0 0 20px;">
+      Na vaš e-naslov bomo poslali plačilna navodila z bančnimi podatki. Status naročila sledite v profilu pod <em>Moje Transakcije</em>.
+    </p>
+    <div style="background:rgba(201,162,39,0.05);border:1px solid rgba(201,162,39,0.15);border-radius:4px;padding:12px 16px;margin-bottom:20px;text-align:left;">
+      <div style="font-size:10px;letter-spacing:0.1em;text-transform:uppercase;color:var(--muted);margin-bottom:8px;">Podrobnosti naročila</div>
+      <div style="display:flex;justify-content:space-between;font-size:13px;margin-bottom:4px;"><span style="color:var(--muted);">Skupaj</span><span id="success-amount" style="color:var(--gold-lt);font-weight:600;"></span></div>
+      <div style="display:flex;justify-content:space-between;font-size:11px;"><span style="color:var(--muted);">Referenca</span><span id="success-ref" style="font-family:monospace;color:#8FA3B1;"></span></div>
+    </div>
+    <button onclick="closeOverlay('success-overlay')" style="width:100%;padding:12px;background:linear-gradient(135deg,#E4BF5A,#C9A227,#8B6F14);color:#0D1117;font-family:'Inter',sans-serif;font-size:12px;font-weight:700;letter-spacing:0.06em;text-transform:uppercase;border:none;border-radius:2px;cursor:pointer;">Zapri</button>
   </div>
 </div>
 
@@ -5002,6 +5175,7 @@ async function showPaymentInfo(dbId, amount) {
   const total = Math.round((base + fee) * 100) / 100;
   const curr  = listing.currency || 'EUR';
   const fmt   = (n) => `${curr} ${Number(n).toLocaleString('sl-SI', {minimumFractionDigits:2})}`;
+  const isAuction = listing.saleType === 'auction';
 
   // Check for existing open transaction for this buyer + listing
   const { data: existing } = await sbM.from('transactions')
@@ -5011,36 +5185,38 @@ async function showPaymentInfo(dbId, amount) {
     .not('status', 'in', '("completed","cancelled")')
     .maybeSingle();
 
-  const ref = existing ? existing.payment_ref
-    : 'MT-' + new Date().getFullYear() + '-' + Math.random().toString(36).slice(2,8).toUpperCase();
-
-  const confirmBtn = document.getElementById('btn-confirm-purchase');
   if (existing) {
-    // Transaction already exists — hide confirm button, show info
-    confirmBtn.style.display = 'none';
-    document.getElementById('pay-listing-name').textContent = listing.name + ' — transakcija že obstaja';
-    _pendingPurchase = null;
-  } else {
-    confirmBtn.style.display = '';
-    confirmBtn.disabled = false;
-    confirmBtn.textContent = '✓ Kupi izdelek';
-    document.getElementById('pay-listing-name').textContent = listing.name;
-    _pendingPurchase = { dbId, listing, total, curr, fee, base, ref };
+    // Already have an open transaction — show success directly
+    showSuccessModal(
+      isAuction ? '🏆 Zmagali ste avkcijo!' : '✓ Naročilo že oddano',
+      listing.name,
+      fmt(total),
+      existing.payment_ref
+    );
+    return;
   }
 
+  const ref = 'MT-' + new Date().getFullYear() + '-' + Math.random().toString(36).slice(2,8).toUpperCase();
+
+  const confirmBtn = document.getElementById('btn-confirm-purchase');
+  confirmBtn.style.display = '';
+  confirmBtn.disabled = false;
+  confirmBtn.textContent = isAuction ? '🏆 Potrdi zmago' : '✓ Potrdi nakup';
+
+  document.getElementById('pay-modal-title').textContent = isAuction ? 'Potrditev zmage na dražbi' : 'Potrdi nakup';
+  document.getElementById('pay-listing-name').textContent = listing.name;
   document.getElementById('pay-base-amount').textContent = fmt(base);
   document.getElementById('pay-fee-amount').textContent  = fmt(fee);
   document.getElementById('pay-amount').textContent      = fmt(total);
   document.getElementById('pay-ref').textContent         = ref;
-  document.getElementById('pay-iban').textContent        = '— bančni podatki prihajajo kmalu —';
-  document.getElementById('pay-bic').textContent         = '—';
 
+  _pendingPurchase = { dbId, listing, total, curr, fee, base, ref, isAuction };
   document.getElementById('payment-overlay').classList.add('open');
 }
 
 async function confirmPurchase() {
   if (!_pendingPurchase) return;
-  const { dbId, listing, total, curr, ref } = _pendingPurchase;
+  const { dbId, listing, total, curr, ref, isAuction } = _pendingPurchase;
   const confirmBtn = document.getElementById('btn-confirm-purchase');
   confirmBtn.disabled = true;
   confirmBtn.textContent = 'Pošiljam…';
@@ -5059,14 +5235,28 @@ async function confirmPurchase() {
 
   if (error) {
     confirmBtn.disabled = false;
-    confirmBtn.textContent = '✓ Kupi izdelek';
+    confirmBtn.textContent = isAuction ? '🏆 Potrdi zmago' : '✓ Potrdi nakup';
     alert('Napaka pri ustvarjanju naročila: ' + error.message);
     return;
   }
 
+  const fmt = (n) => `${curr} ${Number(n).toLocaleString('sl-SI', {minimumFractionDigits:2})}`;
   _pendingPurchase = null;
-  confirmBtn.style.display = 'none';
-  document.getElementById('pay-listing-name').textContent = listing.name + ' — naročilo oddano ✓';
+  closeOverlay('payment-overlay');
+  showSuccessModal(
+    isAuction ? '🏆 Zmagali ste avkcijo!' : '✓ Kupili ste!',
+    listing.name,
+    fmt(total),
+    ref
+  );
+}
+
+function showSuccessModal(headline, listingName, amount, ref) {
+  document.getElementById('success-headline').textContent     = headline;
+  document.getElementById('success-listing-name').textContent = listingName;
+  document.getElementById('success-amount').textContent       = amount;
+  document.getElementById('success-ref').textContent          = ref;
+  document.getElementById('success-overlay').classList.add('open');
 }
 
 // Refresh countdowns every 60 seconds
@@ -5075,6 +5265,157 @@ setInterval(() => {
     renderListings(getFiltered());
   }
 }, 60000);
+
+// ─── MOJI DOKUMENTI ───────────────────────────────────────
+let allMyDocs = [];
+let docsDateFilter = 'all';
+let docsTypeFilter = 'all';
+
+function switchPageTab(tab) {
+  const isMarket = tab === 'market';
+  document.getElementById('tab-market').classList.toggle('active', isMarket);
+  document.getElementById('tab-documents').classList.toggle('active', !isMarket);
+  document.getElementById('section-market-header').style.display   = isMarket ? '' : 'none';
+  document.getElementById('section-market-layout').style.display   = isMarket ? '' : 'none';
+  document.getElementById('section-moji-dokumenti').style.display  = isMarket ? 'none' : 'block';
+  if (!isMarket) loadMyDocuments();
+}
+
+async function loadMyDocuments() {
+  if (!currentUser) {
+    document.getElementById('docs-groups-container').innerHTML =
+      `<div class="docs-empty-state"><h3>Prijavite se</h3><p>Za ogled dokumentov se prijavite v svoj račun.</p></div>`;
+    return;
+  }
+  document.getElementById('docs-groups-container').innerHTML =
+    `<div class="docs-empty-state"><h3>Nalagam…</h3><p></p></div>`;
+  try {
+    const { data, error } = await sbM.from('order_documents')
+      .select('*')
+      .eq('buyer_id', currentUser.id)
+      .order('uploaded_at', { ascending: false });
+    if (error) throw error;
+    allMyDocs = data || [];
+    const badge = document.getElementById('docs-tab-badge');
+    if (allMyDocs.length > 0) { badge.textContent = allMyDocs.length; badge.style.display = ''; }
+    else badge.style.display = 'none';
+    renderMyDocs();
+  } catch(e) {
+    document.getElementById('docs-groups-container').innerHTML =
+      `<div class="docs-empty-state"><h3>Napaka</h3><p>${e.message}</p></div>`;
+  }
+}
+
+function filterDocs(btn, filterType, val) {
+  const group = btn.closest('.docs-chip-group');
+  group.querySelectorAll('.docs-chip').forEach(c => c.classList.remove('active'));
+  btn.classList.add('active');
+  if (filterType === 'date') docsDateFilter = val;
+  if (filterType === 'type') docsTypeFilter = val;
+  renderMyDocs();
+}
+
+function renderMyDocs() {
+  const now = new Date();
+  let docs = allMyDocs.filter(d => {
+    if (docsDateFilter === '6m') return new Date(d.uploaded_at) >= new Date(now - 180 * 86400000);
+    if (docsDateFilter === '1y') return new Date(d.uploaded_at) >= new Date(now - 365 * 86400000);
+    return true;
+  }).filter(d => {
+    if (docsTypeFilter === 'all') return true;
+    return d.document_category === docsTypeFilter;
+  });
+
+  document.getElementById('docs-count').textContent = `${docs.length} dokumentov`;
+
+  if (!docs.length) {
+    document.getElementById('docs-groups-container').innerHTML =
+      `<div class="docs-empty-state"><h3>Ni dokumentov</h3><p>Za ta filter ni dokumentov.</p></div>`;
+    return;
+  }
+
+  // Group by transaction_id
+  const txMap = {};
+  docs.forEach(d => {
+    const key = d.transaction_id || 'brez-narocila';
+    if (!txMap[key]) txMap[key] = [];
+    txMap[key].push(d);
+  });
+
+  const catLabels = { order_invoice:'Naročilo & Račun', other:'Ostali dokumenti', transport:'Transport', material:'Dokumenti o materialu' };
+  const catOrder  = ['order_invoice','other','transport','material'];
+  const docIcons  = { proforma:'📄',order_confirmation:'✅',invoice:'🧾',proof_of_payment:'💶',
+    quality_certificate:'🔬',cmr:'🚚',delivery_note:'📦',weight_certificate:'⚖️',material_analysis:'🧪' };
+  const docLabels = { proforma:'Proforma',order_confirmation:'Potrditveno naročilo',invoice:'Račun',
+    proof_of_payment:'Potrdilo o plačilu',quality_certificate:'Certifikat kakovosti',
+    cmr:'CMR — Tovorni list',delivery_note:'Dobavnica',weight_certificate:'Certifikat teže',material_analysis:'Analiza materiala' };
+
+  const html = Object.entries(txMap).map(([txId, txDocs], groupIdx) => {
+    const first = txDocs[0];
+    const txDate = new Date(first.uploaded_at).toLocaleDateString('sl-SI',{day:'2-digit',month:'2-digit',year:'numeric'});
+
+    // group docs by category
+    const catGroups = {};
+    txDocs.forEach(d => {
+      if (!catGroups[d.document_category]) catGroups[d.document_category] = [];
+      catGroups[d.document_category].push(d);
+    });
+
+    const catSections = catOrder.filter(c => catGroups[c]).map(cat => `
+      <div class="doc-category-section">
+        <div class="doc-cat-label">${catLabels[cat] || cat}</div>
+        ${catGroups[cat].map(d => {
+          const icon = docIcons[d.document_type] || '📎';
+          const label = docLabels[d.document_type] || d.document_type;
+          const fmtDate = new Date(d.uploaded_at).toLocaleDateString('sl-SI',{day:'2-digit',month:'2-digit',year:'numeric'});
+          const fmtSize = d.file_size ? (d.file_size / 1024).toFixed(0) + ' kB' : '';
+          return `<div class="doc-file-row">
+            <div class="doc-file-left">
+              <span class="doc-file-icon">${icon}</span>
+              <div>
+                <div class="doc-file-name" onclick="downloadMyDoc('${d.id}','${d.file_path}','${d.file_name}')">${label}</div>
+                <div class="doc-file-meta">${fmtDate}${fmtSize ? ' · ' + fmtSize : ''}</div>
+              </div>
+            </div>
+            <div class="doc-file-right">
+              <button class="btn-doc-download" onclick="downloadMyDoc('${d.id}','${d.file_path}','${d.file_name}')">⬇ Prenesi</button>
+            </div>
+          </div>`;
+        }).join('')}
+      </div>`).join('');
+
+    const isOpen = groupIdx === 0;
+    return `<div class="order-doc-group">
+      <div class="order-doc-group-hdr ${isOpen ? 'open' : ''}" onclick="toggleDocGroup(this)">
+        <div class="odg-left">
+          <div class="odg-title">${first.file_name.split('/')[0] || 'Naročilo'}</div>
+          <div class="odg-meta">${txDate} · <span>${txId !== 'brez-narocila' ? txId.slice(0,8)+'…' : '—'}</span></div>
+        </div>
+        <div class="odg-right">
+          <span class="odg-count">${txDocs.length} dok.</span>
+          <svg class="odg-chev" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 2l4 5-4 5"/></svg>
+        </div>
+      </div>
+      <div class="order-doc-group-body ${isOpen ? 'open' : ''}">${catSections}</div>
+    </div>`;
+  }).join('');
+
+  document.getElementById('docs-groups-container').innerHTML = html;
+}
+
+function toggleDocGroup(hdr) {
+  hdr.classList.toggle('open');
+  const body = hdr.nextElementSibling;
+  body.classList.toggle('open');
+}
+
+async function downloadMyDoc(docId, filePath, fileName) {
+  const { data, error } = await sbM.storage.from('order-documents').createSignedUrl(filePath, 3600);
+  if (error || !data) { alert('Napaka pri prenosu dokumenta.'); return; }
+  const a = document.createElement('a');
+  a.href = data.signedUrl; a.download = fileName; a.target = '_blank';
+  document.body.appendChild(a); a.click(); document.body.removeChild(a);
+}
 </script>
 
 <!-- ── COOKIE BANNER ── -->
