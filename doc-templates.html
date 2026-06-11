@@ -1106,7 +1106,21 @@
   </div>
 </div>
 
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
 <script>
+// ─── Admin auth gate ───
+(async function authGate() {
+  const ADMIN_EMAILS = ['metals-trade@protonmail.com', 'jani.zibert@gazela.si'];
+  const sb = supabase.createClient(
+    'https://xurgxkrnmutmocqbjffw.supabase.co',
+    'sb_publishable_2YGXEXBZS2gXuw4j1ZL4_g_UHuRaoE3'
+  );
+  const { data: { session } } = await sb.auth.getSession();
+  if (!session || !ADMIN_EMAILS.includes(session.user.email.toLowerCase())) {
+    document.body.innerHTML = '<div style="display:flex;align-items:center;justify-content:center;height:100vh;background:#0D1117;color:#6B8090;font-family:Inter,sans-serif;font-size:14px;">Dostop zavrnjen. Ta stran je samo za administratorje.</div>';
+  }
+})();
+
 // ─── URL param helpers ───
 function p(name, fallback = '—') {
   return new URLSearchParams(window.location.search).get(name) || fallback;
