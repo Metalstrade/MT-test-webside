@@ -298,6 +298,33 @@
     }
     .btn-upload-doc:hover { background: rgba(72,199,142,0.14); }
 
+    /* Seller certs section */
+    .seller-certs-section {
+      border-top: 1px solid rgba(143,163,177,0.06);
+      padding: 8px 18px 10px;
+      background: rgba(0,0,0,0.06);
+    }
+    .seller-certs-title {
+      font-size: 10px; text-transform: uppercase; letter-spacing: 0.1em;
+      color: var(--muted); font-weight: 600; margin-bottom: 6px;
+    }
+    .cert-verify-list { display: flex; flex-direction: column; gap: 3px; }
+    .cert-verify-row {
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 4px 8px; border-radius: 2px;
+      background: rgba(201,162,39,0.04); border: 1px solid rgba(201,162,39,0.1);
+      font-size: 11px;
+    }
+    .cert-verify-label { color: #C0CDD6; }
+    .cert-no-file { font-size: 10px; color: var(--muted); font-style: italic; }
+    .btn-view-cert {
+      padding: 2px 8px; border-radius: 2px; font-size: 10px; font-weight: 600;
+      cursor: pointer; background: rgba(201,162,39,0.1);
+      border: 1px solid rgba(201,162,39,0.25); color: var(--gold-lt);
+      transition: background 0.15s;
+    }
+    .btn-view-cert:hover { background: rgba(201,162,39,0.2); }
+
     /* Upload modal */
     .upload-modal-overlay {
       display: none; position: fixed; inset: 0; z-index: 10001;
@@ -875,6 +902,25 @@
           <button class="btn-send-email" onclick="openSendEmailModal('${order.id}')">📧 Plačilna navodila</button>
           <button onclick="adminTxAction('${order.id}','cancelled')" style="padding:8px 14px;border-radius:2px;font-family:'Inter',sans-serif;font-size:12px;font-weight:600;cursor:pointer;border:1px solid rgba(240,100,90,0.2);background:none;color:#f0645a;transition:background 0.15s;" onmouseover="this.style.background='rgba(240,100,90,0.08)'" onmouseout="this.style.background='none'">✕ Prekliči</button>
         </div>
+        ${(() => {
+          const listing = order._listing;
+          const certLabelMap = { auth:'Certif. pristnosti', serial:'Serijska številka', mint:'Žig livarne', assay:'Assay certifikat', quality:'Certif. kakovosti', weight:'Certif. teže', analysis:'Analiza materiala' };
+          const certFiles = listing?.cert_files || {};
+          const checkedCerts = listing ? ['auth','serial','mint','assay','quality','weight','analysis'].filter(k => listing['cert_' + k]) : [];
+          if (!checkedCerts.length) return '';
+          return `<div class="seller-certs-section">
+            <div class="seller-certs-title">🔍 Certifikati prodajalca</div>
+            <div class="cert-verify-list">
+              ${checkedCerts.map(k => {
+                const fp = certFiles[k];
+                return `<div class="cert-verify-row">
+                  <span class="cert-verify-label">${certLabelMap[k]}</span>
+                  ${fp ? `<button class="btn-view-cert" onclick="viewSellerCert('${esc(fp)}')">👁 Poglej</button>` : `<span class="cert-no-file">ni datoteke</span>`}
+                </div>`;
+              }).join('')}
+            </div>
+          </div>`;
+        })()}
         <div class="doc-section">
           <div class="doc-section-title">
             <span>📎 Dokumenti (${docs.length})</span>
@@ -911,6 +957,12 @@
 
   function genDoc(type, params) {
     window.open(`doc-templates.html?type=${type}&${params}`, '_blank');
+  }
+
+  async function viewSellerCert(filePath) {
+    const { data, error } = await sb.storage.from('listing-certs').createSignedUrl(filePath, 3600);
+    if (error || !data) { showToast('Napaka pri odpiranju certifikata.', 'error'); return; }
+    window.open(data.signedUrl, '_blank');
   }
 
   function docTypeLabel(type) {
@@ -957,7 +1009,15 @@
         const { data: regs } = await sb.from('user_registrations').select('user_id, email').in('user_id', buyerIds);
         (regs || []).forEach(r => { emailMap[r.user_id] = r.email; });
       }
-      allOrders = pending.map(t => ({ ...t, buyer_email: t.buyer_email || emailMap[t.buyer_id] || '' }));
+      const listingIds = [...new Set(pending.map(t => t.listing_id).filter(Boolean))];
+      let listingCertMap = {};
+      if (listingIds.length) {
+        const { data: listings } = await sb.from('listings')
+          .select('id, cert_auth, cert_serial, cert_mint, cert_assay, cert_quality, cert_weight, cert_analysis, cert_files')
+          .in('id', listingIds);
+        (listings || []).forEach(l => { listingCertMap[l.id] = l; });
+      }
+      allOrders = pending.map(t => ({ ...t, buyer_email: t.buyer_email || emailMap[t.buyer_id] || '', _listing: listingCertMap[t.listing_id] || null }));
       await loadOrderDocuments(allOrders.map(o => o.id));
       const badge = document.getElementById('orders-badge');
       if (allOrders.length > 0) { badge.textContent = allOrders.length; badge.style.display = ''; }

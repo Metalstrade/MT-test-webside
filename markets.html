@@ -956,6 +956,24 @@
     .btn-wiz-next:disabled { opacity: 0.4; cursor: not-allowed; transform: none; }
     .wiz-error { font-size: 12px; color: #f0645a; margin-top: 8px; }
 
+    /* Cert upload rows */
+    .cert-row { display: flex; flex-direction: column; gap: 4px; }
+    .cert-check-label { display: flex; align-items: center; gap: 8px; font-size: 12px; color: #C0CDD6; cursor: pointer; }
+    .cert-check-label input[type=checkbox] { accent-color: var(--gold); width: 15px; height: 15px; flex-shrink: 0; }
+    .cert-upload-zone {
+      display: none; align-items: center; gap: 8px; margin-left: 23px;
+      padding: 6px 10px; background: rgba(201,162,39,0.06);
+      border: 1px dashed rgba(201,162,39,0.2); border-radius: 3px;
+    }
+    .cert-upload-btn {
+      padding: 4px 10px; font-size: 11px; font-family: 'Inter', sans-serif;
+      background: none; border: 1px solid rgba(201,162,39,0.3); border-radius: 2px;
+      color: var(--gold-lt); cursor: pointer; white-space: nowrap;
+      transition: background 0.15s;
+    }
+    .cert-upload-btn:hover { background: rgba(201,162,39,0.1); }
+    .cert-file-name { font-size: 11px; color: var(--muted); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; max-width: 200px; }
+
     /* Listing owner controls */
     .listing-owner-bar {
       display: flex; gap: 6px; padding: 8px 16px;
@@ -3899,23 +3917,91 @@ updateFilters();
       </div>
       <div class="wiz-field">
         <label>Certifikati & sledljivost</label>
-        <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:4px;">
-          <label style="display:flex;align-items:center;gap:8px;font-size:12px;color:#C0CDD6;cursor:pointer;">
-            <input type="checkbox" id="wiz-cert-auth" style="accent-color:var(--gold);width:15px;height:15px;" />
-            Certifikat pristnosti
-          </label>
-          <label style="display:flex;align-items:center;gap:8px;font-size:12px;color:#C0CDD6;cursor:pointer;">
-            <input type="checkbox" id="wiz-cert-serial" style="accent-color:var(--gold);width:15px;height:15px;" />
-            Serijska številka
-          </label>
-          <label style="display:flex;align-items:center;gap:8px;font-size:12px;color:#C0CDD6;cursor:pointer;">
-            <input type="checkbox" id="wiz-cert-mint" style="accent-color:var(--gold);width:15px;height:15px;" />
-            Žig livarne
-          </label>
-          <label style="display:flex;align-items:center;gap:8px;font-size:12px;color:#C0CDD6;cursor:pointer;">
-            <input type="checkbox" id="wiz-cert-assay" style="accent-color:var(--gold);width:15px;height:15px;" />
-            Assay certifikat
-          </label>
+        <div style="display:flex;flex-direction:column;gap:6px;margin-top:4px;" id="cert-rows-container">
+          <!-- auth -->
+          <div class="cert-row">
+            <label class="cert-check-label">
+              <input type="checkbox" id="wiz-cert-auth" onchange="toggleCertUpload('auth')" />
+              Certifikat pristnosti
+            </label>
+            <div class="cert-upload-zone" id="certupload-auth">
+              <input type="file" id="certfile-auth" accept=".pdf,image/*" style="display:none;" onchange="onCertFileSelected('auth',this)" />
+              <button type="button" class="cert-upload-btn" onclick="document.getElementById('certfile-auth').click()">📎 Naloži PDF</button>
+              <span class="cert-file-name" id="certfilename-auth"></span>
+            </div>
+          </div>
+          <!-- serial -->
+          <div class="cert-row">
+            <label class="cert-check-label">
+              <input type="checkbox" id="wiz-cert-serial" onchange="toggleCertUpload('serial')" />
+              Serijska številka
+            </label>
+            <div class="cert-upload-zone" id="certupload-serial">
+              <input type="file" id="certfile-serial" accept=".pdf,image/*" style="display:none;" onchange="onCertFileSelected('serial',this)" />
+              <button type="button" class="cert-upload-btn" onclick="document.getElementById('certfile-serial').click()">📎 Naloži PDF</button>
+              <span class="cert-file-name" id="certfilename-serial"></span>
+            </div>
+          </div>
+          <!-- mint -->
+          <div class="cert-row">
+            <label class="cert-check-label">
+              <input type="checkbox" id="wiz-cert-mint" onchange="toggleCertUpload('mint')" />
+              Žig livarne
+            </label>
+            <div class="cert-upload-zone" id="certupload-mint">
+              <input type="file" id="certfile-mint" accept=".pdf,image/*" style="display:none;" onchange="onCertFileSelected('mint',this)" />
+              <button type="button" class="cert-upload-btn" onclick="document.getElementById('certfile-mint').click()">📎 Naloži PDF</button>
+              <span class="cert-file-name" id="certfilename-mint"></span>
+            </div>
+          </div>
+          <!-- assay -->
+          <div class="cert-row">
+            <label class="cert-check-label">
+              <input type="checkbox" id="wiz-cert-assay" onchange="toggleCertUpload('assay')" />
+              Assay certifikat
+            </label>
+            <div class="cert-upload-zone" id="certupload-assay">
+              <input type="file" id="certfile-assay" accept=".pdf,image/*" style="display:none;" onchange="onCertFileSelected('assay',this)" />
+              <button type="button" class="cert-upload-btn" onclick="document.getElementById('certfile-assay').click()">📎 Naloži PDF</button>
+              <span class="cert-file-name" id="certfilename-assay"></span>
+            </div>
+          </div>
+          <!-- quality -->
+          <div class="cert-row">
+            <label class="cert-check-label">
+              <input type="checkbox" id="wiz-cert-quality" onchange="toggleCertUpload('quality')" />
+              Certifikat kakovosti
+            </label>
+            <div class="cert-upload-zone" id="certupload-quality">
+              <input type="file" id="certfile-quality" accept=".pdf,image/*" style="display:none;" onchange="onCertFileSelected('quality',this)" />
+              <button type="button" class="cert-upload-btn" onclick="document.getElementById('certfile-quality').click()">📎 Naloži PDF</button>
+              <span class="cert-file-name" id="certfilename-quality"></span>
+            </div>
+          </div>
+          <!-- weight -->
+          <div class="cert-row">
+            <label class="cert-check-label">
+              <input type="checkbox" id="wiz-cert-weight" onchange="toggleCertUpload('weight')" />
+              Certifikat teže
+            </label>
+            <div class="cert-upload-zone" id="certupload-weight">
+              <input type="file" id="certfile-weight" accept=".pdf,image/*" style="display:none;" onchange="onCertFileSelected('weight',this)" />
+              <button type="button" class="cert-upload-btn" onclick="document.getElementById('certfile-weight').click()">📎 Naloži PDF</button>
+              <span class="cert-file-name" id="certfilename-weight"></span>
+            </div>
+          </div>
+          <!-- analysis -->
+          <div class="cert-row">
+            <label class="cert-check-label">
+              <input type="checkbox" id="wiz-cert-analysis" onchange="toggleCertUpload('analysis')" />
+              Analiza materiala
+            </label>
+            <div class="cert-upload-zone" id="certupload-analysis">
+              <input type="file" id="certfile-analysis" accept=".pdf,image/*" style="display:none;" onchange="onCertFileSelected('analysis',this)" />
+              <button type="button" class="cert-upload-btn" onclick="document.getElementById('certfile-analysis').click()">📎 Naloži PDF</button>
+              <span class="cert-file-name" id="certfilename-analysis"></span>
+            </div>
+          </div>
         </div>
       </div>
       <div class="wiz-field">
@@ -4223,7 +4309,8 @@ function dbToListing(row) {
     priceEur: row.price_usd ? Math.round(row.price_usd * 0.92 * 100) / 100 : 0,
     premiumPct: 0,
     origin: '',
-    cert: { auth: !!row.cert_auth, serial: !!row.cert_serial, mint: !!row.cert_mint, assay: !!row.cert_assay },
+    cert: { auth: !!row.cert_auth, serial: !!row.cert_serial, mint: !!row.cert_mint, assay: !!row.cert_assay, quality: !!row.cert_quality, weight: !!row.cert_weight, analysis: !!row.cert_analysis },
+    certFiles: row.cert_files || {},
     images: row.images || [],
     fromDb: true,
     materialLabel: row.material_label || row.name,
@@ -4397,6 +4484,16 @@ function openWizard() {
   wiz.priceUsd = ''; wiz.shape = ''; wiz.description = '';
   wiz.saleType = 'spot'; wiz.reservePrice = ''; wiz.auctionDuration = 7;
   wiz.imageFiles = []; wiz.imagePreviews = [];
+  wiz.certFiles = {}; wiz.existingCertFiles = {};
+  // Reset cert checkboxes and upload zones
+  ['auth','serial','mint','assay','quality','weight','analysis'].forEach(k => {
+    const cb = document.getElementById('wiz-cert-' + k);
+    if (cb) cb.checked = false;
+    const zone = document.getElementById('certupload-' + k);
+    if (zone) zone.style.display = 'none';
+    const nm = document.getElementById('certfilename-' + k);
+    if (nm) nm.textContent = '';
+  });
   document.querySelectorAll('.category-card').forEach(c => c.classList.remove('selected'));
   document.getElementById('wiz-tree-error').style.display = 'none';
   document.getElementById('wiz-details-error').style.display = 'none';
@@ -4405,6 +4502,22 @@ function openWizard() {
   resetImgSlots();
   renderWizStep(1);
   openOverlay('wizard-overlay');
+}
+
+function toggleCertUpload(key) {
+  const checked = document.getElementById('wiz-cert-' + key)?.checked;
+  const zone = document.getElementById('certupload-' + key);
+  if (zone) zone.style.display = checked ? 'flex' : 'none';
+  if (!checked && wiz.certFiles) { wiz.certFiles[key] = null; document.getElementById('certfilename-' + key).textContent = ''; }
+}
+
+function onCertFileSelected(key, input) {
+  const file = input.files[0];
+  if (!file) return;
+  if (file.size > 20 * 1024 * 1024) { alert('Datoteka je prevelika. Max 20 MB.'); input.value = ''; return; }
+  if (!wiz.certFiles) wiz.certFiles = {};
+  wiz.certFiles[key] = file;
+  document.getElementById('certfilename-' + key).textContent = file.name;
 }
 
 function setSaleType(type) {
@@ -4750,11 +4863,27 @@ async function submitListing() {
       reserve_price: wiz.saleType === 'auction' ? wiz.reservePrice : null,
       auction_end_at: auctionEndAt,
       current_bid: 0,
-      cert_auth:   document.getElementById('wiz-cert-auth').checked,
-      cert_serial: document.getElementById('wiz-cert-serial').checked,
-      cert_mint:   document.getElementById('wiz-cert-mint').checked,
-      cert_assay:  document.getElementById('wiz-cert-assay').checked,
+      cert_auth:     document.getElementById('wiz-cert-auth').checked,
+      cert_serial:   document.getElementById('wiz-cert-serial').checked,
+      cert_mint:     document.getElementById('wiz-cert-mint').checked,
+      cert_assay:    document.getElementById('wiz-cert-assay').checked,
+      cert_quality:  document.getElementById('wiz-cert-quality').checked,
+      cert_weight:   document.getElementById('wiz-cert-weight').checked,
+      cert_analysis: document.getElementById('wiz-cert-analysis').checked,
     };
+
+    // Upload cert files
+    const certFilePaths = Object.assign({}, wiz.existingCertFiles || {});
+    const certKeys = ['auth','serial','mint','assay','quality','weight','analysis'];
+    for (const key of certKeys) {
+      const file = wiz.certFiles?.[key];
+      if (!file) continue;
+      const ext = file.name.split('.').pop().toLowerCase() || 'pdf';
+      const path = `${currentUser.id}/${Date.now()}-${key}.${ext}`;
+      const { data: upData, error: upErr } = await sbM.storage.from('listing-certs').upload(path, file, { upsert: true });
+      if (!upErr) certFilePaths[key] = upData.path;
+    }
+    if (Object.keys(certFilePaths).length) payload.cert_files = certFilePaths;
 
     let data, error;
     if (_editListingId) {
@@ -4809,7 +4938,9 @@ async function openEditListing(dbId) {
   wiz.description = data.description || '';
   wiz.imageFiles = [null, null, null];
   wiz.imagePreviews = [null, null, null];
-  wiz.cert = { auth: !!data.cert_auth, serial: !!data.cert_serial, mint: !!data.cert_mint, assay: !!data.cert_assay };
+  wiz.cert = { auth: !!data.cert_auth, serial: !!data.cert_serial, mint: !!data.cert_mint, assay: !!data.cert_assay, quality: !!data.cert_quality, weight: !!data.cert_weight, analysis: !!data.cert_analysis };
+  wiz.certFiles_raw = data.cert_files || {};
+  wiz.certFiles = {};
 
   document.getElementById('wiz-title').textContent = 'Uredi oglas';
   document.querySelectorAll('.category-card').forEach(c => c.classList.remove('selected'));
@@ -4847,10 +4978,27 @@ function prefillDetailsEdit() {
   document.getElementById('wiz-price').value = wiz.priceUsd;
   document.getElementById('wiz-shape').value = wiz.shape;
   document.getElementById('wiz-description').value = wiz.description;
-  document.getElementById('wiz-cert-auth').checked   = wiz.cert?.auth   || false;
-  document.getElementById('wiz-cert-serial').checked = wiz.cert?.serial || false;
-  document.getElementById('wiz-cert-mint').checked   = wiz.cert?.mint   || false;
-  document.getElementById('wiz-cert-assay').checked  = wiz.cert?.assay  || false;
+  document.getElementById('wiz-cert-auth').checked     = wiz.cert?.auth     || false;
+  document.getElementById('wiz-cert-serial').checked   = wiz.cert?.serial   || false;
+  document.getElementById('wiz-cert-mint').checked     = wiz.cert?.mint     || false;
+  document.getElementById('wiz-cert-assay').checked    = wiz.cert?.assay    || false;
+  document.getElementById('wiz-cert-quality').checked  = wiz.cert?.quality  || false;
+  document.getElementById('wiz-cert-weight').checked   = wiz.cert?.weight   || false;
+  document.getElementById('wiz-cert-analysis').checked = wiz.cert?.analysis || false;
+  // Restore upload zones visibility and existing file paths
+  const certKeys = ['auth','serial','mint','assay','quality','weight','analysis'];
+  wiz.certFiles = {};
+  wiz.existingCertFiles = wiz.certFiles_raw || {};
+  certKeys.forEach(k => {
+    const checked = document.getElementById('wiz-cert-' + k)?.checked;
+    const zone = document.getElementById('certupload-' + k);
+    if (zone) zone.style.display = checked ? 'flex' : 'none';
+    const existing = wiz.existingCertFiles[k];
+    if (existing) {
+      const nameEl = document.getElementById('certfilename-' + k);
+      if (nameEl) nameEl.textContent = existing.split('/').pop();
+    }
+  });
 }
 
 // ── DELETE LISTING ──
