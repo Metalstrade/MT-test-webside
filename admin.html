@@ -1136,6 +1136,16 @@
       btn.disabled = false; btn.textContent = '⬆ Naloži dokument'; return;
     }
     showToast('✓ Dokument uspešno naložen', 'success');
+
+    // Ko admin naloži potrdilo o plačilu → zbriši oglas iz tržnice
+    if (docType === 'proof_of_payment') {
+      const order = allOrders.find(o => o.id === _uploadOrderId);
+      if (order?.listing_id) {
+        await sb.from('listings').delete().eq('id', order.listing_id);
+        showToast('Oglas je bil odstranjen iz tržnice.', 'success');
+      }
+    }
+
     closeUploadModal();
     await loadOrders();
   }

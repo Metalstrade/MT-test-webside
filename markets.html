@@ -5318,6 +5318,20 @@ async function showPaymentInfo(dbId, amount) {
     alert('Ne morete kupiti lastnega oglasa.'); return;
   }
 
+  // Preveri ali ima kupec že katero koli aktivno naročilo za drug oglas
+  const { data: otherActiveTx } = await sbM.from('transactions')
+    .select('id')
+    .eq('buyer_id', currentUser.id)
+    .neq('listing_id', dbId)
+    .not('status', 'in', '("completed","cancelled")')
+    .limit(1)
+    .maybeSingle();
+
+  if (otherActiveTx) {
+    alert('Imate že aktivno naročilo v obdelavi. Počakajte da admin zaključi trenutno naročilo, preden oddate novo.');
+    return;
+  }
+
   const base  = Number(amount);
   const fee   = Math.round(base * 2) / 100;
   const total = Math.round((base + fee) * 100) / 100;
