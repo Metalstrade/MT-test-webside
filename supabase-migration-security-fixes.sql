@@ -56,34 +56,35 @@ CREATE POLICY "admin_delete_docs" ON order_documents
   );
 
 -- ══ 3. order-documents storage — samo admin naloži/briše ══
+-- Opomba: storage politike ne morejo brati auth.users — uporabi auth.email()
 
-DROP POLICY IF EXISTS "auth_upload_docs" ON storage.objects;
-DROP POLICY IF EXISTS "auth_delete_docs" ON storage.objects;
+DROP POLICY IF EXISTS "auth_upload_docs"  ON storage.objects;
+DROP POLICY IF EXISTS "auth_delete_docs"  ON storage.objects;
+DROP POLICY IF EXISTS "admin_upload_docs" ON storage.objects;
+DROP POLICY IF EXISTS "admin_delete_docs" ON storage.objects;
 
 CREATE POLICY "admin_upload_docs" ON storage.objects
   FOR INSERT WITH CHECK (
     bucket_id = 'order-documents'
-    AND EXISTS (SELECT 1 FROM auth.users WHERE id = auth.uid()
-                AND email IN ('metals-trade@protonmail.com','jani.zibert@gazela.si'))
+    AND auth.email() IN ('metals-trade@protonmail.com', 'jani.zibert@gazela.si')
   );
 
 CREATE POLICY "admin_delete_docs" ON storage.objects
   FOR DELETE USING (
     bucket_id = 'order-documents'
-    AND EXISTS (SELECT 1 FROM auth.users WHERE id = auth.uid()
-                AND email IN ('metals-trade@protonmail.com','jani.zibert@gazela.si'))
+    AND auth.email() IN ('metals-trade@protonmail.com', 'jani.zibert@gazela.si')
   );
 
 -- ══ 4. listing-certs — samo lastnik oglasa ali admin bere ══
 
-DROP POLICY IF EXISTS "auth_read_listing_cert" ON storage.objects;
+DROP POLICY IF EXISTS "auth_read_listing_cert"          ON storage.objects;
+DROP POLICY IF EXISTS "owner_or_admin_read_listing_cert" ON storage.objects;
 
 CREATE POLICY "owner_or_admin_read_listing_cert" ON storage.objects
   FOR SELECT USING (
     bucket_id = 'listing-certs'
     AND (
       auth.uid()::text = split_part(name, '/', 1)
-      OR EXISTS (SELECT 1 FROM auth.users WHERE id = auth.uid()
-                 AND email IN ('metals-trade@protonmail.com','jani.zibert@gazela.si'))
+      OR auth.email() IN ('metals-trade@protonmail.com', 'jani.zibert@gazela.si')
     )
   );
