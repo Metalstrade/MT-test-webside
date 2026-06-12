@@ -929,7 +929,7 @@
           <div class="doc-actions">
             <div style="position:relative;display:inline-block;">
               <button class="btn-gen-doc" onclick="toggleGenMenu('genmenu-${order.id}')">⚡ Generiraj ▾</button>
-              <div id="genmenu-${order.id}" style="display:none;position:absolute;top:calc(100% + 4px);left:0;z-index:999;background:#141c24;border:1px solid rgba(201,162,39,0.2);border-radius:4px;min-width:180px;box-shadow:0 4px 20px rgba(0,0,0,0.4);">
+              <div id="genmenu-${order.id}" style="display:none;position:absolute;bottom:calc(100% + 4px);left:0;z-index:999;background:#141c24;border:1px solid rgba(201,162,39,0.2);border-radius:4px;min-width:180px;box-shadow:0 -4px 20px rgba(0,0,0,0.4);">
                 ${docTypes.map(([t,l]) => `<div onclick="genDoc('${t}','${genParams}');toggleGenMenu('genmenu-${order.id}')" style="padding:8px 12px;font-size:11px;color:#C0CDD6;cursor:pointer;transition:background 0.1s;" onmouseover="this.style.background='rgba(255,255,255,0.05)'" onmouseout="this.style.background=''">${l}</div>`).join('')}
               </div>
             </div>
