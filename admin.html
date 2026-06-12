@@ -340,11 +340,40 @@
     .upload-modal-sub   { font-size: 12px; color: var(--muted); margin-bottom: 20px; }
     .upload-field       { margin-bottom: 14px; }
     .upload-field label { display: block; font-size: 10px; letter-spacing: 0.08em; text-transform: uppercase; color: var(--muted); margin-bottom: 5px; }
-    .upload-select {
-      width: 100%; padding: 9px 12px;
+    .custom-select-wrap { position: relative; width: 100%; }
+    .custom-select-btn {
+      width: 100%; padding: 9px 32px 9px 12px; text-align: left;
       background: rgba(255,255,255,0.04); border: 1px solid rgba(143,163,177,0.18);
-      border-radius: 2px; color: #E8EEF2; font-family: 'Inter',sans-serif; font-size: 13px; outline: none;
+      border-radius: 2px; color: #E8EEF2; font-family: 'Inter',sans-serif; font-size: 13px;
+      cursor: pointer; outline: none; position: relative;
+      transition: border-color 0.15s;
     }
+    .custom-select-btn:hover { border-color: rgba(201,162,39,0.3); }
+    .custom-select-btn::after {
+      content: '▾'; position: absolute; right: 10px; top: 50%;
+      transform: translateY(-50%); color: var(--muted); font-size: 11px; pointer-events: none;
+    }
+    .custom-select-dropdown {
+      display: none; position: absolute; top: calc(100% + 2px); left: 0; right: 0;
+      background: #141c24; border: 1px solid rgba(201,162,39,0.2);
+      border-radius: 3px; z-index: 10010; max-height: 260px; overflow-y: auto;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.5);
+    }
+    .custom-select-dropdown.open { display: block; }
+    .custom-select-group {
+      padding: 6px 0 2px; border-top: 1px solid rgba(143,163,177,0.08);
+    }
+    .custom-select-group:first-child { border-top: none; }
+    .custom-select-group-label {
+      padding: 4px 12px; font-size: 9px; text-transform: uppercase;
+      letter-spacing: 0.1em; color: var(--muted); font-weight: 600;
+    }
+    .custom-select-option {
+      padding: 7px 12px 7px 20px; font-size: 12px; color: #C0CDD6;
+      cursor: pointer; transition: background 0.1s;
+    }
+    .custom-select-option:hover { background: rgba(201,162,39,0.08); color: var(--gold-lt); }
+    .custom-select-option.selected { color: var(--gold-lt); }
     .upload-file-zone {
       width: 100%; padding: 20px; text-align: center;
       border: 2px dashed rgba(72,199,142,0.3); border-radius: 4px;
@@ -1038,13 +1067,34 @@
     document.getElementById('upload-file-zone').classList.remove('has-file');
     document.getElementById('upload-progress-msg').textContent = '';
     document.getElementById('btn-do-upload').disabled = true;
+    // Reset custom select to first option
+    selectUploadDocType(document.querySelector('#upload-doc-type-dropdown .custom-select-option'), 'proforma|order_invoice');
     document.getElementById('upload-modal').classList.add('open');
   }
 
   function closeUploadModal() {
     document.getElementById('upload-modal').classList.remove('open');
+    document.getElementById('upload-doc-type-dropdown').classList.remove('open');
     _uploadFile = _uploadOrderId = _uploadBuyerId = _uploadOrderRef = null;
   }
+
+  function toggleUploadSelect() {
+    document.getElementById('upload-doc-type-dropdown').classList.toggle('open');
+  }
+
+  function selectUploadDocType(el, value) {
+    document.getElementById('upload-doc-type').value = value;
+    document.getElementById('upload-doc-type-btn').textContent = el.textContent;
+    document.querySelectorAll('#upload-doc-type-dropdown .custom-select-option').forEach(o => o.classList.remove('selected'));
+    el.classList.add('selected');
+    document.getElementById('upload-doc-type-dropdown').classList.remove('open');
+  }
+
+  document.addEventListener('click', e => {
+    if (!e.target.closest('#upload-doc-type-wrap')) {
+      document.getElementById('upload-doc-type-dropdown')?.classList.remove('open');
+    }
+  });
 
   function onFileSelected(input) {
     const file = input.files[0];
@@ -1179,25 +1229,33 @@ metals-trade@protonmail.com`;
 
     <div class="upload-field">
       <label>Vrsta dokumenta</label>
-      <select class="upload-select" id="upload-doc-type">
-        <optgroup label="Naročilo &amp; Račun">
-          <option value="proforma|order_invoice">Proforma</option>
-          <option value="order_confirmation|order_invoice">Potrditveno naročilo</option>
-          <option value="invoice|order_invoice">Račun</option>
-        </optgroup>
-        <optgroup label="Ostali dokumenti">
-          <option value="proof_of_payment|other">Potrdilo o plačilu</option>
-          <option value="quality_certificate|other">Certifikat kakovosti</option>
-        </optgroup>
-        <optgroup label="Transport">
-          <option value="cmr|transport">CMR — Tovorni list</option>
-          <option value="delivery_note|transport">Dobavnica</option>
-        </optgroup>
-        <optgroup label="Dokumenti o materialu">
-          <option value="weight_certificate|material">Certifikat teže</option>
-          <option value="material_analysis|material">Analiza materiala</option>
-        </optgroup>
-      </select>
+      <div class="custom-select-wrap" id="upload-doc-type-wrap">
+        <button type="button" class="custom-select-btn" id="upload-doc-type-btn" onclick="toggleUploadSelect()">Proforma</button>
+        <input type="hidden" id="upload-doc-type" value="proforma|order_invoice" />
+        <div class="custom-select-dropdown" id="upload-doc-type-dropdown">
+          <div class="custom-select-group">
+            <div class="custom-select-group-label">Naročilo &amp; Račun</div>
+            <div class="custom-select-option selected" onclick="selectUploadDocType(this,'proforma|order_invoice')">Proforma</div>
+            <div class="custom-select-option" onclick="selectUploadDocType(this,'order_confirmation|order_invoice')">Potrditveno naročilo</div>
+            <div class="custom-select-option" onclick="selectUploadDocType(this,'invoice|order_invoice')">Račun</div>
+          </div>
+          <div class="custom-select-group">
+            <div class="custom-select-group-label">Ostali dokumenti</div>
+            <div class="custom-select-option" onclick="selectUploadDocType(this,'proof_of_payment|other')">Potrdilo o plačilu</div>
+            <div class="custom-select-option" onclick="selectUploadDocType(this,'quality_certificate|other')">Certifikat kakovosti</div>
+          </div>
+          <div class="custom-select-group">
+            <div class="custom-select-group-label">Transport</div>
+            <div class="custom-select-option" onclick="selectUploadDocType(this,'cmr|transport')">CMR — Tovorni list</div>
+            <div class="custom-select-option" onclick="selectUploadDocType(this,'delivery_note|transport')">Dobavnica</div>
+          </div>
+          <div class="custom-select-group">
+            <div class="custom-select-group-label">Dokumenti o materialu</div>
+            <div class="custom-select-option" onclick="selectUploadDocType(this,'weight_certificate|material')">Certifikat teže</div>
+            <div class="custom-select-option" onclick="selectUploadDocType(this,'material_analysis|material')">Analiza materiala</div>
+          </div>
+        </div>
+      </div>
     </div>
 
     <div class="upload-field">
