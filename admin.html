@@ -1117,7 +1117,7 @@
     msg.textContent = '';
     const ext  = _uploadFile.name.split('.').pop();
     const path = `${_uploadOrderId}/${docType}/${Date.now()}.${ext}`;
-    const { error: storErr } = await sb.storage.from('order-documents').upload(path, _uploadFile, { upsert: true });
+    const { error: storErr } = await sb.storage.from('order-documents').upload(path, _uploadFile, { upsert: false });
     if (storErr) {
       msg.textContent = 'Napaka pri nalaganju datoteke: ' + storErr.message;
       btn.disabled = false; btn.textContent = '⬆ Naloži dokument'; return;
