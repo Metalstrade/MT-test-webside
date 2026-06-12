@@ -5559,7 +5559,7 @@ function toggleDocGroup(hdr) {
 
 async function downloadMyDoc(docId, filePath, fileName) {
   const { data, error } = await sbM.storage.from('order-documents').createSignedUrl(filePath, 3600);
-  if (error || !data) { alert('Napaka pri prenosu dokumenta.'); return; }
+  if (error || !data) { alert('Napaka pri prenosu: ' + (error?.message || 'ni podatkov')); return; }
   const a = document.createElement('a');
   a.href = data.signedUrl; a.download = fileName; a.target = '_blank';
   document.body.appendChild(a); a.click(); document.body.removeChild(a);
