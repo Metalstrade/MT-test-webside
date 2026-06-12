@@ -75,7 +75,23 @@ CREATE POLICY "admin_delete_docs" ON storage.objects
     AND auth.email() IN ('metals-trade@protonmail.com', 'jani.zibert@gazela.si')
   );
 
--- ══ 4. listing-certs — samo lastnik oglasa ali admin bere ══
+-- ══ 4. Popravi SELECT politiko za order-documents storage ══
+-- Poenostavi — varnost je zagotovljena z RLS na order_documents tabeli
+
+DROP POLICY IF EXISTS "buyers_download_own_docs" ON storage.objects;
+
+CREATE POLICY "buyers_download_own_docs" ON storage.objects
+  FOR SELECT USING (
+    bucket_id = 'order-documents'
+    AND auth.uid() IS NOT NULL
+  );
+
+-- ══ 5. Grant za auth.users — storage interno potrebuje ta dostop ══
+
+GRANT SELECT ON auth.users TO authenticated;
+GRANT SELECT ON auth.users TO anon;
+
+-- ══ 6. listing-certs — samo lastnik oglasa ali admin bere ══
 
 DROP POLICY IF EXISTS "auth_read_listing_cert"          ON storage.objects;
 DROP POLICY IF EXISTS "owner_or_admin_read_listing_cert" ON storage.objects;
