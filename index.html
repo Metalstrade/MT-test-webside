@@ -2722,7 +2722,9 @@
     if (!btn) return;
     btn.dataset.i18n = 'nav_signed_in';
     const lang = localStorage.getItem('lang') || 'en';
-    btn.textContent = i18n[lang].nav_signed_in;
+    // Guard i18n: an early session check can resolve before the later
+    // <script> that defines i18n has run (applyLang fixes the label after).
+    if (typeof i18n !== 'undefined' && i18n[lang]) btn.textContent = i18n[lang].nav_signed_in;
     btn.style.visibility = 'visible';
     btn.style.borderColor = 'var(--gold)';
     btn.style.color = 'var(--gold)';
@@ -2743,26 +2745,19 @@
     if (ddSettings) ddSettings.style.display = '';
   }
 
-  function toggleDropdown() {
-    document.getElementById('dropdown-panel').classList.toggle('open');
-  }
-  function closeDropdown() {
-    document.getElementById('dropdown-panel').classList.remove('open');
-  }
-  document.addEventListener('click', function(e) {
-    const w = document.getElementById('nav-dropdown-wrapper');
-    if (w && !w.contains(e.target)) closeDropdown();
-  });
-
-  async function handleLogout() {
-    closeDropdown();
-    await sb.auth.signOut();
-    localStorage.removeItem('signed_in');
+  // Restore the logged-out nav (Sign In + Start Trading). Also reverses the
+  // inline anti-flash hide, so a stale "signed_in" flag with no valid session
+  // can't leave the nav with no buttons at all.
+  function setSignedOutBtn() {
     const lang = localStorage.getItem('lang') || 'en';
     const btn = document.getElementById('nav-signin-btn');
     if (btn) {
       btn.dataset.i18n = 'nav_signin';
-      btn.textContent = i18n[lang].nav_signin;
+      // i18n may live in a later <script> that hasn't run yet when an early
+      // session check resolves; guard so this never throws (applyLang fixes
+      // the label once it loads). Fall back to the HTML default otherwise.
+      if (typeof i18n !== 'undefined' && i18n[lang]) btn.textContent = i18n[lang].nav_signin;
+      btn.style.visibility = 'visible';
       btn.style.borderColor = 'rgba(143,163,177,0.35)';
       btn.style.color = 'var(--silver-lt)';
       btn.style.cursor = 'pointer';
@@ -2780,6 +2775,24 @@
     if (ddSignin) ddSignin.style.display = '';
     if (ddLogout) ddLogout.style.display = 'none';
     if (ddSettings) ddSettings.style.display = 'none';
+  }
+
+  function toggleDropdown() {
+    document.getElementById('dropdown-panel').classList.toggle('open');
+  }
+  function closeDropdown() {
+    document.getElementById('dropdown-panel').classList.remove('open');
+  }
+  document.addEventListener('click', function(e) {
+    const w = document.getElementById('nav-dropdown-wrapper');
+    if (w && !w.contains(e.target)) closeDropdown();
+  });
+
+  async function handleLogout() {
+    closeDropdown();
+    await sb.auth.signOut();
+    localStorage.removeItem('signed_in');
+    setSignedOutBtn();
   }
 
   document.addEventListener('keydown', function(e) {
@@ -2889,7 +2902,16 @@ return '$' + price.toLocaleString('en-US', {maximumFractionDigits:2});
       localStorage.setItem('signed_in', 'true');
       setSignedInBtn();
       showPersonalDashboard(session.user);
+    } else {
+      // Stale "signed_in" flag but no valid session — restore the logged-out
+      // nav so the buttons the inline script hid don't stay gone.
+      localStorage.removeItem('signed_in');
+      setSignedOutBtn();
     }
+  }).catch(() => {
+    // Session check failed (e.g. backend unreachable). Fail open to the
+    // logged-out nav rather than leaving the header with no buttons.
+    setSignedOutBtn();
   });
 
   // Listen for auth events (sign-in after email confirmation)
