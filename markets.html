@@ -1159,6 +1159,155 @@
     .listing-fav-btn svg { width: 15px; height: 15px; pointer-events: none; }
     .listing-fav-btn.active { background: rgba(201,162,39,0.22); border-color: rgba(201,162,39,0.4); }
     .listing-fav-btn.active svg { fill: #C9A227; stroke: #C9A227; }
+
+    /* ══ NAV RIGHT / NOTIFICATIONS ══ */
+    .nav-right { display: flex; align-items: center; gap: 22px; }
+    .notif-wrap { position: relative; }
+    .notif-bell {
+      position: relative; display: inline-flex; align-items: center; justify-content: center;
+      width: 38px; height: 38px; border-radius: 50%;
+      background: rgba(143,163,177,0.06); border: 1px solid rgba(143,163,177,0.15);
+      color: var(--silver-lt); cursor: pointer;
+      transition: background 0.18s ease, border-color 0.18s ease, color 0.18s ease;
+    }
+    .notif-bell:hover { background: rgba(201,162,39,0.1); border-color: rgba(201,162,39,0.35); color: var(--gold-lt); }
+    .notif-bell:focus-visible { outline: 2px solid var(--gold); outline-offset: 2px; }
+    .notif-count {
+      position: absolute; top: -4px; right: -4px;
+      min-width: 17px; height: 17px; padding: 0 4px;
+      display: flex; align-items: center; justify-content: center;
+      background: #d9483f; color: #fff; font-size: 10px; font-weight: 700;
+      border-radius: 100px; border: 2px solid var(--ink); line-height: 1;
+    }
+    .notif-panel {
+      position: absolute; top: 48px; right: 0; width: 360px; max-width: 90vw;
+      background: var(--ink-2); border: 1px solid rgba(201,162,39,0.18);
+      border-radius: 8px; box-shadow: 0 18px 50px -12px rgba(0,0,0,0.7), 0 0 0 1px rgba(0,0,0,0.3);
+      opacity: 0; transform: translateY(-8px) scale(0.98); pointer-events: none;
+      transition: opacity 0.18s ease, transform 0.18s ease; z-index: 200;
+    }
+    .notif-panel.open { opacity: 1; transform: translateY(0) scale(1); pointer-events: auto; }
+    .notif-panel-hdr {
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 14px 16px; border-bottom: 1px solid rgba(143,163,177,0.1);
+      font-family: 'Cormorant Garamond', serif; font-size: 17px; color: #E8EEF2;
+    }
+    .notif-markall {
+      background: none; border: none; color: var(--muted); font-size: 11px;
+      font-family: 'Inter', sans-serif; cursor: pointer; letter-spacing: 0.03em;
+      transition: color 0.15s ease;
+    }
+    .notif-markall:hover { color: var(--gold-lt); }
+    .notif-list { max-height: 400px; overflow-y: auto; }
+    .notif-empty { padding: 32px 16px; text-align: center; color: var(--muted); font-size: 13px; }
+    .notif-item {
+      display: flex; gap: 11px; padding: 13px 16px; cursor: pointer;
+      border-bottom: 1px solid rgba(143,163,177,0.06);
+      transition: background 0.15s ease; text-align: left; width: 100%;
+      background: none; border-left: none; border-right: none; border-top: none;
+    }
+    .notif-item:hover { background: rgba(201,162,39,0.05); }
+    .notif-item.unread { background: rgba(201,162,39,0.07); }
+    .notif-item.unread:hover { background: rgba(201,162,39,0.11); }
+    .notif-ico {
+      flex-shrink: 0; width: 32px; height: 32px; border-radius: 50%;
+      display: flex; align-items: center; justify-content: center; font-size: 15px;
+      background: rgba(201,162,39,0.12);
+    }
+    .notif-body { flex: 1; min-width: 0; }
+    .notif-title { font-size: 12.5px; font-weight: 600; color: #E8EEF2; margin-bottom: 2px; }
+    .notif-sub { font-size: 12px; color: var(--muted); line-height: 1.45; word-break: break-word; }
+    .notif-time { font-size: 10px; color: var(--steel); margin-top: 3px; letter-spacing: 0.03em; }
+    .notif-dot { flex-shrink: 0; width: 7px; height: 7px; border-radius: 50%; background: var(--gold); margin-top: 6px; }
+
+    /* ══ SPOROČILA ══ */
+    #section-messages { display: none; padding: 0; min-height: calc(100vh - 68px - 44px); }
+    .msg-layout {
+      display: grid; grid-template-columns: 320px 1fr;
+      height: calc(100vh - 68px - 44px);
+    }
+    @media (max-width: 820px) {
+      .msg-layout { grid-template-columns: 1fr; }
+      .msg-layout.thread-open .msg-sidebar { display: none; }
+      .msg-layout:not(.thread-open) .msg-thread { display: none; }
+    }
+    .msg-sidebar {
+      border-right: 1px solid rgba(143,163,177,0.1); overflow-y: auto; background: var(--ink);
+    }
+    .msg-sidebar-hdr {
+      padding: 20px 22px 14px; border-bottom: 1px solid rgba(143,163,177,0.08);
+      position: sticky; top: 0; background: var(--ink); z-index: 2;
+    }
+    .msg-sidebar-hdr .page-header-eyebrow { margin-bottom: 4px; }
+    .msg-sidebar-hdr h2 { font-family: 'Cormorant Garamond', serif; font-size: 24px; font-weight: 600; color: #E8EEF2; margin: 0; }
+    .conv-item {
+      display: flex; gap: 12px; padding: 15px 22px; cursor: pointer; width: 100%; text-align: left;
+      background: none; border: none; border-bottom: 1px solid rgba(143,163,177,0.06);
+      transition: background 0.15s ease;
+    }
+    .conv-item:hover { background: rgba(201,162,39,0.05); }
+    .conv-item.active { background: rgba(201,162,39,0.1); border-left: 2px solid var(--gold); padding-left: 20px; }
+    .conv-avatar {
+      flex-shrink: 0; width: 40px; height: 40px; border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      background: rgba(201,162,39,0.14); color: var(--gold-lt);
+      font-family: 'Cormorant Garamond', serif; font-size: 17px; font-weight: 600;
+    }
+    .conv-main { flex: 1; min-width: 0; }
+    .conv-top { display: flex; justify-content: space-between; align-items: baseline; gap: 8px; }
+    .conv-name { font-size: 13px; font-weight: 600; color: #E8EEF2; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .conv-time { font-size: 10px; color: var(--steel); flex-shrink: 0; }
+    .conv-listing { font-size: 11px; color: var(--gold-lt); margin: 1px 0 3px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .conv-preview { font-size: 12px; color: var(--muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .conv-unread {
+      flex-shrink: 0; min-width: 18px; height: 18px; padding: 0 5px; align-self: center;
+      display: flex; align-items: center; justify-content: center;
+      background: var(--gold); color: var(--ink); font-size: 10px; font-weight: 700; border-radius: 100px;
+    }
+    .msg-empty-state {
+      display: flex; flex-direction: column; align-items: center; justify-content: center;
+      height: 100%; color: var(--muted); text-align: center; padding: 40px; gap: 8px;
+    }
+    .msg-empty-state .big { font-size: 40px; opacity: 0.5; }
+
+    .msg-thread { display: flex; flex-direction: column; height: 100%; background: var(--ink); }
+    .msg-thread-hdr {
+      display: flex; align-items: center; gap: 12px;
+      padding: 16px 24px; border-bottom: 1px solid rgba(143,163,177,0.1); flex-shrink: 0;
+    }
+    .msg-thread-back {
+      display: none; background: none; border: none; color: var(--muted); cursor: pointer; padding: 4px;
+    }
+    @media (max-width: 820px) { .msg-thread-back { display: inline-flex; } }
+    .msg-thread-title { font-size: 14px; font-weight: 600; color: #E8EEF2; }
+    .msg-thread-sub { font-size: 11px; color: var(--gold-lt); }
+    .msg-scroll { flex: 1; overflow-y: auto; padding: 24px; display: flex; flex-direction: column; gap: 10px; }
+    .msg-bubble {
+      max-width: 68%; padding: 10px 14px; border-radius: 12px; font-size: 13px; line-height: 1.5;
+      word-break: break-word; white-space: pre-wrap;
+    }
+    .msg-bubble.them { align-self: flex-start; background: var(--ink-3); color: #E8EEF2; border-bottom-left-radius: 3px; }
+    .msg-bubble.me { align-self: flex-end; background: rgba(201,162,39,0.18); color: #F3E9CC; border: 1px solid rgba(201,162,39,0.25); border-bottom-right-radius: 3px; }
+    .msg-bubble-time { font-size: 9.5px; color: var(--steel); margin-top: 4px; letter-spacing: 0.03em; }
+    .msg-daymark { align-self: center; font-size: 10px; color: var(--steel); letter-spacing: 0.06em; text-transform: uppercase; margin: 8px 0; }
+    .msg-composer {
+      display: flex; gap: 10px; padding: 16px 24px; border-top: 1px solid rgba(143,163,177,0.1); flex-shrink: 0;
+    }
+    .msg-input {
+      flex: 1; resize: none; background: var(--ink-3); border: 1px solid rgba(143,163,177,0.2);
+      border-radius: 8px; padding: 11px 14px; color: #E8EEF2; font-size: 13px;
+      font-family: 'Inter', sans-serif; outline: none; max-height: 120px; line-height: 1.5;
+      transition: border-color 0.15s ease;
+    }
+    .msg-input:focus { border-color: rgba(201,162,39,0.4); }
+    .msg-send {
+      flex-shrink: 0; width: 44px; height: 44px; border-radius: 8px; border: none; cursor: pointer;
+      background: var(--gold); color: var(--ink); display: flex; align-items: center; justify-content: center;
+      transition: opacity 0.15s ease, transform 0.15s ease;
+    }
+    .msg-send:hover { opacity: 0.9; }
+    .msg-send:active { transform: scale(0.94); }
+    .msg-send:disabled { opacity: 0.4; cursor: not-allowed; }
   </style>
 </head>
 <body>
@@ -1168,17 +1317,42 @@
   <a href="index.html" class="nav-logo">
     <img src="brand_assets/LOGO.png" alt="Metals Trading" />
   </a>
-  <a href="index.html" class="nav-back">
-    <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
-      <path d="M13 8H3M7 4l-4 4 4 4"/>
-    </svg>
-    <span data-i18n="nav_back">Nazaj na glavno stran</span>
-  </a>
+  <div class="nav-right">
+    <!-- Notification bell -->
+    <div class="notif-wrap" id="notif-wrap" style="display:none;">
+      <button class="notif-bell" id="notif-bell" onclick="toggleNotifPanel(event)" aria-label="Obvestila">
+        <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/>
+          <path d="M13.73 21a2 2 0 0 1-3.46 0"/>
+        </svg>
+        <span class="notif-count" id="notif-count" style="display:none;">0</span>
+      </button>
+      <div class="notif-panel" id="notif-panel">
+        <div class="notif-panel-hdr">
+          <span>Obvestila</span>
+          <button class="notif-markall" id="notif-markall" onclick="markAllNotifsRead()">Označi vse prebrano</button>
+        </div>
+        <div class="notif-list" id="notif-list">
+          <div class="notif-empty">Ni obvestil.</div>
+        </div>
+      </div>
+    </div>
+    <a href="index.html" class="nav-back">
+      <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M13 8H3M7 4l-4 4 4 4"/>
+      </svg>
+      <span data-i18n="nav_back">Nazaj na glavno stran</span>
+    </a>
+  </div>
 </nav>
 
 <!-- ── PAGE TABS ── -->
 <div class="page-tabs" id="page-tabs">
   <button class="page-tab active" id="tab-market" onclick="switchPageTab('market')">🏛 Trg kovin</button>
+  <button class="page-tab" id="tab-messages" onclick="switchPageTab('messages')">
+    💬 Sporočila
+    <span class="tab-badge" id="msgs-tab-badge" style="display:none;"></span>
+  </button>
   <button class="page-tab" id="tab-documents" onclick="switchPageTab('documents')">
     📄 Moji dokumenti
     <span class="tab-badge" id="docs-tab-badge" style="display:none;"></span>
@@ -1203,6 +1377,52 @@
         </div>
       </div>
     </div>
+  </div>
+</div>
+
+<!-- ── SPOROČILA ── -->
+<div id="section-messages">
+  <div class="msg-layout" id="msg-layout">
+    <!-- Conversation list -->
+    <aside class="msg-sidebar">
+      <div class="msg-sidebar-hdr">
+        <div class="page-header-eyebrow">Sporočila</div>
+        <h2>Pogovori</h2>
+      </div>
+      <div id="conv-list">
+        <div class="msg-empty-state" style="height:auto; padding:40px 24px;">
+          <span class="big">💬</span>
+          <div>Ni pogovorov.</div>
+          <div style="font-size:12px;">Ko boste povprašali za oglas, se bo pogovor prikazal tukaj.</div>
+        </div>
+      </div>
+    </aside>
+    <!-- Thread -->
+    <section class="msg-thread" id="msg-thread">
+      <div class="msg-empty-state" id="msg-thread-empty">
+        <span class="big">✉️</span>
+        <div>Izberite pogovor</div>
+      </div>
+      <div id="msg-thread-active" style="display:none; flex-direction:column; height:100%;">
+        <div class="msg-thread-hdr">
+          <button class="msg-thread-back" onclick="closeThread()" aria-label="Nazaj">
+            <svg width="18" height="18" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M13 8H3M7 4l-4 4 4 4"/></svg>
+          </button>
+          <div class="conv-avatar" id="thread-avatar" style="width:36px;height:36px;font-size:15px;">·</div>
+          <div>
+            <div class="msg-thread-title" id="thread-title">—</div>
+            <div class="msg-thread-sub" id="thread-sub">—</div>
+          </div>
+        </div>
+        <div class="msg-scroll" id="msg-scroll"></div>
+        <div class="msg-composer">
+          <textarea class="msg-input" id="msg-input" rows="1" placeholder="Napišite sporočilo…" oninput="autoGrow(this)" onkeydown="msgKeydown(event)"></textarea>
+          <button class="msg-send" id="msg-send" onclick="sendMessage()" aria-label="Pošlji">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
+          </button>
+        </div>
+      </div>
+    </section>
   </div>
 </div>
 
@@ -3719,9 +3939,7 @@ function resetAll() {
   updateFilters();
 }
 
-function openContact(name) {
-  alert('Vzpostavili bomo stik glede: ' + name + '\n\nFunkcija bo kmalu na voljo.');
-}
+// openContact je definiran v glavnem skriptu (sporočila kupec↔prodajalec).
 
 // ── INIT ──
 updateFilters();
@@ -4272,11 +4490,13 @@ let _editListingId = null;
 sbM.auth.onAuthStateChange((_event, session) => {
   currentUser = session ? session.user : null;
   loadDbListings();
+  initMessaging();
 });
 (async () => {
   const { data: { session } } = await sbM.auth.getSession();
   currentUser = session ? session.user : null;
   await loadDbListings();
+  initMessaging();
   // Check for edit mode from URL
   const editId = new URLSearchParams(window.location.search).get('edit');
   if (editId && currentUser) {
@@ -5201,6 +5421,7 @@ renderListings = function(list) {
           ${weightDisplay ? `<div class="listing-details-row"><span class="listing-details-lbl">Teža</span><span class="listing-details-val">${esc(weightDisplay)}</span></div>` : ''}
           ${l.sub ? `<div class="listing-details-row"><span class="listing-details-lbl">Opis</span><span class="listing-details-val">${esc(l.sub)}</span></div>` : ''}
           ${price > 0 ? `<div class="listing-details-row"><span class="listing-details-lbl">Cena</span><span class="listing-details-val" style="color:var(--gold-lt);font-weight:700;">${sym}${price.toLocaleString('sl-SI')}</span></div>` : ''}
+          ${!isOwner ? `<button class="listing-contact-btn" style="width:100%;margin-top:12px;" onclick="event.stopPropagation(); openContact('${l.dbId}')">✉ Sporočilo prodajalcu</button>` : ''}
         </div>
       </div>
       ${bottomSection}
@@ -5433,14 +5654,354 @@ let allMyDocs = [];
 let docsDateFilter = 'all';
 let docsTypeFilter = 'all';
 
+// ═══════════════════════════════════════════════════════════════════════════
+// SPOROČILA & OBVESTILA
+// ═══════════════════════════════════════════════════════════════════════════
+
+let convCache = [];        // pogovori trenutnega uporabnika
+let activeConvId = null;   // odprt pogovor
+let notifCache = [];       // obvestila
+let _rtChannel = null;     // realtime kanal
+
+function myUnread(c) {
+  if (!currentUser) return 0;
+  return currentUser.id === c.buyer_id ? c.buyer_unread : c.seller_unread;
+}
+function counterpartRole(c) {
+  // vloga sogovornika glede na to, kdo sem jaz
+  return currentUser && currentUser.id === c.buyer_id ? 'Prodajalec' : 'Kupec';
+}
+
+function relTime(iso) {
+  if (!iso) return '';
+  const d = new Date(iso), now = new Date();
+  const diff = (now - d) / 1000;
+  if (diff < 60) return 'zdaj';
+  if (diff < 3600) return Math.floor(diff / 60) + ' min';
+  if (diff < 86400 && d.getDate() === now.getDate()) return d.toLocaleTimeString('sl-SI', { hour: '2-digit', minute: '2-digit' });
+  if (diff < 172800) return 'včeraj';
+  return d.toLocaleDateString('sl-SI', { day: 'numeric', month: 'short' });
+}
+
+// ── POVPRAŠI → ustvari/odpri pogovor ──
+async function openContact(dbIdOrName) {
+  if (!currentUser) { openAuthModal('signin'); return; }
+  const listing = dbListings.find(l => l.dbId === dbIdOrName);
+  if (!listing) { alert('Sporočila so na voljo za aktivne oglase na trgu.'); return; }
+  if (!listing.user_id) { alert('Za ta oglas prodajalec ni na voljo.'); return; }
+  if (listing.user_id === currentUser.id) { alert('To je vaš oglas.'); return; }
+
+  // obstoječ pogovor?
+  let conv = convCache.find(c => c.listing_id === listing.dbId && c.buyer_id === currentUser.id);
+  if (!conv) {
+    const { data, error } = await sbM.from('conversations').insert({
+      listing_id:   listing.dbId,
+      listing_name: listing.name,
+      buyer_id:     currentUser.id,
+      seller_id:    listing.user_id,
+    }).select().single();
+    if (error) {
+      // morda hkratna kreacija — poskusi najti obstoječega
+      const { data: existing } = await sbM.from('conversations')
+        .select('*').eq('listing_id', listing.dbId).eq('buyer_id', currentUser.id).maybeSingle();
+      if (!existing) { alert('Napaka pri odpiranju pogovora: ' + error.message); return; }
+      conv = existing;
+    } else {
+      conv = data;
+    }
+    convCache.unshift(conv);
+  }
+  switchPageTab('messages');
+  renderConversations();
+  openThread(conv.id);
+}
+
+// ── NALAGANJE POGOVOROV ──
+async function loadConversations() {
+  if (!currentUser) {
+    document.getElementById('conv-list').innerHTML =
+      `<div class="msg-empty-state" style="height:auto;padding:40px 24px;"><span class="big">🔒</span><div>Prijavite se za sporočila.</div></div>`;
+    return;
+  }
+  const { data, error } = await sbM.from('conversations').select('*').order('last_message_at', { ascending: false });
+  if (!error) convCache = data || [];
+  renderConversations();
+  updateMsgBadges();
+}
+
+function renderConversations() {
+  const box = document.getElementById('conv-list');
+  if (!convCache.length) {
+    box.innerHTML = `<div class="msg-empty-state" style="height:auto;padding:40px 24px;">
+      <span class="big">💬</span><div>Ni pogovorov.</div>
+      <div style="font-size:12px;">Ko boste povprašali za oglas, se bo pogovor prikazal tukaj.</div></div>`;
+    return;
+  }
+  box.innerHTML = convCache.map(c => {
+    const unread = myUnread(c);
+    const initial = (c.listing_name || '?').trim().charAt(0).toUpperCase();
+    return `<button class="conv-item${c.id === activeConvId ? ' active' : ''}" onclick="openThread('${c.id}')">
+      <div class="conv-avatar">${esc(initial)}</div>
+      <div class="conv-main">
+        <div class="conv-top">
+          <span class="conv-name">${esc(counterpartRole(c))}</span>
+          <span class="conv-time">${relTime(c.last_message_at)}</span>
+        </div>
+        <div class="conv-listing">${esc(c.listing_name || 'Oglas')}</div>
+        <div class="conv-preview">${esc(c.last_message || 'Ni sporočil')}</div>
+      </div>
+      ${unread > 0 ? `<span class="conv-unread">${unread}</span>` : ''}
+    </button>`;
+  }).join('');
+}
+
+// ── ODPRI POGOVOR / NIT ──
+async function openThread(convId) {
+  const conv = convCache.find(c => c.id === convId);
+  if (!conv) return;
+  activeConvId = convId;
+  document.getElementById('msg-layout').classList.add('thread-open');
+  document.getElementById('msg-thread-empty').style.display = 'none';
+  document.getElementById('msg-thread-active').style.display = 'flex';
+  document.getElementById('thread-avatar').textContent = (conv.listing_name || '?').trim().charAt(0).toUpperCase();
+  document.getElementById('thread-title').textContent = counterpartRole(conv);
+  document.getElementById('thread-sub').textContent = conv.listing_name || 'Oglas';
+  renderConversations();
+
+  const scroll = document.getElementById('msg-scroll');
+  scroll.innerHTML = `<div class="msg-daymark">Nalagam…</div>`;
+  const { data, error } = await sbM.from('messages').select('*')
+    .eq('conversation_id', convId).order('created_at', { ascending: true });
+  if (error) { scroll.innerHTML = `<div class="msg-daymark">Napaka pri nalaganju.</div>`; return; }
+  renderMessages(data || []);
+
+  // označi kot prebrano
+  if (myUnread(conv) > 0) {
+    await sbM.rpc('mark_conversation_read', { p_conversation_id: convId });
+    if (currentUser.id === conv.buyer_id) conv.buyer_unread = 0; else conv.seller_unread = 0;
+    renderConversations();
+    updateMsgBadges();
+  }
+}
+
+function renderMessages(msgs) {
+  const scroll = document.getElementById('msg-scroll');
+  if (!msgs.length) { scroll.innerHTML = `<div class="msg-daymark">Začnite pogovor — pošljite prvo sporočilo.</div>`; return; }
+  let html = '', lastDay = '';
+  msgs.forEach(m => {
+    const day = new Date(m.created_at).toLocaleDateString('sl-SI', { day: 'numeric', month: 'long' });
+    if (day !== lastDay) { html += `<div class="msg-daymark">${day}</div>`; lastDay = day; }
+    const mine = m.sender_id === currentUser.id;
+    html += `<div class="msg-bubble ${mine ? 'me' : 'them'}">${esc(m.body)}<div class="msg-bubble-time">${new Date(m.created_at).toLocaleTimeString('sl-SI', { hour: '2-digit', minute: '2-digit' })}</div></div>`;
+  });
+  scroll.innerHTML = html;
+  scroll.scrollTop = scroll.scrollHeight;
+}
+
+function closeThread() {
+  activeConvId = null;
+  document.getElementById('msg-layout').classList.remove('thread-open');
+  document.getElementById('msg-thread-active').style.display = 'none';
+  document.getElementById('msg-thread-empty').style.display = 'flex';
+  renderConversations();
+}
+
+function autoGrow(el) { el.style.height = 'auto'; el.style.height = Math.min(el.scrollHeight, 120) + 'px'; }
+function msgKeydown(e) { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); sendMessage(); } }
+
+async function sendMessage() {
+  const input = document.getElementById('msg-input');
+  const body = input.value.trim();
+  if (!body || !activeConvId || !currentUser) return;
+  const btn = document.getElementById('msg-send');
+  btn.disabled = true;
+
+  // optimistično prikaži
+  const scroll = document.getElementById('msg-scroll');
+  if (scroll.querySelector('.msg-daymark') && scroll.children.length === 1) scroll.innerHTML = '';
+  const tmp = document.createElement('div');
+  tmp.className = 'msg-bubble me';
+  tmp.innerHTML = esc(body) + `<div class="msg-bubble-time">…</div>`;
+  scroll.appendChild(tmp);
+  scroll.scrollTop = scroll.scrollHeight;
+  input.value = ''; autoGrow(input);
+
+  const { error } = await sbM.from('messages').insert({
+    conversation_id: activeConvId, sender_id: currentUser.id, body,
+  });
+  btn.disabled = false;
+  if (error) { tmp.querySelector('.msg-bubble-time').textContent = '⚠ napaka'; return; }
+  tmp.querySelector('.msg-bubble-time').textContent = new Date().toLocaleTimeString('sl-SI', { hour: '2-digit', minute: '2-digit' });
+
+  // posodobi predogled v seznamu
+  const conv = convCache.find(c => c.id === activeConvId);
+  if (conv) { conv.last_message = body; conv.last_message_at = new Date().toISOString(); moveConvTop(conv); renderConversations(); }
+}
+
+function moveConvTop(conv) {
+  convCache = convCache.filter(c => c.id !== conv.id);
+  convCache.unshift(conv);
+}
+
+// ═══ OBVESTILA (zvonec) ═══════════════════════════════════════════════════
+async function loadNotifications() {
+  if (!currentUser) return;
+  document.getElementById('notif-wrap').style.display = '';
+  const { data, error } = await sbM.from('notifications').select('*')
+    .order('created_at', { ascending: false }).limit(30);
+  if (!error) notifCache = data || [];
+  renderNotifications();
+  updateNotifBadge();
+}
+
+const NOTIF_ICONS = { message: '💬', bid: '🔨', outbid: '⚠️', sale: '💰', purchase: '🧾' };
+
+function renderNotifications() {
+  const box = document.getElementById('notif-list');
+  if (!notifCache.length) { box.innerHTML = `<div class="notif-empty">Ni obvestil.</div>`; return; }
+  box.innerHTML = notifCache.map(n => `
+    <button class="notif-item${n.read ? '' : ' unread'}" onclick="onNotifClick('${n.id}')">
+      <div class="notif-ico">${NOTIF_ICONS[n.type] || '🔔'}</div>
+      <div class="notif-body">
+        <div class="notif-title">${esc(n.title)}</div>
+        ${n.body ? `<div class="notif-sub">${esc(n.body)}</div>` : ''}
+        <div class="notif-time">${relTime(n.created_at)}</div>
+      </div>
+      ${n.read ? '' : '<span class="notif-dot"></span>'}
+    </button>`).join('');
+}
+
+function updateNotifBadge() {
+  const n = notifCache.filter(x => !x.read).length;
+  const el = document.getElementById('notif-count');
+  if (n > 0) { el.textContent = n > 99 ? '99+' : n; el.style.display = 'flex'; }
+  else el.style.display = 'none';
+}
+
+function updateMsgBadges() {
+  const totalUnread = convCache.reduce((s, c) => s + myUnread(c), 0);
+  const badge = document.getElementById('msgs-tab-badge');
+  if (totalUnread > 0) { badge.textContent = totalUnread; badge.style.display = ''; }
+  else badge.style.display = 'none';
+}
+
+function toggleNotifPanel(e) {
+  e.stopPropagation();
+  const panel = document.getElementById('notif-panel');
+  panel.classList.toggle('open');
+}
+document.addEventListener('click', (e) => {
+  const wrap = document.getElementById('notif-wrap');
+  if (wrap && !wrap.contains(e.target)) document.getElementById('notif-panel').classList.remove('open');
+});
+
+async function onNotifClick(id) {
+  const n = notifCache.find(x => x.id === id);
+  if (!n) return;
+  if (!n.read) { await markNotifRead(id); }
+  document.getElementById('notif-panel').classList.remove('open');
+  // navigacija
+  const m = (n.link || '').match(/conversation=([0-9a-f-]+)/i);
+  if (m) {
+    switchPageTab('messages');
+    if (!convCache.length) await loadConversations();
+    openThread(m[1]);
+  } else if ((n.type === 'bid' || n.type === 'outbid' || n.type === 'sale' || n.type === 'purchase')) {
+    switchPageTab('market');
+  }
+}
+
+async function markNotifRead(id) {
+  const n = notifCache.find(x => x.id === id);
+  if (n) n.read = true;
+  renderNotifications(); updateNotifBadge();
+  await sbM.from('notifications').update({ read: true }).eq('id', id);
+}
+
+async function markAllNotifsRead() {
+  const unreadIds = notifCache.filter(n => !n.read).map(n => n.id);
+  if (!unreadIds.length) return;
+  notifCache.forEach(n => n.read = true);
+  renderNotifications(); updateNotifBadge();
+  await sbM.from('notifications').update({ read: true }).in('id', unreadIds);
+}
+
+// ═══ REALTIME ═════════════════════════════════════════════════════════════
+function subscribeRealtime() {
+  if (!currentUser) return;
+  if (_rtChannel) { sbM.removeChannel(_rtChannel); _rtChannel = null; }
+  _rtChannel = sbM.channel('rt-' + currentUser.id)
+    .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'notifications', filter: `user_id=eq.${currentUser.id}` },
+      (payload) => {
+        notifCache.unshift(payload.new);
+        if (notifCache.length > 50) notifCache.pop();
+        renderNotifications(); updateNotifBadge();
+      })
+    .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'messages' },
+      (payload) => {
+        const m = payload.new;
+        if (m.sender_id === currentUser.id) return;        // svoje sporočilo že prikazano
+        const conv = convCache.find(c => c.id === m.conversation_id);
+        if (m.conversation_id === activeConvId) {
+          appendIncoming(m);
+          if (conv) { conv.last_message = m.body; conv.last_message_at = m.created_at; }
+          // takoj označi prebrano, ker je nit odprta
+          sbM.rpc('mark_conversation_read', { p_conversation_id: activeConvId });
+        } else {
+          // ni v predpomnilniku (nov pogovor) → osveži seznam
+          if (!conv) { loadConversations(); return; }
+          conv.last_message = m.body; conv.last_message_at = m.created_at;
+          if (currentUser.id === conv.buyer_id) conv.buyer_unread++; else conv.seller_unread++;
+        }
+        moveConvTop(conv || {}); renderConversations(); updateMsgBadges();
+      })
+    .subscribe();
+}
+
+function appendIncoming(m) {
+  const scroll = document.getElementById('msg-scroll');
+  if (!scroll) return;
+  const div = document.createElement('div');
+  div.className = 'msg-bubble them';
+  div.innerHTML = esc(m.body) + `<div class="msg-bubble-time">${new Date(m.created_at).toLocaleTimeString('sl-SI', { hour: '2-digit', minute: '2-digit' })}</div>`;
+  scroll.appendChild(div);
+  scroll.scrollTop = scroll.scrollHeight;
+}
+
+// ── INIT (kliče se, ko je znan uporabnik) ──
+let _msgInitUid = null;
+async function initMessaging() {
+  const uid = currentUser ? currentUser.id : null;
+  if (uid === _msgInitUid) return;   // že inicializirano za tega uporabnika
+  _msgInitUid = uid;
+
+  if (!currentUser) {
+    document.getElementById('notif-wrap').style.display = 'none';
+    if (_rtChannel) { sbM.removeChannel(_rtChannel); _rtChannel = null; }
+    convCache = []; notifCache = []; activeConvId = null;
+    updateMsgBadges();
+    return;
+  }
+  await Promise.all([loadNotifications(), loadConversations()]);
+  subscribeRealtime();
+  // globoka povezava iz obvestila (?conversation=…)
+  const cid = new URLSearchParams(window.location.search).get('conversation');
+  if (cid) { switchPageTab('messages'); openThread(cid); }
+}
+
 function switchPageTab(tab) {
   const isMarket = tab === 'market';
+  const isMsgs   = tab === 'messages';
+  const isDocs   = tab === 'documents';
   document.getElementById('tab-market').classList.toggle('active', isMarket);
-  document.getElementById('tab-documents').classList.toggle('active', !isMarket);
-  document.getElementById('section-market-header').style.display   = isMarket ? '' : 'none';
-  document.getElementById('section-market-layout').style.display   = isMarket ? '' : 'none';
-  document.getElementById('section-moji-dokumenti').style.display  = isMarket ? 'none' : 'block';
-  if (!isMarket) loadMyDocuments();
+  document.getElementById('tab-messages').classList.toggle('active', isMsgs);
+  document.getElementById('tab-documents').classList.toggle('active', isDocs);
+  document.getElementById('section-market-header').style.display  = isMarket ? '' : 'none';
+  document.getElementById('section-market-layout').style.display  = isMarket ? '' : 'none';
+  document.getElementById('section-messages').style.display       = isMsgs ? 'block' : 'none';
+  document.getElementById('section-moji-dokumenti').style.display = isDocs ? 'block' : 'none';
+  if (isDocs) loadMyDocuments();
+  if (isMsgs) loadConversations();
 }
 
 async function loadMyDocuments() {
