@@ -878,6 +878,15 @@
     }
     .wiz-input:focus { border-color: rgba(201,162,39,0.5); }
     .wiz-input::placeholder { color: var(--muted); }
+    .wiz-pw-wrap { position: relative; }
+    .wiz-pw-wrap .wiz-input { padding-right: 42px; box-sizing: border-box; }
+    .wiz-pw-toggle {
+      position: absolute; right: 8px; top: 50%; transform: translateY(-50%);
+      background: none; border: none; color: var(--muted); cursor: pointer;
+      padding: 6px; display: flex; align-items: center; transition: color 0.15s ease;
+    }
+    .wiz-pw-toggle:hover { color: var(--gold-lt); }
+    .wiz-pw-mismatch { display: none; margin: 6px 0 0; font-size: 12px; color: #E57373; }
     .wiz-row { display: grid; grid-template-columns: 1fr auto; gap: 8px; }
     .wiz-unit-select {
       padding: 10px 12px;
@@ -4010,7 +4019,22 @@ updateFilters();
         </div>
         <div class="wiz-field">
           <label>Geslo</label>
-          <input class="wiz-input" type="password" name="password" placeholder="Min. 8 znakov" required minlength="8" autocomplete="new-password" />
+          <div class="wiz-pw-wrap">
+            <input class="wiz-input" type="password" id="m-reg-password" name="password" placeholder="Min. 8 znakov" required minlength="8" autocomplete="new-password" />
+            <button type="button" class="wiz-pw-toggle" onclick="togglePwVisibility('m-reg-password', this)" aria-label="Prikaži geslo" tabindex="-1">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+            </button>
+          </div>
+        </div>
+        <div class="wiz-field">
+          <label>Potrdite geslo</label>
+          <div class="wiz-pw-wrap">
+            <input class="wiz-input" type="password" id="m-reg-password-confirm" placeholder="Ponovite geslo" required minlength="8" autocomplete="new-password" />
+            <button type="button" class="wiz-pw-toggle" onclick="togglePwVisibility('m-reg-password-confirm', this)" aria-label="Prikaži geslo" tabindex="-1">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+            </button>
+          </div>
+          <p class="wiz-pw-mismatch" id="m-reg-password-mismatch">Gesli se ne ujemata.</p>
         </div>
         <div class="wiz-field">
           <label id="m-reg-captcha-q" style="letter-spacing:0;">…</label>
@@ -4587,6 +4611,17 @@ function switchAuthTab(tab) {
   else generateAuthCaptcha('m-reg');
 }
 
+// Password show/hide toggle — swaps input type + icon (eye / eye-off).
+const EYE_ICON = '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>';
+const EYE_OFF_ICON = '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17.94 17.94A10.94 10.94 0 0 1 12 20c-7 0-11-8-11-8a18.5 18.5 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"/><line x1="1" y1="1" x2="23" y2="23"/></svg>';
+function togglePwVisibility(inputId, btn) {
+  const input = document.getElementById(inputId);
+  if (!input) return;
+  const showing = input.type === 'text';
+  input.type = showing ? 'password' : 'text';
+  btn.innerHTML = showing ? EYE_ICON : EYE_OFF_ICON;
+}
+
 function generateAuthCaptcha(prefix) {
   const a = Math.floor(Math.random() * 9) + 1;
   const b = Math.floor(Math.random() * 9) + 1;
@@ -4644,6 +4679,15 @@ async function submitRegM(e) {
     generateAuthCaptcha('m-reg');
     return;
   }
+
+  const mismatchEl = document.getElementById('m-reg-password-mismatch');
+  const pw1 = document.getElementById('m-reg-password').value;
+  const pw2 = document.getElementById('m-reg-password-confirm').value;
+  if (pw1 !== pw2) {
+    mismatchEl.style.display = 'block';
+    return;
+  }
+  mismatchEl.style.display = 'none';
 
   btn.disabled = true; btn.textContent = 'Registriram…';
   const fd = new FormData(document.getElementById('m-reg-form'));
@@ -5253,21 +5297,32 @@ function esc(str) {
 }
 
 // ── LISTING FAVOURITES ──
-function getFavListings() {
+// Stored as [{id, addedAt}] so the homepage dashboard can sort by "date
+// added". Transparently upgrades the older flat-id-array format (no dates).
+function getFavListingsMeta() {
   const key = currentUser ? 'listing_favs_' + currentUser.id : 'listing_favs_guest';
-  return JSON.parse(localStorage.getItem(key) || '[]');
+  const raw = JSON.parse(localStorage.getItem(key) || '[]');
+  if (raw.length && typeof raw[0] === 'string') {
+    const migrated = raw.map(id => ({ id, addedAt: new Date().toISOString() }));
+    localStorage.setItem(key, JSON.stringify(migrated));
+    return migrated;
+  }
+  return raw;
 }
-function saveFavListings(ids) {
+function saveFavListingsMeta(list) {
   const key = currentUser ? 'listing_favs_' + currentUser.id : 'listing_favs_guest';
-  localStorage.setItem(key, JSON.stringify(ids));
+  localStorage.setItem(key, JSON.stringify(list));
+}
+function getFavListings() {
+  return getFavListingsMeta().map(f => f.id);
 }
 function toggleFavListing(dbId, btnEl) {
   event.stopPropagation();
-  let favs = getFavListings();
-  const idx = favs.indexOf(dbId);
+  let favs = getFavListingsMeta();
+  const idx = favs.findIndex(f => f.id === dbId);
   if (idx >= 0) { favs.splice(idx, 1); btnEl.classList.remove('active'); btnEl.querySelector('svg').setAttribute('fill','none'); }
-  else { favs.push(dbId); btnEl.classList.add('active'); btnEl.querySelector('svg').setAttribute('fill','#C9A227'); }
-  saveFavListings(favs);
+  else { favs.push({ id: dbId, addedAt: new Date().toISOString() }); btnEl.classList.add('active'); btnEl.querySelector('svg').setAttribute('fill','#C9A227'); }
+  saveFavListingsMeta(favs);
 }
 
 // ── PATCH getFiltered to include DB listings ──

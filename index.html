@@ -961,6 +961,30 @@
     }
     .btn-edit-my:hover { background: rgba(201,162,39,0.1); }
 
+    /* ── DASHBOARD TOOLBAR (count + sort) ── */
+    .dash-toolbar {
+      display: flex; align-items: center; justify-content: space-between;
+      flex-wrap: wrap; gap: 12px; margin-top: 24px;
+    }
+    .dash-count { font-size: 12px; color: var(--muted); }
+    .dash-count strong { color: #E8EEF2; font-weight: 600; }
+    .dash-sort { display: flex; align-items: center; gap: 8px; font-size: 12px; color: var(--muted); }
+    .dash-sort select {
+      background: var(--ink-3); border: 1px solid rgba(143,163,177,0.15);
+      border-radius: 2px; color: #E8EEF2; font-family: 'Inter', sans-serif;
+      font-size: 12px; padding: 5px 10px; outline: none; cursor: pointer;
+    }
+    .dash-toolbar + .my-listings-grid { margin-top: 16px; }
+
+    /* Table-like key/value row (e.g. "DODANO" date) inside a dashboard card */
+    .dash-meta-row {
+      display: flex; justify-content: space-between; align-items: center;
+      padding: 8px 0 0; margin-top: 8px;
+      border-top: 1px solid rgba(143,163,177,0.08);
+    }
+    .dash-meta-lbl { font-size: 10px; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase; color: var(--muted); }
+    .dash-meta-val { font-size: 11.5px; color: #C0CDD6; font-weight: 500; }
+
     /* ── TRANSACTIONS ── */
     .tx-tab {
       background: none; border: none; border-bottom: 2px solid transparent;
@@ -1354,6 +1378,16 @@
       <div class="section-eyebrow">Moji Oglasi</div>
       <h2 class="section-title">Moje Objave na Trgu</h2>
       <p class="section-sub">Upravljajte z vašimi aktivnimi oglasi. Za urejanje greste skozi celoten postopek znova.</p>
+      <div class="dash-toolbar" id="my-listings-toolbar" style="display:none;">
+        <div class="dash-count" id="my-listings-count"></div>
+        <div class="dash-sort">
+          <span>Razvrsti:</span>
+          <select onchange="sortMyListings(this.value)">
+            <option value="newest">Najnovejši najprej</option>
+            <option value="oldest">Najstarejši najprej</option>
+          </select>
+        </div>
+      </div>
       <div class="my-listings-grid" id="my-listings-grid">
         <p style="color:var(--muted); font-size:13px;" id="my-listings-empty">Nimate še nobenih oglasov. Obiščite <a href="markets.html" style="color:var(--gold);">Marketplace</a> za objavo.</p>
       </div>
@@ -1366,6 +1400,16 @@
       <div class="section-eyebrow">Moje Dražitve</div>
       <h2 class="section-title">Dražbe, kjer Sodelujete</h2>
       <p class="section-sub">Vse dražbe, na katerih ste oddali ponudbo. Spremljajte status in ponudite znova neposredno od tukaj.</p>
+      <div class="dash-toolbar" id="my-bids-toolbar" style="display:none;">
+        <div class="dash-count" id="my-bids-count"></div>
+        <div class="dash-sort">
+          <span>Razvrsti:</span>
+          <select onchange="sortMyBids(this.value)">
+            <option value="newest">Najnovejši najprej</option>
+            <option value="oldest">Najstarejši najprej</option>
+          </select>
+        </div>
+      </div>
       <div class="my-listings-grid" id="my-bids-grid">
         <p style="color:var(--muted); font-size:13px;" id="my-bids-empty">Niste še oddali nobene ponudbe. Obiščite <a href="markets.html" style="color:var(--gold);">Marketplace</a> in poiščite aktivne dražbe.</p>
       </div>
@@ -1378,6 +1422,16 @@
       <div class="section-eyebrow">Priljubljeni Oglasi</div>
       <h2 class="section-title">Oglasi, ki jih Spremljate</h2>
       <p class="section-sub">Oglasi, ki ste jih označili s srčkom na Marketplace strani.</p>
+      <div class="dash-toolbar" id="fav-listings-toolbar" style="display:none;">
+        <div class="dash-count" id="fav-listings-count"></div>
+        <div class="dash-sort">
+          <span>Razvrsti:</span>
+          <select onchange="sortFavListings(this.value)">
+            <option value="newest">Najnovejši najprej</option>
+            <option value="oldest">Najstarejši najprej</option>
+          </select>
+        </div>
+      </div>
       <div class="my-listings-grid" id="fav-listings-grid">
         <p style="color:var(--muted); font-size:13px;" id="fav-listings-empty">Nimate še nobenih priljubljenih oglasov. Obiščite <a href="markets.html" style="color:var(--gold);">Marketplace</a> in označite oglase z všečkom.</p>
       </div>
@@ -1952,12 +2006,34 @@
       <!-- Password -->
       <div>
         <label style="display:block; font-size:11px; letter-spacing:0.08em; text-transform:uppercase; color:var(--muted); margin-bottom:6px; font-family:'Inter',sans-serif;" data-i18n="reg_password">Password</label>
-        <input type="password" name="password" required minlength="8" data-i18n-placeholder="reg_password_ph" placeholder="min. 8 characters" style="
-          width:100%; padding:11px 14px;
-          background:var(--ink-3); border:1px solid rgba(143,163,177,0.2);
-          border-radius:3px; color:#E8EEF2; font-family:'Inter',sans-serif; font-size:14px;
-          outline:none; transition:border-color 0.2s ease;
-        " onfocus="this.style.borderColor='var(--gold)'" onblur="this.style.borderColor='rgba(143,163,177,0.2)'" />
+        <div style="position:relative;">
+          <input type="password" id="reg-password" name="password" required minlength="8" data-i18n-placeholder="reg_password_ph" placeholder="min. 8 characters" style="
+            width:100%; box-sizing:border-box; padding:11px 42px 11px 14px;
+            background:var(--ink-3); border:1px solid rgba(143,163,177,0.2);
+            border-radius:3px; color:#E8EEF2; font-family:'Inter',sans-serif; font-size:14px;
+            outline:none; transition:border-color 0.2s ease;
+          " onfocus="this.style.borderColor='var(--gold)'" onblur="this.style.borderColor='rgba(143,163,177,0.2)'" />
+          <button type="button" onclick="togglePwVisibility('reg-password', this)" aria-label="Prikaži geslo" tabindex="-1" style="position:absolute; right:8px; top:50%; transform:translateY(-50%); background:none; border:none; color:var(--muted); cursor:pointer; padding:6px; display:flex; align-items:center; transition:color 0.15s ease;" onmouseover="this.style.color='var(--gold-lt)'" onmouseout="this.style.color='var(--muted)'">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+          </button>
+        </div>
+      </div>
+
+      <!-- Confirm Password -->
+      <div>
+        <label style="display:block; font-size:11px; letter-spacing:0.08em; text-transform:uppercase; color:var(--muted); margin-bottom:6px; font-family:'Inter',sans-serif;" data-i18n="reg_password_confirm">Confirm password</label>
+        <div style="position:relative;">
+          <input type="password" id="reg-password-confirm" required minlength="8" data-i18n-placeholder="reg_password_confirm_ph" placeholder="repeat password" style="
+            width:100%; box-sizing:border-box; padding:11px 42px 11px 14px;
+            background:var(--ink-3); border:1px solid rgba(143,163,177,0.2);
+            border-radius:3px; color:#E8EEF2; font-family:'Inter',sans-serif; font-size:14px;
+            outline:none; transition:border-color 0.2s ease;
+          " onfocus="this.style.borderColor='var(--gold)'" onblur="this.style.borderColor='rgba(143,163,177,0.2)'" />
+          <button type="button" onclick="togglePwVisibility('reg-password-confirm', this)" aria-label="Prikaži geslo" tabindex="-1" style="position:absolute; right:8px; top:50%; transform:translateY(-50%); background:none; border:none; color:var(--muted); cursor:pointer; padding:6px; display:flex; align-items:center; transition:color 0.15s ease;" onmouseover="this.style.color='var(--gold-lt)'" onmouseout="this.style.color='var(--muted)'">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+          </button>
+        </div>
+        <p id="reg-password-mismatch" style="display:none; margin:6px 0 0; font-size:12px; color:#E57373; font-family:'Inter',sans-serif;" data-i18n="reg_password_mismatch">Passwords do not match.</p>
       </div>
 
       <!-- CAPTCHA -->
@@ -2441,6 +2517,17 @@
     { auth: { detectSessionInUrl: true, persistSession: true, autoRefreshToken: true } }
   );
 
+  // Password show/hide toggle — swaps input type + icon (eye / eye-off).
+  const EYE_ICON = '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>';
+  const EYE_OFF_ICON = '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17.94 17.94A10.94 10.94 0 0 1 12 20c-7 0-11-8-11-8a18.5 18.5 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"/><line x1="1" y1="1" x2="23" y2="23"/></svg>';
+  function togglePwVisibility(inputId, btn) {
+    const input = document.getElementById(inputId);
+    if (!input) return;
+    const showing = input.type === 'text';
+    input.type = showing ? 'password' : 'text';
+    btn.innerHTML = showing ? EYE_ICON : EYE_OFF_ICON;
+  }
+
   function generateCaptcha(prefix) {
     const a = Math.floor(Math.random() * 9) + 1;
     const b = Math.floor(Math.random() * 9) + 1;
@@ -2476,6 +2563,16 @@
     const errEl = document.getElementById('reg-submit-error');
     const btn = document.getElementById('reg-submit-btn');
     errEl.style.display = 'none';
+
+    const mismatchEl = document.getElementById('reg-password-mismatch');
+    const pw1 = document.getElementById('reg-password').value;
+    const pw2 = document.getElementById('reg-password-confirm').value;
+    if (pw1 !== pw2) {
+      mismatchEl.style.display = 'block';
+      return;
+    }
+    mismatchEl.style.display = 'none';
+
     btn.disabled = true;
     btn.style.opacity = '0.6';
     btn.textContent = lang === 'sl' ? 'Pošiljam...' : 'Submitting...';
@@ -3002,44 +3099,85 @@ return '$' + price.toLocaleString('en-US', {maximumFractionDigits:2});
     } catch {}
   }
 
+  // ── DASHBOARD HELPERS (shared by My Listings / My Bids / Favorites) ──
+  function fmtDashDate(iso) {
+    if (!iso) return '—';
+    return new Date(iso).toLocaleDateString('sl-SI', { day: 'numeric', month: 'short', year: 'numeric' });
+  }
+  function updateDashToolbar(prefix, count, noun) {
+    const bar = document.getElementById(prefix + '-toolbar');
+    const countEl = document.getElementById(prefix + '-count');
+    if (!bar) return;
+    if (count > 0) {
+      bar.style.display = 'flex';
+      if (countEl) countEl.innerHTML = `Prikazano: <strong>${count}</strong> ${noun}`;
+    } else {
+      bar.style.display = 'none';
+    }
+  }
+  function sortByDate(list, dir, dateOf) {
+    return [...list].sort((a, b) => {
+      const d = new Date(dateOf(a)) - new Date(dateOf(b));
+      return dir === 'oldest' ? d : -d;
+    });
+  }
+
+  const SHAPE_LABEL = { bar:'Palica/Ingot', coin:'Kovanec', granule:'Granule', sheet:'List/Folija', jewelry:'Nakit', powder:'Zrno/Prah', industrial:'Industrijsko', other:'Ostalo' };
+
+  let _myListingsData = [];
+  let _myListingsSort = 'newest';
+
   async function loadMyListings(user) {
     const grid = document.getElementById('my-listings-grid');
     const emptyMsg = document.getElementById('my-listings-empty');
     try {
       const { data, error } = await sb.from('listings').select('*').eq('user_id', user.id).order('created_at', { ascending: false });
       if (error || !data || !data.length) {
+        _myListingsData = [];
         grid.innerHTML = '';
         grid.appendChild(emptyMsg);
         emptyMsg.style.display = '';
+        updateDashToolbar('my-listings', 0);
         return;
       }
       emptyMsg.style.display = 'none';
-      const shapeLabel = { bar:'Palica/Ingot', coin:'Kovanec', granule:'Granule', sheet:'List/Folija', jewelry:'Nakit', powder:'Zrno/Prah', industrial:'Industrijsko', other:'Ostalo' };
-      grid.innerHTML = data.map(row => {
-        const imgHtml = row.images && row.images[0]
-          ? `<img src="${esc(row.images[0])}" alt="${esc(row.name)}" />`
-          : `<div class="my-listing-img-ph">⬡</div>`;
-        const weightStr = row.weight ? (row.weight + ' ' + (row.weight_unit || 'kg')) : '';
-        const priceStr = row.price_usd ? ('$' + Number(row.price_usd).toLocaleString('en-US', {maximumFractionDigits:2})) : 'Cena na poizvedbo';
-        return `
-        <div class="my-listing-card" data-id="${esc(row.id)}">
-          <button class="my-listing-del" data-id="${esc(row.id)}" onclick="deleteMyListing(this.dataset.id, this)" title="Izbriši">×</button>
-          <div class="my-listing-img">${imgHtml}</div>
-          <div class="my-listing-body">
-            <div class="my-listing-name">${esc(row.name)}</div>
-            <div class="my-listing-meta">${esc(row.material_label)}${weightStr ? ' · ' + esc(weightStr) : ''}${row.shape ? ' · ' + esc(shapeLabel[row.shape]||row.shape) : ''}</div>
-            <div class="my-listing-price">${esc(priceStr)}</div>
-            <button class="btn-edit-my" data-id="${esc(row.id)}" onclick="editMyListing(this.dataset.id)">✎ Uredi oglas</button>
-          </div>
-        </div>`;
-      }).join('');
+      _myListingsData = data;
+      renderMyListings();
     } catch {}
+  }
+
+  function sortMyListings(dir) { _myListingsSort = dir; renderMyListings(); }
+
+  function renderMyListings() {
+    const grid = document.getElementById('my-listings-grid');
+    const rows = sortByDate(_myListingsData, _myListingsSort, r => r.created_at);
+    updateDashToolbar('my-listings', rows.length, 'oglasov');
+    grid.innerHTML = rows.map(row => {
+      const imgHtml = row.images && row.images[0]
+        ? `<img src="${esc(row.images[0])}" alt="${esc(row.name)}" />`
+        : `<div class="my-listing-img-ph">⬡</div>`;
+      const weightStr = row.weight ? (row.weight + ' ' + (row.weight_unit || 'kg')) : '';
+      const priceStr = row.price_usd ? ('$' + Number(row.price_usd).toLocaleString('en-US', {maximumFractionDigits:2})) : 'Cena na poizvedbo';
+      return `
+      <div class="my-listing-card" data-id="${esc(row.id)}">
+        <button class="my-listing-del" data-id="${esc(row.id)}" onclick="deleteMyListing(this.dataset.id, this)" title="Izbriši">×</button>
+        <div class="my-listing-img">${imgHtml}</div>
+        <div class="my-listing-body">
+          <div class="my-listing-name">${esc(row.name)}</div>
+          <div class="my-listing-meta">${esc(row.material_label)}${weightStr ? ' · ' + esc(weightStr) : ''}${row.shape ? ' · ' + esc(SHAPE_LABEL[row.shape]||row.shape) : ''}</div>
+          <div class="dash-meta-row"><span class="dash-meta-lbl">Dodano</span><span class="dash-meta-val">${fmtDashDate(row.created_at)}</span></div>
+          <div class="my-listing-price">${esc(priceStr)}</div>
+          <button class="btn-edit-my" data-id="${esc(row.id)}" onclick="editMyListing(this.dataset.id)">✎ Uredi oglas</button>
+        </div>
+      </div>`;
+    }).join('');
   }
 
   async function deleteMyListing(id, btnEl) {
     if (!confirm('Res želite izbrisati ta oglas?')) return;
     const { error } = await sb.from('listings').delete().eq('id', id);
     if (error) { alert('Napaka pri brisanju. Poskusite znova.'); return; }
+    _myListingsData = _myListingsData.filter(r => r.id !== id);
     btnEl.closest('.my-listing-card').remove();
     // Show empty message if no more cards
     const grid = document.getElementById('my-listings-grid');
@@ -3048,6 +3186,7 @@ return '$' + price.toLocaleString('en-US', {maximumFractionDigits:2});
       grid.appendChild(document.getElementById('my-listings-empty'));
       document.getElementById('my-listings-empty').style.display = '';
     }
+    updateDashToolbar('my-listings', _myListingsData.length, 'oglasov');
   }
 
   function editMyListing(id) {
@@ -3086,49 +3225,84 @@ return '$' + price.toLocaleString('en-US', {maximumFractionDigits:2});
     btn.querySelector('span').textContent = i18n[lang]?.form_send || 'Send Message';
   }
 
-  async function loadFavListings(user) {
+  // Favourites are stored in localStorage (shared with markets.html) as
+  // [{id, addedAt}]. Transparently upgrades the older flat-id-array format
+  // (no dates) the first time it's read.
+  function getFavListingsMetaLocal(user) {
     const key = 'listing_favs_' + user.id;
-    const ids = JSON.parse(localStorage.getItem(key) || '[]');
+    const raw = JSON.parse(localStorage.getItem(key) || '[]');
+    if (raw.length && typeof raw[0] === 'string') {
+      const migrated = raw.map(id => ({ id, addedAt: new Date().toISOString() }));
+      localStorage.setItem(key, JSON.stringify(migrated));
+      return migrated;
+    }
+    return raw;
+  }
+
+  let _favListingsData = [];
+  let _favListingsSort = 'newest';
+
+  async function loadFavListings(user) {
     const grid = document.getElementById('fav-listings-grid');
     const emptyMsg = document.getElementById('fav-listings-empty');
+    const favsMeta = getFavListingsMetaLocal(user);
 
-    if (!ids.length) {
+    if (!favsMeta.length) {
+      _favListingsData = [];
       grid.innerHTML = '';
       grid.appendChild(emptyMsg);
       emptyMsg.style.display = '';
+      updateDashToolbar('fav-listings', 0);
       return;
     }
     emptyMsg.style.display = 'none';
     grid.innerHTML = '<p style="color:var(--muted);font-size:13px;">Nalagam...</p>';
 
     try {
+      const ids = favsMeta.map(f => f.id);
       const { data, error } = await sb.from('listings').select('*').in('id', ids);
       if (error || !data || !data.length) {
+        _favListingsData = [];
         grid.innerHTML = '';
         grid.appendChild(emptyMsg);
         emptyMsg.style.display = '';
+        updateDashToolbar('fav-listings', 0);
         return;
       }
-      grid.innerHTML = data.map(row => {
-        const imgHtml = row.images && row.images[0]
-          ? `<img src="${esc(row.images[0])}" style="width:100%;height:100%;object-fit:cover;" alt="${esc(row.name)}">`
-          : `<div style="width:100%;height:100%;display:flex;align-items:center;justify-content:center;font-size:28px;color:rgba(201,162,39,0.25);">⬡</div>`;
-        const price = row.price_usd;
-        const priceStr = price ? '$' + Number(price).toLocaleString('sl-SI', {minimumFractionDigits:0}) : 'Cena na poizvedbo';
-        return `<div class="my-listing-card" style="position:relative;">
-          <div class="my-listing-img" style="background:linear-gradient(135deg,#1a2530,#0e161e);">${imgHtml}</div>
-          <div class="my-listing-body">
-            <div class="my-listing-title">${esc(row.name) || 'Oglas'}</div>
-            <div class="my-listing-price">${esc(priceStr)}</div>
-            <a href="markets.html" class="btn-edit-my" style="text-decoration:none;">→ Oglej si na Marketplace</a>
-          </div>
-        </div>`;
-      }).join('');
+      const addedMap = {};
+      favsMeta.forEach(f => { addedMap[f.id] = f.addedAt; });
+      _favListingsData = data.map(row => ({ row, addedAt: addedMap[row.id] || row.created_at }));
+      renderFavListings();
     } catch {
+      _favListingsData = [];
       grid.innerHTML = '';
       grid.appendChild(emptyMsg);
       emptyMsg.style.display = '';
     }
+  }
+
+  function sortFavListings(dir) { _favListingsSort = dir; renderFavListings(); }
+
+  function renderFavListings() {
+    const grid = document.getElementById('fav-listings-grid');
+    const items = sortByDate(_favListingsData, _favListingsSort, x => x.addedAt);
+    updateDashToolbar('fav-listings', items.length, 'priljubljenih');
+    grid.innerHTML = items.map(({ row, addedAt }) => {
+      const imgHtml = row.images && row.images[0]
+        ? `<img src="${esc(row.images[0])}" style="width:100%;height:100%;object-fit:cover;" alt="${esc(row.name)}">`
+        : `<div style="width:100%;height:100%;display:flex;align-items:center;justify-content:center;font-size:28px;color:rgba(201,162,39,0.25);">⬡</div>`;
+      const price = row.price_usd;
+      const priceStr = price ? '$' + Number(price).toLocaleString('sl-SI', {minimumFractionDigits:0}) : 'Cena na poizvedbo';
+      return `<div class="my-listing-card" style="position:relative;">
+        <div class="my-listing-img" style="background:linear-gradient(135deg,#1a2530,#0e161e);">${imgHtml}</div>
+        <div class="my-listing-body">
+          <div class="my-listing-title">${esc(row.name) || 'Oglas'}</div>
+          <div class="dash-meta-row"><span class="dash-meta-lbl">Dodano med priljubljene</span><span class="dash-meta-val">${fmtDashDate(addedAt)}</span></div>
+          <div class="my-listing-price">${esc(priceStr)}</div>
+          <a href="markets.html" class="btn-edit-my" style="text-decoration:none;">→ Oglej si na Marketplace</a>
+        </div>
+      </div>`;
+    }).join('');
   }
 
   // ── SETTINGS MODAL ──────────────────────────────────────────────────────────
@@ -3381,74 +3555,99 @@ return '$' + price.toLocaleString('en-US', {maximumFractionDigits:2});
     return `${mins}m`;
   }
 
+  let _myBidsData = [];
+  let _myBidsSort = 'newest';
+  let _myBidsUser = null;
+
   async function loadMyBids(user) {
+    _myBidsUser = user;
     const grid = document.getElementById('my-bids-grid');
     const emptyMsg = document.getElementById('my-bids-empty');
     try {
-      // Get distinct listing IDs + my highest bid per listing
+      // Get distinct listing IDs + my highest bid (and when I placed it) per listing
       const { data: bidsData, error: bidsErr } = await sb
         .from('bids')
-        .select('listing_id, amount')
+        .select('listing_id, amount, created_at')
         .eq('user_id', user.id)
         .order('amount', { ascending: false });
       if (bidsErr || !bidsData || !bidsData.length) {
-        grid.innerHTML = ''; grid.appendChild(emptyMsg); emptyMsg.style.display = ''; return;
+        _myBidsData = [];
+        grid.innerHTML = ''; grid.appendChild(emptyMsg); emptyMsg.style.display = '';
+        updateDashToolbar('my-bids', 0);
+        return;
       }
-      // Deduplicate — keep highest bid per listing
+      // Deduplicate — keep highest bid per listing (+ its timestamp)
       const myBidMap = {};
       bidsData.forEach(b => {
-        if (!myBidMap[b.listing_id] || b.amount > myBidMap[b.listing_id]) myBidMap[b.listing_id] = b.amount;
+        if (!myBidMap[b.listing_id] || b.amount > myBidMap[b.listing_id].amount) {
+          myBidMap[b.listing_id] = { amount: b.amount, created_at: b.created_at };
+        }
       });
       const listingIds = Object.keys(myBidMap);
       const { data: listings, error: listErr } = await sb
         .from('listings').select('*').in('id', listingIds);
       if (listErr || !listings || !listings.length) {
-        grid.innerHTML = ''; grid.appendChild(emptyMsg); emptyMsg.style.display = ''; return;
+        _myBidsData = [];
+        grid.innerHTML = ''; grid.appendChild(emptyMsg); emptyMsg.style.display = '';
+        updateDashToolbar('my-bids', 0);
+        return;
       }
       emptyMsg.style.display = 'none';
-      grid.innerHTML = listings.map(row => {
-        const myBid   = myBidMap[row.id] || 0;
-        const curBid  = row.current_bid || 0;
-        const endAt   = row.auction_end_at;
-        const ended   = endAt && new Date(endAt) <= new Date();
-        const iWon    = ended && row.current_bidder_id === user.id;
-        const isLeading = !ended && row.current_bidder_id === user.id;
-        const countdown = _bidCountdown(endAt);
-        const imgHtml = row.images && row.images[0]
-          ? `<img src="${esc(row.images[0])}" style="width:100%;height:100%;object-fit:cover;" alt="${esc(row.name)}">`
-          : `<div style="width:100%;height:100%;display:flex;align-items:center;justify-content:center;font-size:28px;color:rgba(201,162,39,0.25);">⬡</div>`;
-
-        let statusBadge = '';
-        let actionBtn   = '';
-        if (iWon) {
-          statusBadge = `<span style="display:inline-block;padding:2px 8px;background:rgba(201,162,39,0.15);color:#E4BF5A;border:1px solid rgba(201,162,39,0.3);border-radius:2px;font-size:10px;font-weight:600;letter-spacing:0.06em;">🏆 ZMAGALI STE</span>`;
-          actionBtn = `<a href="markets.html" class="btn-edit-my" style="text-decoration:none;background:linear-gradient(135deg,#E4BF5A,#C9A227,#8B6F14);color:#0D1117;">💳 Plačaj zdaj</a>`;
-        } else if (ended) {
-          statusBadge = `<span style="display:inline-block;padding:2px 8px;background:rgba(143,163,177,0.1);color:#6B8090;border:1px solid rgba(143,163,177,0.2);border-radius:2px;font-size:10px;font-weight:600;letter-spacing:0.06em;">ZAKLJUČENO</span>`;
-          actionBtn = `<a href="markets.html" class="btn-edit-my" style="text-decoration:none;opacity:0.5;cursor:default;">Dražba zaključena</a>`;
-        } else if (isLeading) {
-          statusBadge = `<span style="display:inline-block;padding:2px 8px;background:rgba(72,199,142,0.12);color:rgba(72,199,142,0.9);border:1px solid rgba(72,199,142,0.25);border-radius:2px;font-size:10px;font-weight:600;letter-spacing:0.06em;">▲ VODITE</span>`;
-          actionBtn = `<a href="markets.html" class="btn-edit-my" style="text-decoration:none;">⏱ ${countdown} — Marketplace</a>`;
-        } else {
-          statusBadge = `<span style="display:inline-block;padding:2px 8px;background:rgba(240,100,90,0.12);color:#f0645a;border:1px solid rgba(240,100,90,0.2);border-radius:2px;font-size:10px;font-weight:600;letter-spacing:0.06em;">▼ PREBIT</span>`;
-          actionBtn = `<a href="markets.html" class="btn-edit-my" style="text-decoration:none;border-color:rgba(201,162,39,0.4);color:var(--gold-lt);">🔨 Ponudi znova — ${countdown}</a>`;
-        }
-        return `<div class="my-listing-card" style="position:relative;">
-          <div class="my-listing-img" style="background:linear-gradient(135deg,#1a2530,#0e161e);">${imgHtml}</div>
-          <div class="my-listing-body">
-            <div style="margin-bottom:6px;">${statusBadge}</div>
-            <div class="my-listing-name">${esc(row.name)}</div>
-            <div class="my-listing-meta" style="display:flex;flex-direction:column;gap:2px;">
-              <span>Trenutna ponudba: <strong style="color:#E4BF5A;">$${Number(curBid).toLocaleString()}</strong></span>
-              <span style="color:var(--muted);font-size:12px;">Vaša ponudba: $${Number(myBid).toLocaleString()}</span>
-            </div>
-            ${actionBtn}
-          </div>
-        </div>`;
-      }).join('');
+      _myBidsData = listings.map(row => ({ row, myBid: myBidMap[row.id].amount, bidDate: myBidMap[row.id].created_at }));
+      renderMyBids();
     } catch {
+      _myBidsData = [];
       grid.innerHTML = ''; grid.appendChild(emptyMsg); emptyMsg.style.display = '';
     }
+  }
+
+  function sortMyBids(dir) { _myBidsSort = dir; renderMyBids(); }
+
+  function renderMyBids() {
+    const grid = document.getElementById('my-bids-grid');
+    const user = _myBidsUser;
+    const items = sortByDate(_myBidsData, _myBidsSort, x => x.bidDate);
+    updateDashToolbar('my-bids', items.length, 'ponudb');
+    grid.innerHTML = items.map(({ row, myBid, bidDate }) => {
+      const curBid  = row.current_bid || 0;
+      const endAt   = row.auction_end_at;
+      const ended   = endAt && new Date(endAt) <= new Date();
+      const iWon    = ended && row.current_bidder_id === user.id;
+      const isLeading = !ended && row.current_bidder_id === user.id;
+      const countdown = _bidCountdown(endAt);
+      const imgHtml = row.images && row.images[0]
+        ? `<img src="${esc(row.images[0])}" style="width:100%;height:100%;object-fit:cover;" alt="${esc(row.name)}">`
+        : `<div style="width:100%;height:100%;display:flex;align-items:center;justify-content:center;font-size:28px;color:rgba(201,162,39,0.25);">⬡</div>`;
+
+      let statusBadge = '';
+      let actionBtn   = '';
+      if (iWon) {
+        statusBadge = `<span style="display:inline-block;padding:2px 8px;background:rgba(201,162,39,0.15);color:#E4BF5A;border:1px solid rgba(201,162,39,0.3);border-radius:2px;font-size:10px;font-weight:600;letter-spacing:0.06em;">🏆 ZMAGALI STE</span>`;
+        actionBtn = `<a href="markets.html" class="btn-edit-my" style="text-decoration:none;background:linear-gradient(135deg,#E4BF5A,#C9A227,#8B6F14);color:#0D1117;">💳 Plačaj zdaj</a>`;
+      } else if (ended) {
+        statusBadge = `<span style="display:inline-block;padding:2px 8px;background:rgba(143,163,177,0.1);color:#6B8090;border:1px solid rgba(143,163,177,0.2);border-radius:2px;font-size:10px;font-weight:600;letter-spacing:0.06em;">ZAKLJUČENO</span>`;
+        actionBtn = `<a href="markets.html" class="btn-edit-my" style="text-decoration:none;opacity:0.5;cursor:default;">Dražba zaključena</a>`;
+      } else if (isLeading) {
+        statusBadge = `<span style="display:inline-block;padding:2px 8px;background:rgba(72,199,142,0.12);color:rgba(72,199,142,0.9);border:1px solid rgba(72,199,142,0.25);border-radius:2px;font-size:10px;font-weight:600;letter-spacing:0.06em;">▲ VODITE</span>`;
+        actionBtn = `<a href="markets.html" class="btn-edit-my" style="text-decoration:none;">⏱ ${countdown} — Marketplace</a>`;
+      } else {
+        statusBadge = `<span style="display:inline-block;padding:2px 8px;background:rgba(240,100,90,0.12);color:#f0645a;border:1px solid rgba(240,100,90,0.2);border-radius:2px;font-size:10px;font-weight:600;letter-spacing:0.06em;">▼ PREBIT</span>`;
+        actionBtn = `<a href="markets.html" class="btn-edit-my" style="text-decoration:none;border-color:rgba(201,162,39,0.4);color:var(--gold-lt);">🔨 Ponudi znova — ${countdown}</a>`;
+      }
+      return `<div class="my-listing-card" style="position:relative;">
+        <div class="my-listing-img" style="background:linear-gradient(135deg,#1a2530,#0e161e);">${imgHtml}</div>
+        <div class="my-listing-body">
+          <div style="margin-bottom:6px;">${statusBadge}</div>
+          <div class="my-listing-name">${esc(row.name)}</div>
+          <div class="my-listing-meta" style="display:flex;flex-direction:column;gap:2px;">
+            <span>Trenutna ponudba: <strong style="color:#E4BF5A;">$${Number(curBid).toLocaleString()}</strong></span>
+            <span style="color:var(--muted);font-size:12px;">Vaša ponudba: $${Number(myBid).toLocaleString()}</span>
+          </div>
+          <div class="dash-meta-row"><span class="dash-meta-lbl">Ponudili</span><span class="dash-meta-val">${fmtDashDate(bidDate)}</span></div>
+          ${actionBtn}
+        </div>
+      </div>`;
+    }).join('');
   }
 
   // ── TRANSACTIONS ──
@@ -3622,6 +3821,8 @@ const i18n = {
     reset_pw_btn:'Save New Password', reset_pw_success:'Password updated! You can now sign in.',
     reg_success_title:'Check your email!',
     reg_password:'Password', reg_password_ph:'min. 8 characters',
+    reg_password_confirm:'Confirm password', reg_password_confirm_ph:'repeat password',
+    reg_password_mismatch:'Passwords do not match.',
   },
   sl: {
     nav_metals:'Kovine', nav_about:'O nas', nav_process:'Postopek', nav_contact:'Kontakt', nav_cta:'Začni trgovati', nav_signin:'Prijavi se', nav_signed_in:'Prijavljen',
@@ -3708,6 +3909,8 @@ const i18n = {
     reset_pw_btn:'Shrani novo geslo', reset_pw_success:'Geslo posodobljeno! Sedaj se lahko prijavite.',
     reg_success_title:'Preverite e-pošto!',
     reg_password:'Geslo', reg_password_ph:'najmanj 8 znakov',
+    reg_password_confirm:'Potrdite geslo', reg_password_confirm_ph:'ponovite geslo',
+    reg_password_mismatch:'Gesli se ne ujemata.',
   }
 };
 
