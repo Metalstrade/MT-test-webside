@@ -120,27 +120,19 @@
     .overview-panel .tradingview-widget-container,
     .overview-panel .tradingview-widget-container__widget { height: 100%; width: 100%; }
 
-    /* RIGHT: Advanced Chart */
+    /* RIGHT: Advanced Chart — a small button until opened, then a full panel */
     .chart-panel {
       flex: 1 1 0; min-width: 0;
+      display: flex; align-items: flex-start; justify-content: flex-start;
+    }
+    .chart-panel.chart-panel-open {
       border-radius: 10px; overflow: hidden;
       border: 1px solid rgba(201,162,39,0.12);
       background: var(--ink-2); height: 600px;
-      display: flex; align-items: center; justify-content: center;
+      align-items: stretch; justify-content: stretch;
     }
     #tv-chart-container { height: 100%; width: 100%; }
 
-    /* Chart placeholder */
-    .chart-placeholder {
-      display: flex; flex-direction: column; align-items: center;
-      justify-content: center; gap: 20px; padding: 40px;
-      text-align: center;
-    }
-    .chart-placeholder svg { opacity: 0.18; }
-    .chart-placeholder p {
-      font-size: 14px; color: var(--muted); line-height: 1.6;
-      max-width: 260px;
-    }
     .chart-open-btn {
       display: inline-flex; align-items: center; gap: 9px;
       padding: 11px 26px; border-radius: 5px; cursor: pointer;
@@ -155,7 +147,8 @@
     @media (max-width: 1024px) {
       .markets-layout { flex-direction: column; padding: 16px 20px 40px; }
       .overview-panel { flex: none; width: 100%; height: 500px; }
-      .chart-panel { flex: none; width: 100%; height: 460px; }
+      .chart-panel { flex: none; width: 100%; }
+      .chart-panel.chart-panel-open { height: 460px; }
     }
     @media (max-width: 768px) {
       nav { padding: 0 20px; }
@@ -432,16 +425,9 @@
         </div>
       </div>
 
-      <!-- RIGHT: Advanced Chart with price scale -->
+      <!-- RIGHT: Advanced Chart with price scale — starts as just a small button -->
       <div class="chart-panel" id="chart-panel">
         <div class="chart-placeholder" id="chart-placeholder">
-          <svg width="56" height="56" viewBox="0 0 56 56" fill="none" xmlns="http://www.w3.org/2000/svg">
-            <rect x="1" y="1" width="54" height="54" rx="9" stroke="#C9A227" stroke-width="1.5"/>
-            <polyline points="10,40 20,26 28,32 36,18 46,22" stroke="#C9A227" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
-            <line x1="10" y1="44" x2="46" y2="44" stroke="#C9A227" stroke-width="1.2" stroke-linecap="round"/>
-            <line x1="10" y1="12" x2="10" y2="44" stroke="#C9A227" stroke-width="1.2" stroke-linecap="round"/>
-          </svg>
-          <p data-i18n="chart_prompt">Ali želite uporabljati napredni graf?</p>
           <button class="chart-open-btn" onclick="openAdvancedChart()">
             <svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
               <polyline points="1,15 6,9 10,12 15,5"/><polyline points="10,5 15,5 15,10"/>
@@ -554,8 +540,7 @@
       document.getElementById('chart-placeholder').style.display = 'none';
       const container = document.getElementById('tv-chart-container');
       container.style.display = 'block';
-      document.getElementById('chart-panel').style.alignItems = 'stretch';
-      document.getElementById('chart-panel').style.justifyContent = 'stretch';
+      document.getElementById('chart-panel').classList.add('chart-panel-open');
       renderChart('TVC:GOLD');
       chartOpen = true;
     }
