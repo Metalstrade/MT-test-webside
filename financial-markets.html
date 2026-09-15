@@ -184,9 +184,20 @@
     .fav-strip-hint {
       font-size: 11px; color: var(--muted); font-style: italic; margin-left: 4px;
     }
-    .fav-chips {
-      display: flex; gap: 6px; flex-wrap: wrap;
+    .fav-strip-toggle {
+      margin-left: auto; background: none; border: none; cursor: pointer; padding: 4px 0;
+      display: inline-flex; align-items: center; gap: 6px;
+      font-family: 'Inter', sans-serif; font-size: 11px; font-weight: 600;
+      letter-spacing: 0.04em; text-transform: uppercase;
+      color: var(--gold); transition: color 0.15s ease;
     }
+    .fav-strip-toggle:hover { color: var(--gold-lt); }
+    .fav-strip-toggle svg { transition: transform 0.2s ease; flex-shrink: 0; }
+    .fav-strip-toggle.open svg { transform: rotate(180deg); }
+    .fav-chips {
+      display: none; gap: 6px; flex-wrap: wrap; margin-top: 12px;
+    }
+    .fav-chips.open { display: flex; }
     .fav-chip {
       display: inline-flex; align-items: center; gap: 5px;
       padding: 5px 10px 5px 10px; border-radius: 100px;
@@ -250,6 +261,10 @@
         <span class="fav-strip-title">Moji Favoriti</span>
         <span class="fav-count-badge" id="fm-fav-count">0 / 10</span>
         <span class="fav-strip-hint" id="fm-fav-hint">Prijavite se za shranjevanje</span>
+        <button class="fav-strip-toggle" id="fm-fav-toggle" onclick="toggleFavStrip()">
+          <span id="fm-fav-toggle-lbl">Izberi favorite</span>
+          <svg width="11" height="11" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="4,6 8,10 12,6"/></svg>
+        </button>
       </div>
       <div class="fav-chips" id="fm-fav-chips"></div>
     </div>
@@ -645,6 +660,14 @@
           <svg class="fav-heart" viewBox="0 0 24 24" fill="${isFav ? 'currentColor' : 'none'}" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
         </button>`;
       }).join('');
+    }
+
+    function toggleFavStrip() {
+      const chips = document.getElementById('fm-fav-chips');
+      const btn   = document.getElementById('fm-fav-toggle');
+      const isOpen = chips.classList.toggle('open');
+      btn.classList.toggle('open', isOpen);
+      document.getElementById('fm-fav-toggle-lbl').textContent = isOpen ? 'Skrij favorite' : 'Izberi favorite';
     }
 
     sbFM.auth.getSession().then(({ data: { session } }) => {
