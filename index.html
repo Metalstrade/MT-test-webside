@@ -416,6 +416,15 @@
       color: #F0F4F7;
       margin: 0 0 16px;
     }
+    /* Dashboard section headings — bold uppercase print letters (table-like),
+       sans-serif instead of the site's usual serif display type. */
+    .section-title.dash-heading {
+      font-family: 'Inter', sans-serif;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.035em;
+      font-size: clamp(22px, 2vw, 34px);
+    }
     .section-sub {
       font-size: 16px;
       line-height: 1.75;
@@ -1376,7 +1385,7 @@
   <section id="my-listings-section">
     <div class="section-inner">
       <div class="section-eyebrow">Moji Oglasi</div>
-      <h2 class="section-title">Moje Objave na Trgu</h2>
+      <h2 class="section-title dash-heading">Moje Objave na Trgu</h2>
       <p class="section-sub">Upravljajte z vašimi aktivnimi oglasi. Za urejanje greste skozi celoten postopek znova.</p>
       <div class="dash-toolbar" id="my-listings-toolbar" style="display:none;">
         <div class="dash-count" id="my-listings-count"></div>
@@ -1398,7 +1407,7 @@
   <section id="my-bids-section" style="display:none;">
     <div class="section-inner">
       <div class="section-eyebrow">Moje Dražitve</div>
-      <h2 class="section-title">Dražbe, kjer Sodelujete</h2>
+      <h2 class="section-title dash-heading">Dražbe, kjer Sodelujete</h2>
       <p class="section-sub">Vse dražbe, na katerih ste oddali ponudbo. Spremljajte status in ponudite znova neposredno od tukaj.</p>
       <div class="dash-toolbar" id="my-bids-toolbar" style="display:none;">
         <div class="dash-count" id="my-bids-count"></div>
@@ -1420,7 +1429,7 @@
   <section id="fav-listings-section" style="display:none;">
     <div class="section-inner">
       <div class="section-eyebrow">Priljubljeni Oglasi</div>
-      <h2 class="section-title">Oglasi, ki jih Spremljate</h2>
+      <h2 class="section-title dash-heading">Oglasi, ki jih Spremljate</h2>
       <p class="section-sub">Oglasi, ki ste jih označili s srčkom na Marketplace strani.</p>
       <div class="dash-toolbar" id="fav-listings-toolbar" style="display:none;">
         <div class="dash-count" id="fav-listings-count"></div>
@@ -1442,7 +1451,7 @@
   <section id="my-transactions-section" style="display:none;">
     <div class="section-inner">
       <div class="section-eyebrow">Escrow</div>
-      <h2 class="section-title">Moje Transakcije</h2>
+      <h2 class="section-title dash-heading">Moje Transakcije</h2>
       <p class="section-sub">Aktivne in zaključene transakcije — kot kupec in kot prodajalec.</p>
 
       <!-- Tabs: kot kupec / kot prodajalec -->
