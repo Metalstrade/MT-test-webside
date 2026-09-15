@@ -4558,12 +4558,15 @@ function overlayClickClose(event, id) {
 // ── FAB CLICK ──
 function fabClick() {
   if (!currentUser) {
-    openAuthModal('signin');
+    alert('Za oddajo oglasa se morate najprej registrirati.');
+    openAuthModal('register');
     return;
   }
   const approved = currentUser.user_metadata?.marketplace_approved;
   if (!approved) {
-    alert('Vaš račun še čaka na odobritev administratorja. Ko bo odobren, boste prejeli obvestilo in bodo omogočene vse funkcije Marketplace-a.');
+    if (confirm('Za oddajo oglasa morate verificirati svoj račun. V Nastavitvah → Verifikacija oddajte dokazila (izpisek iz registra, davčna registracija ipd.) — administrator jih bo pregledal in potrdil.\n\nŽelite zdaj iti v Nastavitve?')) {
+      window.location.href = 'index.html?openSettings=verify';
+    }
     return;
   }
   openWizard();
@@ -4675,7 +4678,7 @@ async function submitRegM(e) {
 
   document.getElementById('m-reg-form').style.display = 'none';
   document.getElementById('m-reg-success-msg').textContent =
-    `Poslali smo potrditveni link na ${fd.get('email')}. Kliknite nanj, da aktivirate račun.`;
+    `Poslali smo potrditveni link na ${fd.get('email')}. Kliknite nanj, da aktivirate račun. Po aktivaciji lahko takoj brskate po trgu — za oddajo oglasov ali nakup pa boste morali v Nastavitvah oddati verifikacijo računa.`;
   document.getElementById('m-reg-success').style.display = '';
 }
 
@@ -5029,8 +5032,12 @@ function resetImgSlots() {
 
 // ── SUBMIT LISTING ──
 async function submitListing() {
-  if (!currentUser || !currentUser.user_metadata?.marketplace_approved) {
-    alert('Vaš račun še čaka na odobritev administratorja.');
+  if (!currentUser) {
+    alert('Za oddajo oglasa se morate najprej registrirati.');
+    return;
+  }
+  if (!currentUser.user_metadata?.marketplace_approved) {
+    alert('Za oddajo oglasa morate imeti verificiran račun. Pojdite v Nastavitve → Verifikacija in oddajte dokazila.');
     return;
   }
   const nextBtn = document.getElementById('wiz-btn-next');
@@ -5528,7 +5535,7 @@ async function showPaymentInfo(dbId, amount) {
   if (!currentUser) { openAuthModal('signin'); return; }
 
   if (!currentUser.user_metadata?.marketplace_approved) {
-    alert('Vaš račun še čaka na odobritev administratorja. Ko bo odobren, boste prejeli obvestilo in bodo omogočene vse funkcije Marketplace-a.');
+    alert('Za nakup morate imeti verificiran račun. Pojdite v Nastavitve → Verifikacija in oddajte dokazila — administrator jih bo pregledal in potrdil.');
     return;
   }
 

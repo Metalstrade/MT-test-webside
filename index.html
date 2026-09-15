@@ -2332,7 +2332,7 @@
       <!-- TAB: VERIFY -->
       <div id="stab-verify" style="display:none;">
         <div id="verify-status-box" style="padding:16px;border-radius:3px;margin-bottom:20px;font-size:13px;"></div>
-        <p style="color:var(--muted);font-size:13px;margin:0 0 20px;">Za pridobitev oznake <strong style="color:var(--gold-lt);">Verified Seller ✓</strong> naložite enega od dokumentov:</p>
+        <p style="color:var(--muted);font-size:13px;margin:0 0 20px;">Verifikacija je pogoj za <strong style="color:var(--gold-lt);">oddajo oglasov in nakup</strong> na Marketplace-u ter vam prinese oznako <strong style="color:var(--gold-lt);">Verified Seller ✓</strong>. Naložite enega od dokumentov:</p>
         <ul style="color:var(--muted);font-size:13px;margin:0 0 20px;padding-left:20px;line-height:2;">
           <li>Izpisek iz poslovnega registra (ne starejši od 3 mes.)</li>
           <li>Kopija davčne registracije</li>
@@ -2569,8 +2569,8 @@
     const email = fd.get('email');
     document.getElementById('reg-success-msg').textContent =
       lang === 'sl'
-        ? `Poslali smo potrditveni link na ${email}. Kliknite nanj, da aktivirate račun. Po potrditvi emaila vas bomo pregledali in odobrili dostop do Marketplace-a.`
-        : `We sent a confirmation link to ${email}. Click it to activate your account. After email confirmation, we will review and approve your Marketplace access.`;
+        ? `Poslali smo potrditveni link na ${email}. Kliknite nanj, da aktivirate račun. Po aktivaciji lahko takoj brskate po trgu — za oddajo oglasov ali nakup pa boste morali v Nastavitvah oddati verifikacijo računa, ki jo bo pregledal administrator.`
+        : `We sent a confirmation link to ${email}. Click it to activate your account. Once active, you can browse the marketplace right away — to post listings or buy, you'll need to submit account verification in Settings, which our team will review.`;
 
     document.getElementById('reg-form').style.display = 'none';
     document.getElementById('reg-success').style.display = 'block';
@@ -2902,6 +2902,11 @@ return '$' + price.toLocaleString('en-US', {maximumFractionDigits:2});
       localStorage.setItem('signed_in', 'true');
       setSignedInBtn();
       showPersonalDashboard(session.user);
+      // Deep link from markets.html — "morate verificirati" redirects here
+      if (new URLSearchParams(window.location.search).get('openSettings') === 'verify') {
+        openSettingsModal();
+        switchSettingsTab('verify');
+      }
     } else {
       // Stale "signed_in" flag but no valid session — restore the logged-out
       // nav so the buttons the inline script hid don't stay gone.
@@ -3147,6 +3152,11 @@ return '$' + price.toLocaleString('en-US', {maximumFractionDigits:2});
       document.querySelector(`.stab[data-tab="${t}"]`).classList.toggle('active', t === tab);
     });
     if (tab === 'history') loadHistoryTab();
+    if (tab === 'verify') {
+      sb.auth.getUser().then(({ data: { user } }) => {
+        if (user) loadVerifyStatus(user, user.user_metadata || {});
+      });
+    }
   }
 
   // Profile
@@ -3166,14 +3176,42 @@ return '$' + price.toLocaleString('en-US', {maximumFractionDigits:2});
     document.getElementById('sp-desc').value           = m.company_desc || '';
     const emailDisplay = document.getElementById('sec-email-display');
     if (emailDisplay) emailDisplay.textContent = user.email || '—';
-    if (m.verified) {
-      document.getElementById('verify-status-box').innerHTML = '<span style="color:#48c78e;">✓ Račun je verificiran</span>';
-      document.getElementById('verify-status-box').style.background = 'rgba(72,199,142,0.08)';
-      document.getElementById('verify-status-box').style.border = '1px solid rgba(72,199,142,0.2)';
-    } else {
-      document.getElementById('verify-status-box').innerHTML = '<span style="color:var(--muted);">Račun še ni verificiran.</span>';
-      document.getElementById('verify-status-box').style.background = 'rgba(143,163,177,0.06)';
-      document.getElementById('verify-status-box').style.border = '1px solid rgba(143,163,177,0.12)';
+    loadVerifyStatus(user, m);
+  }
+
+  // Verifikacija — loči: ni oddano / čaka na pregled / zavrnjeno / odobreno.
+  // m.verified je hiter začetni izris (brez čakanja na omrežje); nato
+  // po potrebi dopolnimo s pravim statusom iz tabele verifications.
+  async function loadVerifyStatus(user, m) {
+    const box = document.getElementById('verify-status-box');
+    if (!box) return;
+    if (m && m.verified) {
+      box.innerHTML = '<span style="color:#48c78e;">✓ Račun je verificiran</span>';
+      box.style.background = 'rgba(72,199,142,0.08)';
+      box.style.border = '1px solid rgba(72,199,142,0.2)';
+      return;
+    }
+    box.innerHTML = '<span style="color:var(--muted);">Račun še ni verificiran.</span>';
+    box.style.background = 'rgba(143,163,177,0.06)';
+    box.style.border = '1px solid rgba(143,163,177,0.12)';
+    try {
+      const { data } = await sb.from('verifications')
+        .select('status,created_at')
+        .eq('user_id', user.id)
+        .order('created_at', { ascending: false })
+        .limit(1)
+        .maybeSingle();
+      if (data && data.status === 'pending') {
+        box.innerHTML = '<span style="color:var(--gold-lt);">⏳ Dokument oddan — čaka na pregled administratorja.</span>';
+        box.style.background = 'rgba(201,162,39,0.08)';
+        box.style.border = '1px solid rgba(201,162,39,0.2)';
+      } else if (data && data.status === 'rejected') {
+        box.innerHTML = '<span style="color:#f0645a;">✕ Verifikacija je bila zavrnjena. Naložite nov dokument.</span>';
+        box.style.background = 'rgba(240,100,90,0.08)';
+        box.style.border = '1px solid rgba(240,100,90,0.2)';
+      }
+    } catch {
+      // Tiho spregledaj — začetni "ni verificiran" izris ostane veljaven.
     }
   }
   async function saveProfile() {
@@ -3307,6 +3345,7 @@ return '$' + price.toLocaleString('en-US', {maximumFractionDigits:2});
     msg.style.color = '#48c78e';
     msg.textContent = '✓ Dokument poslan. Pregledali ga bomo v 1-2 delovnih dneh.';
     fileEl.value = '';
+    loadVerifyStatus(user, user.user_metadata || {});
   }
 
   // Language / Currency prefs
