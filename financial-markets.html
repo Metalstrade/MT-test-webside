@@ -659,7 +659,10 @@
       fmUser = session?.user || null;
       renderFavChipsFM();
     });
-    sbFM.auth.onAuthStateChange((_e, session) => {
+    sbFM.auth.onAuthStateChange((e, session) => {
+      // INITIAL_SESSION is already handled by the getSession() call above —
+      // reacting to it here too double-rendered the chip grid on arrival.
+      if (e === 'INITIAL_SESSION') return;
       fmUser = session?.user || null;
       renderFavChipsFM();
     });

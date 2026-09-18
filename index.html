@@ -3027,7 +3027,10 @@ return '$' + price.toLocaleString('en-US', {maximumFractionDigits:2});
 
   // Listen for auth events (sign-in after email confirmation)
   sb.auth.onAuthStateChange((event, session) => {
-    if (session && (event === 'SIGNED_IN' || event === 'TOKEN_REFRESHED' || event === 'INITIAL_SESSION')) {
+    // INITIAL_SESSION is already handled by the getSession() call above —
+    // reacting to it here too double-fetched My Listings/Bids/Favorites and
+    // could flicker the dashboard on arrival.
+    if (session && (event === 'SIGNED_IN' || event === 'TOKEN_REFRESHED')) {
       localStorage.setItem('signed_in', 'true');
       setSignedInBtn();
       showPersonalDashboard(session.user);

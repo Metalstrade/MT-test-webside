@@ -4511,8 +4511,13 @@ let dbListings = [];
 let _imgSlotTarget = 0;
 let _editListingId = null;
 
-sbM.auth.onAuthStateChange((_event, session) => {
+sbM.auth.onAuthStateChange((event, session) => {
   currentUser = session ? session.user : null;
+  // INITIAL_SESSION already gets handled by the getSession() call below —
+  // reacting to it here too raced two independent loadDbListings() fetches
+  // against each other, which is what made the listings grid visibly
+  // flicker (render, then re-render) on arrival.
+  if (event === 'INITIAL_SESSION') return;
   loadDbListings();
   initMessaging();
 });
