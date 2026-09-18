@@ -606,14 +606,23 @@
       background: rgba(13,17,23,0.95); backdrop-filter: blur(12px);
       border-bottom: 1px solid rgba(201,162,39,0.1);
       padding: 0 48px;
+      /* Three tabs (+ unread badges) no longer reliably fit a phone width.
+         Scroll the row itself instead of letting it force the whole page
+         wider — that was clipping the FAB and causing a layout "jump"
+         (visible flicker) whenever a badge appeared after first paint. */
+      overflow-x: auto; -webkit-overflow-scrolling: touch; scrollbar-width: none;
     }
+    .page-tabs::-webkit-scrollbar { display: none; }
     @media (max-width: 900px) { .page-tabs { padding: 0 20px; } }
+    @media (max-width: 480px) {
+      .page-tab { padding: 12px 12px 10px; font-size: 12px; gap: 5px; }
+    }
     .page-tab {
       padding: 12px 20px 10px; background: none; border: none; border-bottom: 2px solid transparent;
       font-family: 'Inter', sans-serif; font-size: 13px; font-weight: 500;
       color: var(--muted); cursor: pointer; letter-spacing: 0.03em;
       transition: color 0.15s, border-color 0.15s;
-      display: flex; align-items: center; gap: 7px; white-space: nowrap;
+      display: flex; align-items: center; gap: 7px; white-space: nowrap; flex-shrink: 0;
     }
     .page-tab:hover { color: var(--silver-lt); }
     .page-tab.active { color: var(--gold-lt); border-bottom-color: var(--gold); }
