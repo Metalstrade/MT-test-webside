@@ -261,7 +261,7 @@
       width: 100%; padding: 9px 12px;
       background: var(--ink-3); border: 1px solid rgba(143,163,177,0.15);
       border-radius: 3px; color: #E8EEF2; font-family: 'Inter', sans-serif;
-      font-size: 13px; outline: none; cursor: pointer;
+      font-size: 16px; outline: none; cursor: pointer;
       transition: border-color 0.2s ease;
       appearance: none;
       background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' fill='none' stroke='%236B8090' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M1 1l5 5 5-5'/%3E%3C/svg%3E");
@@ -281,7 +281,7 @@
       width: 100%; padding: 9px 10px 9px 24px;
       background: var(--ink-3); border: 1px solid rgba(143,163,177,0.15);
       border-radius: 3px; color: #E8EEF2; font-family: 'Inter', sans-serif;
-      font-size: 13px; outline: none;
+      font-size: 16px; outline: none;
       transition: border-color 0.2s ease;
     }
     .price-input:focus { border-color: var(--gold); }
@@ -303,7 +303,7 @@
     }
     .search-input {
       flex: 1; background: none; border: none; outline: none;
-      font-family: 'Inter', sans-serif; font-size: 13px;
+      font-family: 'Inter', sans-serif; font-size: 16px;
       color: #E8EEF2; padding: 11px 0;
     }
     .search-input::placeholder { color: var(--muted); }
@@ -343,7 +343,7 @@
     .sort-bar select {
       background: var(--ink-3); border: 1px solid rgba(143,163,177,0.15);
       border-radius: 2px; color: #E8EEF2; font-family: 'Inter', sans-serif;
-      font-size: 12px; padding: 5px 10px; outline: none; cursor: pointer;
+      font-size: 16px; padding: 5px 10px; outline: none; cursor: pointer;
     }
 
     /* ── LISTINGS GRID ── */
@@ -882,7 +882,10 @@
       width: 100%; padding: 10px 14px;
       background: var(--ink-3); border: 1px solid rgba(143,163,177,0.15);
       border-radius: 3px; color: #E8EEF2;
-      font-family: 'Inter', sans-serif; font-size: 13px; outline: none;
+      /* 16px, not 13px: below 16px, iOS Safari auto-zooms in on focus and
+         back out on blur — with several fields in a row (registration) that
+         reads as the page "flickering" while filling out the form. */
+      font-family: 'Inter', sans-serif; font-size: 16px; outline: none;
       transition: border-color 0.2s ease;
     }
     .wiz-input:focus { border-color: rgba(201,162,39,0.5); }
@@ -1130,7 +1133,7 @@
     .bid-stat-val { font-size: 16px; font-weight: 600; color: var(--gold-lt); font-family: 'Cormorant Garamond', serif; }
     .bid-input-wrap { margin-bottom: 14px; }
     .bid-input-wrap label { font-size: 11px; color: var(--muted); letter-spacing: 0.06em; text-transform: uppercase; display: block; margin-bottom: 6px; }
-    .bid-input { width: 100%; background: var(--ink-3); border: 1px solid rgba(143,163,177,0.2); border-radius: 3px; padding: 10px 12px; color: #E8EEF2; font-size: 15px; font-family: 'Inter', sans-serif; outline: none; }
+    .bid-input { width: 100%; background: var(--ink-3); border: 1px solid rgba(143,163,177,0.2); border-radius: 3px; padding: 10px 12px; color: #E8EEF2; font-size: 16px; font-family: 'Inter', sans-serif; outline: none; }
     .bid-input:focus { border-color: rgba(201,162,39,0.4); }
     .bid-error { font-size: 12px; color: #f0645a; margin-bottom: 12px; display: none; }
     .btn-submit-bid {
@@ -4019,12 +4022,58 @@ updateFilters();
           <input class="wiz-input" type="email" name="email" placeholder="vaš@email.com" required autocomplete="email" />
         </div>
         <div class="wiz-field">
+          <label>Naziv podjetja</label>
+          <input class="wiz-input" type="text" name="company_name" placeholder="npr. Metals d.o.o." required />
+        </div>
+        <div class="wiz-field">
           <label>Telefon</label>
-          <input class="wiz-input" type="tel" name="telefon" placeholder="+386 41 123 456" />
+          <input class="wiz-input" type="tel" name="telefon" placeholder="+386 41 123 456" required />
         </div>
         <div class="wiz-field">
           <label>Davčna številka</label>
-          <input class="wiz-input" type="text" name="davcna" placeholder="SI12345678" />
+          <input class="wiz-input" type="text" name="davcna" placeholder="SI12345678" required />
+        </div>
+        <div class="wiz-field">
+          <label>Naslov podjetja</label>
+          <input class="wiz-input" type="text" name="address" placeholder="npr. Dunajska cesta 5, 1000 Ljubljana" required />
+        </div>
+        <div class="wiz-field">
+          <label>NACE dejavnost</label>
+          <input class="wiz-input" type="text" name="nace" placeholder="npr. 24.10 — Proizvodnja surovega železa in jekla" required />
+          <div style="font-size:11px;color:var(--muted);margin-top:4px;">Vpišite kodo in naziv (npr. 46.72, 24.45, 38.32…)</div>
+        </div>
+        <div class="wiz-field">
+          <label>Država</label>
+          <select class="wiz-input" name="country">
+            <option value="">— Izberite —</option>
+            <option value="AT">Avstrija</option>
+            <option value="BE">Belgija</option>
+            <option value="BG">Bolgarija</option>
+            <option value="CY">Ciper</option>
+            <option value="CZ">Češka</option>
+            <option value="DK">Danska</option>
+            <option value="EE">Estonija</option>
+            <option value="FI">Finska</option>
+            <option value="FR">Francija</option>
+            <option value="GR">Grčija</option>
+            <option value="IE">Irska</option>
+            <option value="IT">Italija</option>
+            <option value="LV">Latvija</option>
+            <option value="LT">Litva</option>
+            <option value="LU">Luksemburg</option>
+            <option value="MT">Malta</option>
+            <option value="HU">Madžarska</option>
+            <option value="DE">Nemčija</option>
+            <option value="NL">Nizozemska</option>
+            <option value="PL">Poljska</option>
+            <option value="PT">Portugalska</option>
+            <option value="RO">Romunija</option>
+            <option value="SK">Slovaška</option>
+            <option value="SI">Slovenija</option>
+            <option value="ES">Španija</option>
+            <option value="SE">Švedska</option>
+            <option value="HR">Hrvaška</option>
+          </select>
         </div>
         <div class="wiz-field">
           <label>Geslo</label>
@@ -4050,6 +4099,11 @@ updateFilters();
           <input class="wiz-input" type="number" id="m-reg-captcha-a" placeholder="Odgovor" required autocomplete="off" data-answer="" />
         </div>
         <div class="wiz-error" id="m-reg-captcha-error" style="display:none;margin-bottom:6px;">Napačen odgovor.</div>
+        <label style="display:flex; align-items:flex-start; gap:8px; margin-bottom:10px; cursor:pointer;">
+          <input type="checkbox" id="m-reg-terms-check" style="margin-top:2px; accent-color:var(--gold); width:15px; height:15px; flex-shrink:0; cursor:pointer;" />
+          <span style="font-size:12px; color:var(--muted); line-height:1.6;">Strinjam se s <a href="index.html" target="_blank" style="color:var(--gold); text-decoration:underline;">pogoji uporabe</a></span>
+        </label>
+        <div class="wiz-error" id="m-reg-terms-error" style="display:none;margin-bottom:10px;">Za nadaljevanje morate sprejeti pogoje uporabe.</div>
         <div class="wiz-error" id="m-reg-error" style="display:none;margin-bottom:10px;"></div>
         <button type="submit" class="btn-wiz-next" style="width:100%;" id="m-reg-btn">Registriraj se →</button>
       </form>
@@ -4703,6 +4757,13 @@ async function submitRegM(e) {
   }
   mismatchEl.style.display = 'none';
 
+  const termsErr = document.getElementById('m-reg-terms-error');
+  if (!document.getElementById('m-reg-terms-check').checked) {
+    termsErr.style.display = '';
+    return;
+  }
+  termsErr.style.display = 'none';
+
   btn.disabled = true; btn.textContent = 'Registriram…';
   const fd = new FormData(document.getElementById('m-reg-form'));
   const { data, error } = await sbM.auth.signUp({
@@ -4711,16 +4772,21 @@ async function submitRegM(e) {
     options: {
       emailRedirectTo: window.location.href,
       data: {
-        first_name: fd.get('ime'),
-        last_name:  fd.get('priimek'),
-        phone:      fd.get('telefon'),
-        tax_number: fd.get('davcna'),
+        first_name:   fd.get('ime'),
+        last_name:    fd.get('priimek'),
+        phone:        fd.get('telefon'),
+        company_name: fd.get('company_name'),
+        address:      fd.get('address'),
+        nace:         fd.get('nace'),
+        tax_number:   fd.get('davcna'),
+        country:      fd.get('country'),
+        marketplace_approved: false,
       }
     }
   });
   btn.disabled = false; btn.textContent = 'Registriraj se →';
 
-  const isDuplicate = (error && error.message.toLowerCase().includes('already'))
+  const isDuplicate = (error && (error.message.toLowerCase().includes('already') || error.message.toLowerCase().includes('unique')))
     || (!error && data.user && Array.isArray(data.user.identities) && data.user.identities.length === 0);
 
   if (isDuplicate) {
@@ -4732,6 +4798,26 @@ async function submitRegM(e) {
     errEl.textContent = error.message;
     errEl.style.display = '';
     return;
+  }
+
+  // Insert into user_registrations via SECURITY DEFINER function (bypasses RLS before email confirm)
+  // — same record admin.html's "Registracije" list reads, so signing up here
+  // shows up there exactly like signing up from the homepage does.
+  if (data.user) {
+    const { error: rpcErr } = await sbM.rpc('register_company', {
+      p_user_id:      data.user.id,
+      p_email:        fd.get('email'),
+      p_company_name: fd.get('company_name'),
+      p_vat:          fd.get('davcna'),
+      p_country:      fd.get('country'),
+      p_address:      fd.get('address'),
+      p_nace:         fd.get('nace')
+    });
+    if (rpcErr) {
+      errEl.textContent = 'Račun je bil ustvarjen, vendar vpis v register ni uspel: ' + rpcErr.message;
+      errEl.style.display = '';
+      // Still show success below — the auth account was created either way.
+    }
   }
 
   document.getElementById('m-reg-form').style.display = 'none';
