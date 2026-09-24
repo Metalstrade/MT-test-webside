@@ -1961,17 +1961,18 @@
       </div>
 
       <!-- NACE -->
-      <div>
+      <div style="position:relative;">
         <label style="display:block; font-size:11px; letter-spacing:0.08em; text-transform:uppercase; color:var(--muted); margin-bottom:6px; font-family:'Inter',sans-serif;" data-i18n-html="reg_nace_label">NACE dejavnost <span style="color:var(--gold);">*</span></label>
-        <select name="nace" id="reg-nace" required style="
-          width:100%; padding:11px 14px;
+        <input type="text" id="reg-nace-search" autocomplete="off" data-i18n-placeholder="reg_nace_search_ph" placeholder="— Izberite dejavnost —" style="
+          width:100%; padding:11px 14px; box-sizing:border-box;
           background:var(--ink-3); border:1px solid rgba(143,163,177,0.2);
           border-radius:3px; color:#E8EEF2; font-family:'Inter',sans-serif; font-size:16px;
           outline:none; transition:border-color 0.2s ease;
-        " onfocus="this.style.borderColor='var(--gold)'" onblur="this.style.borderColor='rgba(143,163,177,0.2)'">
-          <option value="">— Izberite dejavnost —</option>
-        </select>
-        <div style="font-size:11px;color:var(--muted);margin-top:4px;" data-i18n="reg_nace_hint">Izberite glavno dejavnost s seznama (SKD 2008)</div>
+        " onfocus="this.style.borderColor='var(--gold)'" onblur="this.style.borderColor='rgba(143,163,177,0.2)'" />
+        <input type="hidden" name="nace" id="reg-nace" />
+        <div id="reg-nace-dropdown" style="display:none; position:absolute; top:100%; left:0; right:0; z-index:80; max-height:280px; overflow-y:auto; margin-top:4px; background:var(--ink-3); border:1px solid rgba(143,163,177,0.25); border-radius:3px; box-shadow:0 8px 24px rgba(0,0,0,0.4);"></div>
+        <div style="font-size:11px;color:var(--muted);margin-top:4px;" data-i18n="reg_nace_hint">Vnesite kodo (npr. 46) ali del imena dejavnosti za filtriranje</div>
+        <div id="reg-nace-error" style="display:none; font-size:12px; color:#ff6b6b; margin-top:4px;" data-i18n="reg_nace_required">Prosimo, izberite dejavnost.</div>
       </div>
 
       <!-- Country -->
@@ -3203,28 +3204,127 @@
     ["ES","Španija","Spain"], ["SE","Švedska","Sweden"], ["HR","Hrvaška","Croatia"]
   ];
 
-  // Napolni <select> z vsemi NACE kodami, razvrščenimi po sekcijah
-  // (optgroup). Vrednost (value) ostane vedno v slovenščini (kanonična
-  // oblika, ki gre v bazo), prikazano besedilo (text) sledi jeziku strani.
-  function populateNaceSelect(selectId, lang) {
-    const sel = document.getElementById(selectId);
-    if (!sel) return;
-    lang = lang || localStorage.getItem('lang') || 'sl';
-    const prevValue = sel.value;
-    const placeholder = lang === 'en' ? '— Select activity —' : '— Izberite dejavnost —';
-    let html = `<option value="">${placeholder}</option>`;
+  // Seznam vseh NACE kod v enolinijski obliki (brez sekcij), za filtriranje.
+  let NACE_FLAT = null;
+  function getNaceFlat() {
+    if (NACE_FLAT) return NACE_FLAT;
+    NACE_FLAT = [];
     NACE_DATA.forEach(([letter, slTitle, enTitle, codes]) => {
-      const groupLabel = letter + ' — ' + (lang === 'en' ? enTitle : slTitle);
-      html += `<optgroup label="${groupLabel}">`;
       codes.forEach(([code, slDesc, enDesc]) => {
-        const value = code + ' — ' + slDesc;
-        const text  = code + ' — ' + (lang === 'en' ? enDesc : slDesc);
-        html += `<option value="${value}">${text}</option>`;
+        NACE_FLAT.push({ code, slDesc, enDesc, letter, slTitle, enTitle });
       });
-      html += '</optgroup>';
     });
-    sel.innerHTML = html;
-    if (prevValue) sel.value = prevValue;
+    return NACE_FLAT;
+  }
+
+  // Iskalni spustni seznam za NACE: besedilni vnos (vidno) + skrito polje
+  // (name="nace", kanonična SL vrednost, ki gre v bazo) + spustni seznam
+  // zadetkov. Filtrira po začetku kode (npr. "46") ali po delu opisa.
+  function setupNaceCombobox(prefix) {
+    const search = document.getElementById(prefix + '-search');
+    const hidden = document.getElementById(prefix);
+    const dropdown = document.getElementById(prefix + '-dropdown');
+    if (!search || !hidden || !dropdown) return;
+
+    let items = [];
+    let activeIndex = -1;
+    const lang = () => localStorage.getItem('lang') || 'sl';
+
+    function render(filter) {
+      const flat = getNaceFlat();
+      const f = (filter || '').trim().toLowerCase();
+      const L = lang();
+      if (!f) {
+        items = flat;
+      } else {
+        const digits = f.replace(/[^0-9]/g, '');
+        items = flat.filter(item => {
+          const desc = (L === 'en' ? item.enDesc : item.slDesc).toLowerCase();
+          const codeDigits = item.code.replace(/[^0-9]/g, '');
+          return (digits && codeDigits.startsWith(digits)) || item.code.toLowerCase().startsWith(f) || desc.includes(f);
+        });
+      }
+      activeIndex = -1;
+      if (!items.length) {
+        dropdown.innerHTML = `<div style="padding:10px 14px;color:var(--muted);font-size:13px;">${L === 'en' ? 'No matching activity' : 'Ni ujemajočih dejavnosti'}</div>`;
+      } else {
+        let lastLetter = null;
+        let html = '';
+        items.forEach((item, i) => {
+          if (item.letter !== lastLetter) {
+            lastLetter = item.letter;
+            const title = L === 'en' ? item.enTitle : item.slTitle;
+            html += `<div style="padding:8px 14px 4px;font-size:10px;letter-spacing:0.06em;text-transform:uppercase;color:var(--gold);opacity:0.85;">${item.letter} — ${title}</div>`;
+          }
+          const desc = L === 'en' ? item.enDesc : item.slDesc;
+          html += `<div data-idx="${i}" style="padding:9px 14px;cursor:pointer;font-size:14px;color:#E8EEF2;">${item.code} — ${desc}</div>`;
+        });
+        dropdown.innerHTML = html;
+        Array.from(dropdown.children).forEach(el => {
+          if (!el.dataset.idx) return;
+          el.addEventListener('mousedown', e => e.preventDefault());
+          el.addEventListener('mouseenter', () => setActive(parseInt(el.dataset.idx, 10)));
+          el.addEventListener('click', () => selectItem(parseInt(el.dataset.idx, 10)));
+        });
+      }
+      dropdown.style.display = 'block';
+    }
+
+    function setActive(i) {
+      activeIndex = i;
+      Array.from(dropdown.children).forEach(el => {
+        if (!el.dataset.idx) return;
+        const isActive = parseInt(el.dataset.idx, 10) === i;
+        el.style.background = isActive ? 'rgba(212,175,55,0.15)' : 'transparent';
+        if (isActive) el.scrollIntoView({ block: 'nearest' });
+      });
+    }
+
+    function selectItem(i) {
+      const item = items[i];
+      if (!item) return;
+      const L = lang();
+      hidden.value = item.code + ' — ' + item.slDesc;
+      search.value = item.code + ' — ' + (L === 'en' ? item.enDesc : item.slDesc);
+      hidden.dispatchEvent(new Event('change', { bubbles: true }));
+      closeDropdown();
+      const errEl = document.getElementById(prefix + '-error');
+      if (errEl) errEl.style.display = 'none';
+    }
+
+    function closeDropdown() { dropdown.style.display = 'none'; }
+
+    function syncDisplay() {
+      const L = lang();
+      if (!hidden.value) { search.value = ''; return; }
+      const code = hidden.value.split(' — ')[0];
+      const item = getNaceFlat().find(x => x.code === code);
+      if (item) search.value = item.code + ' — ' + (L === 'en' ? item.enDesc : item.slDesc);
+    }
+
+    search.addEventListener('focus', () => { render(''); search.select(); });
+    search.addEventListener('input', () => render(search.value));
+    search.addEventListener('blur', () => { setTimeout(() => { closeDropdown(); syncDisplay(); }, 150); });
+    search.addEventListener('keydown', e => {
+      if (dropdown.style.display === 'none') return;
+      if (e.key === 'ArrowDown') { e.preventDefault(); setActive(Math.min(activeIndex + 1, items.length - 1)); }
+      else if (e.key === 'ArrowUp') { e.preventDefault(); setActive(Math.max(activeIndex - 1, 0)); }
+      else if (e.key === 'Enter') { e.preventDefault(); if (activeIndex >= 0) selectItem(activeIndex); }
+      else if (e.key === 'Escape') { closeDropdown(); search.blur(); }
+    });
+
+    search._naceSyncDisplay = syncDisplay;
+    search._naceReset = () => { hidden.value = ''; search.value = ''; closeDropdown(); };
+  }
+
+  // Ob spremembi jezika: posodobi prikaz izbrane dejavnosti in placeholder
+  // (kanonična vrednost v skritem polju se ne spremeni).
+  function syncNaceComboboxLang(prefix, lang) {
+    const search = document.getElementById(prefix + '-search');
+    if (!search) return;
+    lang = lang || localStorage.getItem('lang') || 'sl';
+    search.placeholder = lang === 'en' ? '— Select activity —' : '— Izberite dejavnost —';
+    if (typeof search._naceSyncDisplay === 'function') search._naceSyncDisplay();
   }
 
   // Napolni <select> z državami. Vrednost je vedno 2-črkovna ISO koda.
@@ -3242,7 +3342,7 @@
     if (prevValue) sel.value = prevValue;
   }
 
-  populateNaceSelect('reg-nace');
+  setupNaceCombobox('reg-nace');
   populateCountrySelect('reg-country');
 
 
@@ -3253,6 +3353,9 @@
     document.getElementById('reg-form').style.display = 'flex';
     document.getElementById('reg-success').style.display = 'none';
     document.getElementById('reg-form').reset();
+    const naceSearch = document.getElementById('reg-nace-search');
+    if (naceSearch && naceSearch._naceReset) naceSearch._naceReset();
+    document.getElementById('reg-nace-error').style.display = 'none';
     generateCaptcha('reg');
   }
   function closeRegModal() {
@@ -3281,6 +3384,13 @@
       return;
     }
     mismatchEl.style.display = 'none';
+
+    const naceErrEl = document.getElementById('reg-nace-error');
+    if (!document.getElementById('reg-nace').value) {
+      naceErrEl.style.display = 'block';
+      return;
+    }
+    naceErrEl.style.display = 'none';
 
     btn.disabled = true;
     btn.style.opacity = '0.6';
@@ -4510,7 +4620,8 @@ const i18n = {
     reg_company:'Company Name', reg_company_ph:'e.g. Metals Ltd.',
     reg_tax:'Tax Number', reg_tax_ph:'SI12345678',
     reg_address:'Company Address <span style="color:var(--gold);">*</span>', reg_address_ph:'e.g. 5 Vienna Street, 1000 Ljubljana',
-    reg_nace_label:'NACE Activity <span style="color:var(--gold);">*</span>', reg_nace_hint:'Select your main activity from the list (NACE Rev. 2)',
+    reg_nace_label:'NACE Activity <span style="color:var(--gold);">*</span>', reg_nace_hint:'Type a code (e.g. 46) or part of the activity name to filter',
+    reg_nace_search_ph:'— Select activity —', reg_nace_required:'Please select an activity.',
     reg_country_label:'Country',
     reg_submit:'Register',
     reg_terms_full:'By registering you agree to our <a href="#" style="color:var(--gold);text-decoration:none;">terms of service</a> and <a href="#" style="color:var(--gold);text-decoration:none;">privacy policy</a>.',
@@ -4602,7 +4713,8 @@ const i18n = {
     reg_company:'Naziv podjetja', reg_company_ph:'npr. Metals d.o.o.',
     reg_tax:'Davčna številka', reg_tax_ph:'SI12345678',
     reg_address:'Naslov podjetja <span style="color:var(--gold);">*</span>', reg_address_ph:'npr. Dunajska cesta 5, 1000 Ljubljana',
-    reg_nace_label:'NACE dejavnost <span style="color:var(--gold);">*</span>', reg_nace_hint:'Izberite glavno dejavnost s seznama (SKD 2008)',
+    reg_nace_label:'NACE dejavnost <span style="color:var(--gold);">*</span>', reg_nace_hint:'Vnesite kodo (npr. 46) ali del imena dejavnosti za filtriranje',
+    reg_nace_search_ph:'— Izberite dejavnost —', reg_nace_required:'Prosimo, izberite dejavnost.',
     reg_country_label:'Država',
     reg_submit:'Registriraj se',
     reg_terms_full:'Z registracijo se strinjate s <a href="#" style="color:var(--gold);text-decoration:none;">pogoji uporabe</a> in <a href="#" style="color:var(--gold);text-decoration:none;">politiko zasebnosti</a>.',
@@ -4654,7 +4766,7 @@ function setLang(lang) {
   if (slBody) slBody.style.display = lang === 'sl' ? 'block' : 'none';
   // Re-render the NACE / country dropdowns in the new language (selection
   // is preserved — only the visible option text changes, not the value).
-  if (typeof populateNaceSelect === 'function') populateNaceSelect('reg-nace', lang);
+  if (typeof syncNaceComboboxLang === 'function') syncNaceComboboxLang('reg-nace', lang);
   if (typeof populateCountrySelect === 'function') populateCountrySelect('reg-country', lang);
 }
 
