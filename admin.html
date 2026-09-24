@@ -894,7 +894,8 @@
     }
     grid.innerHTML = allOrders.map(order => {
       const date = new Date(order.created_at).toLocaleDateString('sl-SI', {day:'2-digit',month:'2-digit',year:'numeric',hour:'2-digit',minute:'2-digit'});
-      const buyerEmail = order.buyer_email || '(email ni znan)';
+      const buyerEmail  = order.buyer_email  || '(email ni znan)';
+      const sellerEmail = order.seller_email || '(email ni znan)';
       const docs = (orderDocuments[order.id] || []);
       const docsHtml = docs.length
         ? `<div class="doc-list">${docs.map(d => `
@@ -913,12 +914,13 @@
             </div>`).join('')}</div>`
         : `<div style="font-size:11px;color:var(--muted);padding:4px 0 8px;">Ni naloženih dokumentov.</div>`;
 
-      const genParams = `ref=${encodeURIComponent(order.payment_ref)}&listing=${encodeURIComponent(order.listing_title)}&amount=${encodeURIComponent(order.amount)}&currency=${encodeURIComponent(order.currency)}&buyer=${encodeURIComponent(buyerEmail)}&buyer_email=${encodeURIComponent(buyerEmail)}&date=${encodeURIComponent(order.created_at)}`;
+      const genParams = `ref=${encodeURIComponent(order.payment_ref)}&listing=${encodeURIComponent(order.listing_title)}&amount=${encodeURIComponent(order.amount)}&currency=${encodeURIComponent(order.currency)}&buyer=${encodeURIComponent(buyerEmail)}&buyer_email=${encodeURIComponent(buyerEmail)}&seller=${encodeURIComponent(sellerEmail)}&date=${encodeURIComponent(order.created_at)}`;
       const docTypes = [
         ['proforma','📄 Proforma'],['order_confirmation','✅ Potrdit. naročilo'],
         ['invoice','🧾 Račun'],['proof_of_payment','💶 Potrdilo o plačilu'],
         ['quality_certificate','🔬 Certif. kakovosti'],['cmr','🚚 CMR'],
-        ['delivery_note','📦 Dobavnica'],['weight_certificate','⚖️ Certif. teže'],
+        ['delivery_note','📦 Dobavnica'],['waste_tracking','♻️ Sledilni list'],
+        ['weight_certificate','⚖️ Certif. teže'],
         ['material_analysis','🧪 Analiza mat.']
       ];
       return `<div class="order-card" id="ordercard-${order.id}">
@@ -1003,12 +1005,14 @@
   function docTypeLabel(type) {
     const m = {proforma:'Proforma',order_confirmation:'Potrditveno naročilo',invoice:'Račun',
       proof_of_payment:'Potrdilo o plačilu',quality_certificate:'Certifikat kakovosti',
-      cmr:'CMR',delivery_note:'Dobavnica',weight_certificate:'Certifikat teže',material_analysis:'Analiza materiala'};
+      cmr:'CMR',delivery_note:'Dobavnica',waste_tracking:'Sledilni list',
+      weight_certificate:'Certifikat teže',material_analysis:'Analiza materiala'};
     return m[type] || type;
   }
   function docTypeIcon(type) {
     const m = {proforma:'📄',order_confirmation:'✅',invoice:'🧾',proof_of_payment:'💶',
-      quality_certificate:'🔬',cmr:'🚚',delivery_note:'📦',weight_certificate:'⚖️',material_analysis:'🧪'};
+      quality_certificate:'🔬',cmr:'🚚',delivery_note:'📦',waste_tracking:'♻️',
+      weight_certificate:'⚖️',material_analysis:'🧪'};
     return m[type] || '📎';
   }
 
@@ -1038,10 +1042,15 @@
       const { data, error } = await sb.rpc('admin_get_transactions');
       if (error) throw error;
       const pending = (data || []).filter(t => t.status === 'pending_payment');
-      const buyerIds = [...new Set(pending.map(t => t.buyer_id).filter(Boolean))];
+      // Batch both buyer and seller ids together — proforma / quality cert /
+      // material analysis / the waste tracking sheet all expect a "seller"
+      // (waste generator), which previously was never looked up at all.
+      const buyerIds  = [...new Set(pending.map(t => t.buyer_id).filter(Boolean))];
+      const sellerIds = [...new Set(pending.map(t => t.seller_id).filter(Boolean))];
+      const partyIds  = [...new Set([...buyerIds, ...sellerIds])];
       let emailMap = {};
-      if (buyerIds.length) {
-        const { data: regs } = await sb.from('user_registrations').select('user_id, email').in('user_id', buyerIds);
+      if (partyIds.length) {
+        const { data: regs } = await sb.from('user_registrations').select('user_id, email').in('user_id', partyIds);
         (regs || []).forEach(r => { emailMap[r.user_id] = r.email; });
       }
       const listingIds = [...new Set(pending.map(t => t.listing_id).filter(Boolean))];
@@ -1052,7 +1061,12 @@
           .in('id', listingIds);
         (listings || []).forEach(l => { listingCertMap[l.id] = l; });
       }
-      allOrders = pending.map(t => ({ ...t, buyer_email: t.buyer_email || emailMap[t.buyer_id] || '', _listing: listingCertMap[t.listing_id] || null }));
+      allOrders = pending.map(t => ({
+        ...t,
+        buyer_email:  t.buyer_email || emailMap[t.buyer_id] || '',
+        seller_email: emailMap[t.seller_id] || '',
+        _listing: listingCertMap[t.listing_id] || null,
+      }));
       await loadOrderDocuments(allOrders.map(o => o.id));
       const badge = document.getElementById('orders-badge');
       if (allOrders.length > 0) { badge.textContent = allOrders.length; badge.style.display = ''; }
@@ -1264,6 +1278,7 @@ metals-trade@protonmail.com`;
             <div class="custom-select-group-label">Transport</div>
             <div class="custom-select-option" onclick="selectUploadDocType(this,'cmr|transport')">CMR — Tovorni list</div>
             <div class="custom-select-option" onclick="selectUploadDocType(this,'delivery_note|transport')">Dobavnica</div>
+            <div class="custom-select-option" onclick="selectUploadDocType(this,'waste_tracking|transport')">Sledilni list</div>
           </div>
           <div class="custom-select-group">
             <div class="custom-select-group-label">Dokumenti o materialu</div>

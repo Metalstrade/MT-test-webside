@@ -268,6 +268,13 @@
     }
     .cert-check { color: #2d9e5c; font-size: 16pt; }
 
+    /* Sledilni list — denser than CMR (12 numbered fields), so its boxes
+       get tighter spacing scoped to this document only. */
+    #doc-waste_tracking .cmr-grid { gap: 2mm; margin-bottom: 2.2mm; }
+    #doc-waste_tracking .cmr-box  { padding: 2mm 3mm; }
+    #doc-waste_tracking .cmr-val  { font-size: 8.3pt; }
+    #doc-waste_tracking .cmr-no   { margin-bottom: 1px; }
+
     /* CMR specific */
     .cmr-grid {
       display: grid; grid-template-columns: 1fr 1fr; gap: 3mm; margin-bottom: 4mm;
@@ -356,6 +363,11 @@
     <div class="doc-type-card" onclick="openDoc('delivery_note')">
       <div class="dtc-icon">📦</div>
       <div class="dtc-name">Dobavnica</div>
+      <div class="dtc-cat">Transport</div>
+    </div>
+    <div class="doc-type-card" onclick="openDoc('waste_tracking')">
+      <div class="dtc-icon">♻️</div>
+      <div class="dtc-name">Sledilni list</div>
       <div class="dtc-cat">Transport</div>
     </div>
     <div class="doc-type-card" onclick="openDoc('weight_certificate')">
@@ -971,6 +983,147 @@
   </div>
 </div>
 
+<!-- ─── DOCUMENT: Waste Shipment Tracking Form (Sledilni list) ─── -->
+<!-- Priloga VII k Uredbi (ES) št. 1013/2006 — spremlja pošiljke zelenega
+     seznama odpadkov (npr. kovinski odpadek) med EU državami. -->
+<div class="document-wrap" id="doc-waste_tracking">
+  <div class="print-toolbar">
+    <div class="print-toolbar-left">
+      <span class="pt-doc-name">♻️ Sledilni list</span>
+      <span class="pt-ref" id="pt-wt-ref">—</span>
+    </div>
+    <div style="display:flex;gap:8px;">
+      <button onclick="window.history.back()" class="btn-back-to-selector">← Nazaj</button>
+      <button onclick="window.print()" class="btn-print">🖨 Natisni / Shrani kot PDF</button>
+    </div>
+  </div>
+  <div class="doc-page">
+    <div class="doc-head">
+      <div class="doc-head-logo"><img src="brand_assets/LOGO.png" alt="Metals Trading"/></div>
+      <div class="doc-head-company">
+        <div class="co-name">Metals Trading</div>
+        metals-trade.com<br/>metals-trade@protonmail.com
+      </div>
+    </div>
+    <div class="doc-title-block">
+      <div>
+        <div class="doc-type-label">Transport · Uredba (ES) št. 1013/2006</div>
+        <div class="doc-title">Sledilni list</div>
+        <div style="font-size:7pt;color:#888;margin-top:2px;max-width:115mm;line-height:1.5;">
+          Podatki, ki spremljajo pošiljke odpadkov iz člena 3(2) in (4) — "Information accompanying shipments of waste"
+        </div>
+      </div>
+      <div class="doc-meta-box">
+        <div class="doc-meta-row"><span class="doc-meta-lbl">Številka:</span><span class="doc-meta-val" id="wt-number">—</span></div>
+        <div class="doc-meta-row"><span class="doc-meta-lbl">Datum:</span><span class="doc-meta-val" id="wt-date">—</span></div>
+        <div class="doc-meta-row"><span class="doc-meta-lbl">Ref. naročila:</span><span class="doc-meta-val" id="wt-ref" style="font-family:monospace;font-size:8pt;">—</span></div>
+      </div>
+    </div>
+
+    <div class="cmr-grid">
+      <div class="cmr-box">
+        <div class="cmr-no">1. Oseba, ki organizira pošiljko</div>
+        <div class="cmr-val" id="wt-arranger">Metals Trading d.o.o.<br/>metals-trade.com, SI — Slovenija<br/>metals-trade@protonmail.com</div>
+      </div>
+      <div class="cmr-box">
+        <div class="cmr-no">2. Uvoznik / prejemnik</div>
+        <div class="cmr-val" id="wt-consignee">—</div>
+        <div class="cmr-val" id="wt-consignee-email" style="font-size:8pt;font-weight:400;color:#666;">&nbsp;</div>
+      </div>
+    </div>
+
+    <div class="cmr-grid">
+      <div class="cmr-box">
+        <div class="cmr-no">3. Dejanska količina</div>
+        <div class="cmr-val" id="wt-quantity">—</div>
+      </div>
+      <div class="cmr-box">
+        <div class="cmr-no">4. Dejanski datum pošiljke</div>
+        <div class="cmr-val" id="wt-shipdate">—</div>
+      </div>
+    </div>
+
+    <div class="cmr-grid" style="grid-template-columns:1fr 1fr 1fr;">
+      <div class="cmr-box">
+        <div class="cmr-no">5(a). Prvi prevoznik</div>
+        <div class="cmr-val" style="font-size:8pt;line-height:1.8;">Ime: ____________________<br/>Prev. sredstvo: __________<br/>Datum: __________________<br/>Podpis: _________________</div>
+      </div>
+      <div class="cmr-box">
+        <div class="cmr-no">5(b). Drugi prevoznik</div>
+        <div class="cmr-val" style="font-size:8pt;line-height:1.8;">Ime: ____________________<br/>Prev. sredstvo: __________<br/>Datum: __________________<br/>Podpis: _________________</div>
+      </div>
+      <div class="cmr-box">
+        <div class="cmr-no">5(c). Tretji prevoznik</div>
+        <div class="cmr-val" style="font-size:8pt;line-height:1.8;">Ime: ____________________<br/>Prev. sredstvo: __________<br/>Datum: __________________<br/>Podpis: _________________</div>
+      </div>
+    </div>
+
+    <div class="cmr-grid">
+      <div class="cmr-box">
+        <div class="cmr-no">6. Povzročitelj odpadka</div>
+        <div class="cmr-val" id="wt-generator">—</div>
+      </div>
+      <div class="cmr-box">
+        <div class="cmr-no">7. Obrat za predelavo ☐ &nbsp; Laboratorij ☐</div>
+        <div class="cmr-val" style="font-size:8pt;line-height:1.8;">Ime: ______________________<br/>Naslov: ___________________</div>
+      </div>
+    </div>
+
+    <div class="cmr-grid">
+      <div class="cmr-box">
+        <div class="cmr-no">8. Postopek predelave — R/D-koda</div>
+        <div class="cmr-val" id="wt-rcode">R12</div>
+      </div>
+      <div class="cmr-box">
+        <div class="cmr-no">9. Običajen opis odpadka</div>
+        <div class="cmr-val" id="wt-description">—</div>
+      </div>
+    </div>
+
+    <div class="cmr-box" style="margin-bottom:3mm;">
+      <div class="cmr-no">10. Identifikacija odpadka (ustrezne kode)</div>
+      <div class="cmr-val" style="font-size:8pt;line-height:1.9;">
+        i) Baselska priloga IX: ________________ &nbsp;&nbsp; ii) OECD-koda: ________________<br/>
+        iii) Evropski seznam odpadkov: ________________ &nbsp;&nbsp; iv) Nacionalna koda: ________________
+      </div>
+    </div>
+
+    <table class="cmr-goods-table" style="margin-bottom:3mm;">
+      <thead>
+        <tr><th colspan="3">11. Vpletene države</th></tr>
+        <tr><th>Izvoz / odprema — Export</th><th>Tranzit — Transit</th><th>Uvoz — Import/destination</th></tr>
+      </thead>
+      <tbody>
+        <tr><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td></tr>
+      </tbody>
+    </table>
+
+    <div class="cmr-grid">
+      <div class="cmr-box" style="min-height:11mm;">
+        <div class="cmr-no">12. Izjava osebe, ki organizira pošiljko</div>
+        <div style="font-size:7pt;color:#666;margin:2px 0 3px;">Potrjujem, da so zgornji podatki popolni in točni po mojem najboljšem vedenju.</div>
+        <div style="margin-top:2mm; border-top:1px solid #ccc; font-size:7.5pt; color:#888; padding-top:1.5mm;">Ime, datum, podpis</div>
+      </div>
+      <div class="cmr-box" style="min-height:11mm;">
+        <div class="cmr-no">13. Podpis ob prevzemu odpadka</div>
+        <div style="margin-top:6mm; border-top:1px solid #ccc; font-size:7.5pt; color:#888; padding-top:1.5mm;">Ime, datum, podpis</div>
+      </div>
+    </div>
+
+    <div class="cmr-box" style="margin-top:2.2mm;">
+      <div class="cmr-no">14. Izpolni obrat za predelavo ali laboratorij</div>
+      <div style="font-size:8pt;color:#666;margin-top:2px;">Pošiljka prejeta — prejeta količina: kg _________ &nbsp; litre _________</div>
+      <div style="margin-top:2mm; border-top:1px solid #ccc; font-size:7.5pt; color:#888; padding-top:1.5mm;">Ime, datum, podpis</div>
+    </div>
+
+    <div class="doc-footer">
+      <span>Metals Trading — metals-trade.com</span>
+      <span class="doc-footer-center">Sledilni list — Uredba (ES) št. 1013/2006</span>
+      <span id="wt-footer-ref">—</span>
+    </div>
+  </div>
+</div>
+
 <!-- ─── DOCUMENT: Weight Certificate ─── -->
 <div class="document-wrap" id="doc-weight_certificate">
   <div class="print-toolbar">
@@ -1132,7 +1285,8 @@ function fmtDate(iso) {
 function docNum(type, ref) {
   const prefixes = {
     proforma:'PF', order_confirmation:'NO', invoice:'R', proof_of_payment:'PP',
-    quality_certificate:'CK', cmr:'CMR', delivery_note:'DO', weight_certificate:'CT', material_analysis:'AM'
+    quality_certificate:'CK', cmr:'CMR', delivery_note:'DO', weight_certificate:'CT', material_analysis:'AM',
+    waste_tracking:'SL'
   };
   const pr = prefixes[type] || 'MT';
   const suffix = ref && ref !== '—' ? '-' + ref.replace('MT-','') : '-' + new Date().getFullYear() + '-' + Math.random().toString(36).slice(2,6).toUpperCase();
@@ -1252,6 +1406,17 @@ function openDoc(type) {
     setText('dn-buyer', buyer); setText('dn-buyer-email', buyerEmail);
     setText('dn-listing', listing);
     setText('dn-ref', ref); setText('dn-ref2', ref); setText('dn-footer-ref', ref);
+  }
+  else if (type === 'waste_tracking') {
+    setText('pt-wt-ref', ref);
+    setText('wt-number', dn); setText('wt-date', dt);
+    setText('wt-ref', ref); setText('wt-footer-ref', ref);
+    setText('wt-consignee', buyer);
+    setText('wt-consignee-email', buyerEmail && buyerEmail !== '—' ? buyerEmail : ' ');
+    setText('wt-generator', seller);
+    setText('wt-quantity', p('weight', '—') !== '—' ? p('weight') + ' kg' : '—');
+    setText('wt-shipdate', dt);
+    setText('wt-description', listing);
   }
   else if (type === 'weight_certificate') {
     setText('pt-wc-ref', ref);

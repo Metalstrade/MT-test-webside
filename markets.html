@@ -6230,10 +6230,10 @@ function renderMyDocs() {
   const catLabels = { order_invoice:'Naročilo & Račun', other:'Ostali dokumenti', transport:'Transport', material:'Dokumenti o materialu' };
   const catOrder  = ['order_invoice','other','transport','material'];
   const docIcons  = { proforma:'📄',order_confirmation:'✅',invoice:'🧾',proof_of_payment:'💶',
-    quality_certificate:'🔬',cmr:'🚚',delivery_note:'📦',weight_certificate:'⚖️',material_analysis:'🧪' };
+    quality_certificate:'🔬',cmr:'🚚',delivery_note:'📦',waste_tracking:'♻️',weight_certificate:'⚖️',material_analysis:'🧪' };
   const docLabels = { proforma:'Proforma',order_confirmation:'Potrditveno naročilo',invoice:'Račun',
     proof_of_payment:'Potrdilo o plačilu',quality_certificate:'Certifikat kakovosti',
-    cmr:'CMR — Tovorni list',delivery_note:'Dobavnica',weight_certificate:'Certifikat teže',material_analysis:'Analiza materiala' };
+    cmr:'CMR — Tovorni list',delivery_note:'Dobavnica',waste_tracking:'Sledilni list',weight_certificate:'Certifikat teže',material_analysis:'Analiza materiala' };
 
   const html = Object.entries(txMap).map(([txId, txDocs], groupIdx) => {
     const first = txDocs[0];
