@@ -4611,6 +4611,17 @@ const sbM = supabase.createClient(
 
 let currentUser = null;
 let dbListings = [];
+
+// currentUser prihaja iz predpomnjene seje (JWT), ki se po admin odobritvi
+// verifikacije (neposreden UPDATE auth.users v bazi) ne osveži takoj — do
+// naravne osvežitve žetona (lahko tudi do 1h) še vedno kaže star status.
+// getUser() naredi mrežno zahtevo na Supabase in vrne trenutno resnico.
+async function checkMarketplaceApproved() {
+  if (!currentUser) return false;
+  const { data, error } = await sbM.auth.getUser();
+  if (!error && data?.user) currentUser = data.user;
+  return !!currentUser.user_metadata?.marketplace_approved;
+}
 let _imgSlotTarget = 0;
 let _editListingId = null;
 
@@ -4688,13 +4699,13 @@ function overlayClickClose(event, id) {
 }
 
 // ── FAB CLICK ──
-function fabClick() {
+async function fabClick() {
   if (!currentUser) {
     alert('Za oddajo oglasa se morate najprej registrirati.');
     openAuthModal('register');
     return;
   }
-  const approved = currentUser.user_metadata?.marketplace_approved;
+  const approved = await checkMarketplaceApproved();
   if (!approved) {
     if (confirm('Za oddajo oglasa morate verificirati svoj račun. V Nastavitvah → Verifikacija oddajte dokazila (izpisek iz registra, davčna registracija ipd.) — administrator jih bo pregledal in potrdil.\n\nŽelite zdaj iti v Nastavitve?')) {
       window.location.href = 'index.html?openSettings=verify';
@@ -6053,7 +6064,7 @@ async function submitListing() {
     alert('Za oddajo oglasa se morate najprej registrirati.');
     return;
   }
-  if (!currentUser.user_metadata?.marketplace_approved) {
+  if (!(await checkMarketplaceApproved())) {
     alert('Za oddajo oglasa morate imeti verificiran račun. Pojdite v Nastavitve → Verifikacija in oddajte dokazila.');
     return;
   }
@@ -6562,7 +6573,7 @@ let _pendingPurchase = null;
 async function showPaymentInfo(dbId, amount) {
   if (!currentUser) { openAuthModal('signin'); return; }
 
-  if (!currentUser.user_metadata?.marketplace_approved) {
+  if (!(await checkMarketplaceApproved())) {
     alert('Za nakup morate imeti verificiran račun. Pojdite v Nastavitve → Verifikacija in oddajte dokazila — administrator jih bo pregledal in potrdil.');
     return;
   }
