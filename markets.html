@@ -3974,8 +3974,8 @@ updateFilters();
   <div class="modal-box" style="max-width:460px;">
     <div class="modal-hdr">
       <div class="auth-tabs">
-        <button class="auth-tab active" id="auth-tab-signin" onclick="switchAuthTab('signin')">Prijava</button>
-        <button class="auth-tab" id="auth-tab-register" onclick="switchAuthTab('register')">Registracija</button>
+        <button class="auth-tab active" id="auth-tab-signin" onclick="switchAuthTab('signin')" data-i18n="auth_tab_signin">Prijava</button>
+        <button class="auth-tab" id="auth-tab-register" onclick="switchAuthTab('register')" data-i18n="auth_tab_register">Registracija</button>
       </div>
       <button class="modal-close" onclick="closeOverlay('auth-prompt-overlay')">×</button>
     </div>
@@ -3984,19 +3984,19 @@ updateFilters();
     <div id="auth-signin-panel" class="auth-prompt-body">
       <form onsubmit="submitSignInM(event)">
         <div class="wiz-field">
-          <label>E-pošta</label>
-          <input class="wiz-input" type="email" id="m-signin-email" placeholder="vaš@email.com" required autocomplete="email" />
+          <label data-i18n="signin_email">E-pošta</label>
+          <input class="wiz-input" type="email" id="m-signin-email" data-i18n-placeholder="signin_email_ph" placeholder="vaš@email.com" required autocomplete="email" />
         </div>
         <div class="wiz-field">
-          <label>Geslo</label>
+          <label data-i18n="signin_password">Geslo</label>
           <input class="wiz-input" type="password" id="m-signin-pw" placeholder="••••••••" required autocomplete="current-password" />
         </div>
         <div class="wiz-field">
           <label id="m-signin-captcha-q" style="letter-spacing:0;">…</label>
-          <input class="wiz-input" type="number" id="m-signin-captcha-a" placeholder="Odgovor" required autocomplete="off" data-answer="" />
+          <input class="wiz-input" type="number" id="m-signin-captcha-a" data-i18n-placeholder="captcha_answer_ph" placeholder="Odgovor" required autocomplete="off" data-answer="" />
         </div>
         <div class="wiz-error" id="m-signin-error" style="display:none;margin-bottom:10px;"></div>
-        <button type="submit" class="btn-wiz-next" style="width:100%;" id="m-signin-btn">Prijavi se →</button>
+        <button type="submit" class="btn-wiz-next" style="width:100%;" id="m-signin-btn" data-i18n="signin_btn">Prijavi se →</button>
       </form>
     </div>
 
@@ -4009,105 +4009,78 @@ updateFilters();
       <form id="m-reg-form" onsubmit="submitRegM(event)">
         <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px;">
           <div class="wiz-field">
-            <label>Ime</label>
-            <input class="wiz-input" type="text" name="ime" placeholder="Janez" required />
+            <label data-i18n="reg_firstname">Ime</label>
+            <input class="wiz-input" type="text" name="ime" data-i18n-placeholder="reg_firstname_ph" placeholder="Janez" required />
           </div>
           <div class="wiz-field">
-            <label>Priimek</label>
-            <input class="wiz-input" type="text" name="priimek" placeholder="Novak" required />
+            <label data-i18n="reg_lastname">Priimek</label>
+            <input class="wiz-input" type="text" name="priimek" data-i18n-placeholder="reg_lastname_ph" placeholder="Novak" required />
           </div>
         </div>
         <div class="wiz-field">
-          <label>E-pošta</label>
-          <input class="wiz-input" type="email" name="email" placeholder="vaš@email.com" required autocomplete="email" />
+          <label data-i18n="reg_email">E-pošta</label>
+          <input class="wiz-input" type="email" name="email" data-i18n-placeholder="signin_email_ph" placeholder="vaš@email.com" required autocomplete="email" />
         </div>
         <div class="wiz-field">
-          <label>Naziv podjetja</label>
-          <input class="wiz-input" type="text" name="company_name" placeholder="npr. Metals d.o.o." required />
+          <label data-i18n="reg_company">Naziv podjetja</label>
+          <input class="wiz-input" type="text" name="company_name" data-i18n-placeholder="reg_company_ph" placeholder="npr. Metals d.o.o." required />
         </div>
         <div class="wiz-field">
-          <label>Telefon</label>
+          <label data-i18n="reg_phone">Telefon</label>
           <input class="wiz-input" type="tel" name="telefon" placeholder="+386 41 123 456" required />
         </div>
         <div class="wiz-field">
-          <label>Davčna številka</label>
+          <label data-i18n="reg_tax">Davčna številka</label>
           <input class="wiz-input" type="text" name="davcna" placeholder="SI12345678" required />
         </div>
         <div class="wiz-field">
-          <label>Naslov podjetja</label>
-          <input class="wiz-input" type="text" name="address" placeholder="npr. Dunajska cesta 5, 1000 Ljubljana" required />
+          <label data-i18n="reg_address">Naslov podjetja</label>
+          <input class="wiz-input" type="text" name="address" data-i18n-placeholder="reg_address_ph" placeholder="npr. Dunajska cesta 5, 1000 Ljubljana" required />
         </div>
         <div class="wiz-field">
-          <label>NACE dejavnost</label>
+          <label data-i18n="reg_nace_label">NACE dejavnost</label>
           <select class="wiz-input" name="nace" id="m-reg-nace" required>
             <option value="">— Izberite dejavnost —</option>
           </select>
-          <div style="font-size:11px;color:var(--muted);margin-top:4px;">Izberite glavno dejavnost s seznama (SKD 2008)</div>
+          <div style="font-size:11px;color:var(--muted);margin-top:4px;" data-i18n="reg_nace_hint">Izberite glavno dejavnost s seznama (SKD 2008)</div>
         </div>
         <div class="wiz-field">
-          <label>Država</label>
-          <select class="wiz-input" name="country">
+          <label data-i18n="reg_country_label">Država</label>
+          <select class="wiz-input" name="country" id="m-reg-country">
             <option value="">— Izberite —</option>
-            <option value="AT">Avstrija</option>
-            <option value="BE">Belgija</option>
-            <option value="BG">Bolgarija</option>
-            <option value="CY">Ciper</option>
-            <option value="CZ">Češka</option>
-            <option value="DK">Danska</option>
-            <option value="EE">Estonija</option>
-            <option value="FI">Finska</option>
-            <option value="FR">Francija</option>
-            <option value="GR">Grčija</option>
-            <option value="IE">Irska</option>
-            <option value="IT">Italija</option>
-            <option value="LV">Latvija</option>
-            <option value="LT">Litva</option>
-            <option value="LU">Luksemburg</option>
-            <option value="MT">Malta</option>
-            <option value="HU">Madžarska</option>
-            <option value="DE">Nemčija</option>
-            <option value="NL">Nizozemska</option>
-            <option value="PL">Poljska</option>
-            <option value="PT">Portugalska</option>
-            <option value="RO">Romunija</option>
-            <option value="SK">Slovaška</option>
-            <option value="SI">Slovenija</option>
-            <option value="ES">Španija</option>
-            <option value="SE">Švedska</option>
-            <option value="HR">Hrvaška</option>
           </select>
         </div>
         <div class="wiz-field">
-          <label>Geslo</label>
+          <label data-i18n="reg_password">Geslo</label>
           <div class="wiz-pw-wrap">
-            <input class="wiz-input" type="password" id="m-reg-password" name="password" placeholder="Min. 8 znakov" required minlength="8" autocomplete="new-password" />
+            <input class="wiz-input" type="password" id="m-reg-password" name="password" data-i18n-placeholder="reg_password_ph" placeholder="Min. 8 znakov" required minlength="8" autocomplete="new-password" />
             <button type="button" class="wiz-pw-toggle" onclick="togglePwVisibility('m-reg-password', this)" aria-label="Prikaži geslo" tabindex="-1">
               <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
             </button>
           </div>
         </div>
         <div class="wiz-field">
-          <label>Potrdite geslo</label>
+          <label data-i18n="reg_password_confirm">Potrdite geslo</label>
           <div class="wiz-pw-wrap">
-            <input class="wiz-input" type="password" id="m-reg-password-confirm" placeholder="Ponovite geslo" required minlength="8" autocomplete="new-password" />
+            <input class="wiz-input" type="password" id="m-reg-password-confirm" data-i18n-placeholder="reg_password_confirm_ph" placeholder="Ponovite geslo" required minlength="8" autocomplete="new-password" />
             <button type="button" class="wiz-pw-toggle" onclick="togglePwVisibility('m-reg-password-confirm', this)" aria-label="Prikaži geslo" tabindex="-1">
               <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
             </button>
           </div>
-          <p class="wiz-pw-mismatch" id="m-reg-password-mismatch">Gesli se ne ujemata.</p>
+          <p class="wiz-pw-mismatch" id="m-reg-password-mismatch" data-i18n="reg_password_mismatch">Gesli se ne ujemata.</p>
         </div>
         <div class="wiz-field">
           <label id="m-reg-captcha-q" style="letter-spacing:0;">…</label>
-          <input class="wiz-input" type="number" id="m-reg-captcha-a" placeholder="Odgovor" required autocomplete="off" data-answer="" />
+          <input class="wiz-input" type="number" id="m-reg-captcha-a" data-i18n-placeholder="captcha_answer_ph" placeholder="Odgovor" required autocomplete="off" data-answer="" />
         </div>
-        <div class="wiz-error" id="m-reg-captcha-error" style="display:none;margin-bottom:6px;">Napačen odgovor.</div>
+        <div class="wiz-error" id="m-reg-captcha-error" style="display:none;margin-bottom:6px;" data-i18n="captcha_error">Napačen odgovor.</div>
         <label style="display:flex; align-items:flex-start; gap:8px; margin-bottom:10px; cursor:pointer;">
           <input type="checkbox" id="m-reg-terms-check" style="margin-top:2px; accent-color:var(--gold); width:15px; height:15px; flex-shrink:0; cursor:pointer;" />
-          <span style="font-size:12px; color:var(--muted); line-height:1.6;">Strinjam se s <a href="index.html" target="_blank" style="color:var(--gold); text-decoration:underline;">pogoji uporabe</a></span>
+          <span style="font-size:12px; color:var(--muted); line-height:1.6;" data-i18n-html="reg_terms_label">Strinjam se s <a href="index.html" target="_blank" style="color:var(--gold); text-decoration:underline;">pogoji uporabe</a></span>
         </label>
-        <div class="wiz-error" id="m-reg-terms-error" style="display:none;margin-bottom:10px;">Za nadaljevanje morate sprejeti pogoje uporabe.</div>
+        <div class="wiz-error" id="m-reg-terms-error" style="display:none;margin-bottom:10px;" data-i18n="reg_terms_error">Za nadaljevanje morate sprejeti pogoje uporabe.</div>
         <div class="wiz-error" id="m-reg-error" style="display:none;margin-bottom:10px;"></div>
-        <button type="submit" class="btn-wiz-next" style="width:100%;" id="m-reg-btn">Registriraj se →</button>
+        <button type="submit" class="btn-wiz-next" style="width:100%;" id="m-reg-btn" data-i18n="reg_btn">Registriraj se →</button>
       </form>
     </div>
   </div>
@@ -4507,6 +4480,33 @@ const i18nM = {
     results_shown: 'Showing:', results_listings: 'listings',
     sort_label: 'Sort:', sort_price_asc: 'Price ↑', sort_price_desc: 'Price ↓',
     sort_newest: 'Newest', sort_purity: 'Purity ↑',
+    auth_tab_signin: 'Sign In', auth_tab_register: 'Register',
+    signin_email: 'Email', signin_email_ph: 'you@example.com', signin_password: 'Password',
+    signin_btn: 'Sign in →',
+    captcha_answer_ph: 'Answer', captcha_error: 'Incorrect answer.',
+    reg_firstname: 'First Name', reg_firstname_ph: 'e.g. James',
+    reg_lastname: 'Last Name', reg_lastname_ph: 'e.g. Smith',
+    reg_email: 'Email',
+    reg_company: 'Company Name', reg_company_ph: 'e.g. Metals Ltd.',
+    reg_phone: 'Phone',
+    reg_tax: 'Tax Number',
+    reg_address: 'Company Address', reg_address_ph: 'e.g. 5 Vienna Street, 1000 Ljubljana',
+    reg_nace_label: 'NACE Activity', reg_nace_hint: 'Select your main activity from the list (NACE Rev. 2)',
+    reg_country_label: 'Country',
+    reg_password: 'Password', reg_password_ph: 'Min. 8 characters',
+    reg_password_confirm: 'Confirm password', reg_password_confirm_ph: 'Repeat password',
+    reg_password_mismatch: 'Passwords do not match.',
+    reg_terms_label: 'I agree with the <a href="index.html" target="_blank" style="color:var(--gold); text-decoration:underline;">Terms of Use</a>',
+    reg_terms_error: 'You must accept the Terms of Use to continue.',
+    reg_btn: 'Register →',
+    signin_captcha_wrong: 'Incorrect captcha answer.',
+    signin_loading: 'Signing in…',
+    signin_email_unconfirmed: 'Email not confirmed yet. Check your inbox.',
+    signin_bad_credentials: 'Incorrect email or password.',
+    reg_loading: 'Registering…',
+    reg_duplicate_email: 'This email is already registered. Please sign in.',
+    reg_rpc_error_prefix: 'Account created, but the registration record failed: ',
+    reg_success_msg: 'We sent a confirmation link to {email}. Click it to activate your account. Once active, you can browse the marketplace right away — to post listings or buy, you\'ll need to submit account verification in Settings.',
   },
   sl: {
     nav_back: 'Nazaj na glavno stran',
@@ -4531,6 +4531,33 @@ const i18nM = {
     results_shown: 'Prikazano:', results_listings: 'oglasov',
     sort_label: 'Razvrsti:', sort_price_asc: 'Cena ↑', sort_price_desc: 'Cena ↓',
     sort_newest: 'Najnovejši', sort_purity: 'Čistost ↑',
+    auth_tab_signin: 'Prijava', auth_tab_register: 'Registracija',
+    signin_email: 'E-pošta', signin_email_ph: 'vaš@email.com', signin_password: 'Geslo',
+    signin_btn: 'Prijavi se →',
+    captcha_answer_ph: 'Odgovor', captcha_error: 'Napačen odgovor.',
+    reg_firstname: 'Ime', reg_firstname_ph: 'Janez',
+    reg_lastname: 'Priimek', reg_lastname_ph: 'Novak',
+    reg_email: 'E-pošta',
+    reg_company: 'Naziv podjetja', reg_company_ph: 'npr. Metals d.o.o.',
+    reg_phone: 'Telefon',
+    reg_tax: 'Davčna številka',
+    reg_address: 'Naslov podjetja', reg_address_ph: 'npr. Dunajska cesta 5, 1000 Ljubljana',
+    reg_nace_label: 'NACE dejavnost', reg_nace_hint: 'Izberite glavno dejavnost s seznama (SKD 2008)',
+    reg_country_label: 'Država',
+    reg_password: 'Geslo', reg_password_ph: 'Min. 8 znakov',
+    reg_password_confirm: 'Potrdite geslo', reg_password_confirm_ph: 'Ponovite geslo',
+    reg_password_mismatch: 'Gesli se ne ujemata.',
+    reg_terms_label: 'Strinjam se s <a href="index.html" target="_blank" style="color:var(--gold); text-decoration:underline;">pogoji uporabe</a>',
+    reg_terms_error: 'Za nadaljevanje morate sprejeti pogoje uporabe.',
+    reg_btn: 'Registriraj se →',
+    signin_captcha_wrong: 'Napačen odgovor na captcha.',
+    signin_loading: 'Prijavljam…',
+    signin_email_unconfirmed: 'E-pošta še ni potrjena. Preverite inbox.',
+    signin_bad_credentials: 'Napačen e-naslov ali geslo.',
+    reg_loading: 'Registriram…',
+    reg_duplicate_email: 'Ta e-naslov je že registriran. Prosim prijavite se.',
+    reg_rpc_error_prefix: 'Račun je bil ustvarjen, vendar vpis v register ni uspel: ',
+    reg_success_msg: 'Poslali smo potrditveni link na {email}. Kliknite nanj, da aktivirate račun. Po aktivaciji lahko takoj brskate po trgu — za oddajo oglasov ali nakup pa boste morali v Nastavitvah oddati verifikacijo računa.',
   }
 };
 
@@ -4549,6 +4576,14 @@ function setLang(lang) {
   document.querySelectorAll('[data-i18n-placeholder]').forEach(el => {
     const v = t[el.dataset.i18nPlaceholder]; if (v !== undefined) el.placeholder = v;
   });
+  // Re-render the NACE / country dropdowns in the new language (selection
+  // preserved — only the visible text changes, value stays canonical SL).
+  // Guarded with typeof: this script tag runs before the one defining these
+  // (NACE data + auth modal helpers), so the very first setLang() call — the
+  // one fired by the IIFE at the bottom of this block — happens before they
+  // exist yet; later calls (language switch clicks) find them defined fine.
+  if (typeof populateNaceSelect === 'function') populateNaceSelect('m-reg-nace', lang);
+  if (typeof populateCountrySelect === 'function') populateCountrySelect('m-reg-country', lang);
   // Reinit current accordion in new language
   if (state.type === 'nonferrous') initMetalAccordion();
   else if (state.type === 'ferrous') initFerrousAccordion();
@@ -4695,682 +4730,727 @@ function togglePwVisibility(inputId, btn) {
 // SKD 2008 / NACE Rev. 2 — polni seznam kod na ravni razreda (4-mestna
 // koda). Vir: https://loghin.biz/si/nace, dopolnjeno z nekaj standardnimi
 // kodami, ki na viru manjkajo (64.11/64.19/64.20/64.30, 49.31/49.32, 99.00).
+// SKD 2008 / NACE Rev. 2 — bilingual (SL canonical value / EN display).
+// Vir: https://loghin.biz/si/nace in https://loghin.biz/en/nace, dopolnjeno
+// z nekaj standardnimi kodami, ki na viru manjkajo v slovenščini
+// (64.11/64.19/64.20/64.30, 49.31/49.32, 99.00). Struktura vsakega
+// razreda: [koda, sl_opis, en_opis].
 const NACE_DATA = [
-["A","KMETIJSTVO IN LOV, GOZDARSTVO, RIBIŠTVO",[
-["01.11","Pridelovanje žit (razen riža), stročnic in oljnic"],
-["01.12","Pridelovanje riža"],
-["01.13","Pridelovanje zelenjadnic in melon, korenovk in gomoljnic"],
-["01.14","Pridelovanje sladkornega trsa"],
-["01.15","Pridelovanje tobaka"],
-["01.16","Pridelovanje rastlin za vlakna"],
-["01.19","Pridelovanje cvetja in drugih enoletnih rastlin"],
-["01.21","Vinogradništvo"],
-["01.22","Gojenje tropskega in subtropskega sadja"],
-["01.23","Gojenje citrusov"],
-["01.24","Gojenje pečkatega in koščičastega sadja"],
-["01.25","Gojenje drugih sadnih dreves in grmovnic"],
-["01.26","Pridelovanje oljnih sadežev"],
-["01.27","Gojenje rastlin za izdelavo napitkov"],
-["01.28","Gojenje začimbnih, aromatskih in zdravilnih rastlin"],
-["01.29","Gojenje drugih trajnih nasadov"],
-["01.30","Razmnoževanje rastlin"],
-["01.41","Prireja mleka"],
-["01.42","Druga govedoreja"],
-["01.43","Konjereja"],
-["01.44","Reja kamel"],
-["01.45","Reja drobnice"],
-["01.46","Prašičereja"],
-["01.47","Reja perutnine"],
-["01.49","Reja drugih živali"],
-["01.50","Mešano kmetijstvo"],
-["01.61","Storitve za rastlinsko pridelavo"],
-["01.62","Storitve za živinorejo, razen veterinarskih"],
-["01.63","Priprava pridelkov"],
-["01.64","Obdelava semen"],
-["01.70","Lovstvo"],
-["02.10","Gojenje gozdov in druge gozdarske dejavnosti"],
-["02.20","Sečnja"],
-["02.30","Nabiranje gozdnih dobrin, razen lesa"],
-["02.40","Storitve za gozdarstvo"],
-["03.11","Morsko ribištvo"],
-["03.12","Sladkovodno ribištvo"],
-["03.21","Gojenje morskih organizmov"],
-["03.22","Gojenje sladkovodnih organizmov"]
+["A","KMETIJSTVO IN LOV, GOZDARSTVO, RIBIŠTVO","AGRICULTURE, FORESTRY AND FISHING",[
+["01.11","Pridelovanje žit (razen riža), stročnic in oljnic","Growing of cereals (except rice), leguminous crops and oil seeds"],
+["01.12","Pridelovanje riža","Growing of rice"],
+["01.13","Pridelovanje zelenjadnic in melon, korenovk in gomoljnic","Growing of vegetables and melons, roots and tubers"],
+["01.14","Pridelovanje sladkornega trsa","Growing of sugar cane"],
+["01.15","Pridelovanje tobaka","Growing of tobacco"],
+["01.16","Pridelovanje rastlin za vlakna","Growing of fibre crops"],
+["01.19","Pridelovanje cvetja in drugih enoletnih rastlin","Growing of other non-perennial crops"],
+["01.21","Vinogradništvo","Growing of grapes"],
+["01.22","Gojenje tropskega in subtropskega sadja","Growing of tropical and subtropical fruits"],
+["01.23","Gojenje citrusov","Growing of citrus fruits"],
+["01.24","Gojenje pečkatega in koščičastega sadja","Growing of pome fruits and stone fruits"],
+["01.25","Gojenje drugih sadnih dreves in grmovnic","Growing of other tree and bush fruits and nuts"],
+["01.26","Pridelovanje oljnih sadežev","Growing of oleaginous fruits"],
+["01.27","Gojenje rastlin za izdelavo napitkov","Growing of beverage crops"],
+["01.28","Gojenje začimbnih, aromatskih in zdravilnih rastlin","Growing of spices, aromatic, drug and pharmaceutical crops"],
+["01.29","Gojenje drugih trajnih nasadov","Growing of other perennial crops"],
+["01.30","Razmnoževanje rastlin","Plant propagation"],
+["01.41","Prireja mleka","Raising of dairy cattle"],
+["01.42","Druga govedoreja","Raising of other cattle and buffaloes"],
+["01.43","Konjereja","Raising of horses and other equines"],
+["01.44","Reja kamel","Raising of camels and camelids"],
+["01.45","Reja drobnice","Raising of sheep and goats"],
+["01.46","Prašičereja","Raising of swine/pigs"],
+["01.47","Reja perutnine","Raising of poultry"],
+["01.49","Reja drugih živali","Raising of other animals"],
+["01.50","Mešano kmetijstvo","Mixed farming"],
+["01.61","Storitve za rastlinsko pridelavo","Support activities for crop production"],
+["01.62","Storitve za živinorejo, razen veterinarskih","Support activities for animal production"],
+["01.63","Priprava pridelkov","Post-harvest crop activities"],
+["01.64","Obdelava semen","Seed processing for propagation"],
+["01.70","Lovstvo","Hunting, trapping and related service activities"],
+["02.10","Gojenje gozdov in druge gozdarske dejavnosti","Silviculture and other forestry activities"],
+["02.20","Sečnja","Logging"],
+["02.30","Nabiranje gozdnih dobrin, razen lesa","Gathering of wild growing non-wood products"],
+["02.40","Storitve za gozdarstvo","Support services to forestry"],
+["03.11","Morsko ribištvo","Marine fishing"],
+["03.12","Sladkovodno ribištvo","Freshwater fishing"],
+["03.21","Gojenje morskih organizmov","Marine aquaculture"],
+["03.22","Gojenje sladkovodnih organizmov","Freshwater aquaculture"]
 ]],
-["B","RUDARSTVO",[
-["05.10","Pridobivanje črnega premoga"],
-["05.20","Pridobivanje rjavega premoga in lignita"],
-["06.10","Pridobivanje surove nafte"],
-["06.20","Pridobivanje zemeljskega plina"],
-["07.10","Pridobivanje železove rude"],
-["07.21","Pridobivanje uranove in torijeve rude"],
-["07.29","Pridobivanje rud drugih neželeznih kovin"],
-["08.11","Pridobivanje kamna"],
-["08.12","Pridobivanje gramoza, peska, gline"],
-["08.91","Pridobivanje mineralov za kemikalije in gnojila"],
-["08.92","Pridobivanje šote"],
-["08.93","Pridobivanje soli"],
-["08.99","Drugo pridobivanje rudnin in kamnin"],
-["09.10","Storitve za pridobivanje nafte in zemeljskega plina"],
-["09.90","Storitve za drugo rudarjenje"]
+["B","RUDARSTVO","MINING AND QUARRYING",[
+["05.10","Pridobivanje črnega premoga","Mining of hard coal"],
+["05.20","Pridobivanje rjavega premoga in lignita","Mining of lignite"],
+["06.10","Pridobivanje surove nafte","Extraction of crude petroleum"],
+["06.20","Pridobivanje zemeljskega plina","Extraction of natural gas"],
+["07.10","Pridobivanje železove rude","Mining of iron ores"],
+["07.21","Pridobivanje uranove in torijeve rude","Mining of uranium and thorium ores"],
+["07.29","Pridobivanje rud drugih neželeznih kovin","Mining of other non-ferrous metal ores"],
+["08.11","Pridobivanje kamna","Quarrying of ornamental and building stone, limestone, gypsum, chalk and slate"],
+["08.12","Pridobivanje gramoza, peska, gline","Operation of gravel and sand pits; mining of clays and kaolin"],
+["08.91","Pridobivanje mineralov za kemikalije in gnojila","Mining of chemical and fertiliser minerals"],
+["08.92","Pridobivanje šote","Extraction of peat"],
+["08.93","Pridobivanje soli","Extraction of salt"],
+["08.99","Drugo pridobivanje rudnin in kamnin","Other mining and quarrying n.e.c."],
+["09.10","Storitve za pridobivanje nafte in zemeljskega plina","Support activities for petroleum and natural gas extraction"],
+["09.90","Storitve za drugo rudarjenje","Support activities for other mining and quarrying"]
 ]],
-["C","PREDELOVALNE DEJAVNOSTI",[
-["10.11","Proizvodnja mesa, razen perutninskega"],
-["10.12","Proizvodnja perutninskega mesa"],
-["10.13","Proizvodnja mesnih izdelkov"],
-["10.20","Predelava in konzerviranje rib, rakov in mehkužcev"],
-["10.31","Predelava in konzerviranje krompirja"],
-["10.32","Proizvodnja sadnih in zelenjavnih sokov"],
-["10.39","Druga predelava in konzerviranje sadja in zelenjave"],
-["10.41","Proizvodnja olja in maščob"],
-["10.42","Proizvodnja margarine in podobnih jedilnih maščob"],
-["10.51","Mlekarstvo in sirarstvo"],
-["10.52","Proizvodnja sladoleda"],
-["10.61","Mlinarstvo"],
-["10.62","Proizvodnja škroba in škrobnih izdelkov"],
-["10.71","Proizvodnja kruha, svežega peciva in slaščic"],
-["10.72","Proizvodnja prepečenca in piškotov; proizvodnja trajnega peciva in slaščic"],
-["10.73","Proizvodnja testenin"],
-["10.81","Proizvodnja sladkorja"],
-["10.82","Proizvodnja kakava, čokolade in sladkornih izdelkov"],
-["10.83","Predelava čaja in kave"],
-["10.84","Proizvodnja začimb, dišav in drugih dodatkov"],
-["10.85","Proizvodnja pripravljenih jedi in obrokov"],
-["10.86","Proizvodnja homogeniziranih in dietetičnih živil"],
-["10.89","Proizvodnja drugih prehrambenih izdelkov, drugje nerazvrščenih"],
-["10.91","Proizvodnja krmil"],
-["10.92","Proizvodnja hrane za hišne živali"],
-["11.01","Proizvodnja žganih pijač"],
-["11.02","Proizvodnja vina iz grozdja"],
-["11.03","Proizvodnja sadnih vin in podobnih fermentiranih pijač"],
-["11.04","Proizvodnja aromatiziranih vin iz grozdja"],
-["11.05","Proizvodnja piva"],
-["11.06","Proizvodnja slada"],
-["11.07","Proizvodnja brezalkoholnih pijač, mineralnih in drugih stekleničenih vod"],
-["12.00","Proizvodnja tobačnih izdelkov"],
-["13.10","Priprava in predenje tekstilnih vlaken"],
-["13.20","Tkanje tekstilij"],
-["13.30","Dodelava tekstilij"],
-["13.91","Proizvodnja pletenih in kvačkanih materialov"],
-["13.92","Proizvodnja končnih tekstilnih izdelkov, razen oblačil"],
-["13.93","Proizvodnja preprog"],
-["13.94","Proizvodnja vrvi, vrvic in mrež"],
-["13.95","Proizvodnja netkanih tekstilij in izdelkov iz njih, razen oblačil"],
-["13.96","Proizvodnja tehničnega in industrijskega tekstila"],
-["13.99","Proizvodnja drugje nerazvrščenih tekstilij"],
-["14.11","Proizvodnja usnjenih oblačil"],
-["14.12","Proizvodnja delovnih oblačil"],
-["14.13","Proizvodnja drugih vrhnjih oblačil"],
-["14.14","Proizvodnja spodnjega perila"],
-["14.19","Proizvodnja drugih oblačil, pokrival ter dodatkov"],
-["14.20","Proizvodnja krznenih izdelkov"],
-["14.31","Proizvodnja nogavic"],
-["14.39","Proizvodnja drugih pletenih in kvačkanih oblačil"],
-["15.11","Strojenje in dodelava usnja in krzna"],
-["15.12","Proizvodnja potovalne galanterije, sedlarskih in jermenarskih izdelkov"],
-["15.20","Proizvodnja obutve"],
-["16.10","Žaganje, skobljanje in impregniranje lesa"],
-["16.21","Proizvodnja furnirja in plošč na osnovi lesa"],
-["16.22","Proizvodnja sestavljenega parketa"],
-["16.23","Stavbno mizarstvo in tesarstvo"],
-["16.24","Proizvodnja lesene embalaže"],
-["16.29","Proizvodnja drugih izdelkov iz lesa, plute, slame in protja"],
-["17.11","Proizvodnja vlaknin"],
-["17.12","Proizvodnja papirja in kartona"],
-["17.21","Proizvodnja valovitega papirja in kartona ter papirne in kartonske embalaže"],
-["17.22","Proizvodnja gospodinjskih, higienskih in toaletnih potrebščin iz papirja"],
-["17.23","Proizvodnja pisarniških potrebščin iz papirja"],
-["17.24","Proizvodnja tapet"],
-["17.29","Proizvodnja drugih izdelkov iz papirja in kartona"],
-["18.11","Tiskanje časopisov"],
-["18.12","Drugo tiskanje"],
-["18.13","Priprava za tisk in objavo"],
-["18.14","Knjigoveštvo in sorodne dejavnosti"],
-["18.20","Razmnoževanje posnetih nosilcev zapisa"],
-["19.10","Proizvodnja koksa"],
-["19.20","Proizvodnja naftnih derivatov"],
-["20.11","Proizvodnja tehničnih plinov"],
-["20.12","Proizvodnja barvil in pigmentov"],
-["20.13","Proizvodnja drugih anorganskih osnovnih kemikalij"],
-["20.14","Proizvodnja drugih organskih osnovnih kemikalij"],
-["20.15","Proizvodnja gnojil in dušikovih spojin"],
-["20.16","Proizvodnja plastičnih mas v primarni obliki"],
-["20.17","Proizvodnja sintetičnega kavčuka v primarni obliki"],
-["20.20","Proizvodnja razkužil, pesticidov in drugih agrokemičnih izdelkov"],
-["20.30","Proizvodnja barv, lakov in podobnih premazov, tiskarskih barv in kitov"],
-["20.41","Proizvodnja mil in pralnih sredstev, čistilnih in polirnih sredstev"],
-["20.42","Proizvodnja parfumov in toaletnih sredstev"],
-["20.51","Proizvodnja razstreliv"],
-["20.52","Proizvodnja sredstev za lepljenje"],
-["20.53","Proizvodnja eteričnih olj"],
-["20.59","Proizvodnja drugih kemičnih izdelkov"],
-["20.60","Proizvodnja umetnih vlaken"],
-["21.10","Proizvodnja farmacevtskih surovin"],
-["21.20","Proizvodnja farmacevtskih preparatov"],
-["22.11","Proizvodnja in obnavljanje gumijastih plaščev in zračnic za vozila"],
-["22.19","Proizvodnja drugih izdelkov iz gume"],
-["22.21","Proizvodnja plošč, folij, cevi in profilov iz plastičnih mas"],
-["22.22","Proizvodnja embalaže iz plastičnih mas"],
-["22.23","Proizvodnja izdelkov iz plastičnih mas za gradbeništvo"],
-["22.29","Proizvodnja drugih izdelkov iz plastičnih mas"],
-["23.11","Proizvodnja ravnega stekla"],
-["23.12","Oblikovanje in obdelava ravnega stekla"],
-["23.13","Proizvodnja votlega stekla"],
-["23.14","Proizvodnja steklenih vlaken"],
-["23.19","Proizvodnja in oblikovanje drugih vrst stekla ter tehničnih steklenih izdelkov"],
-["23.20","Proizvodnja ognjevzdržne keramike"],
-["23.31","Proizvodnja keramičnih ploščic in oblog"],
-["23.32","Proizvodnja strešnikov, opeke in drugih gradbenih izdelkov iz žgane gline"],
-["23.41","Proizvodnja gospodinjske in okrasne keramike"],
-["23.42","Proizvodnja sanitarne keramike"],
-["23.43","Proizvodnja izolatorjev in izolacijskih elementov iz keramike"],
-["23.44","Proizvodnja druge tehnične keramike"],
-["23.49","Proizvodnja drugih keramičnih izdelkov"],
-["23.51","Proizvodnja cementa"],
-["23.52","Proizvodnja apna in mavca"],
-["23.61","Proizvodnja betonskih izdelkov za gradbeništvo"],
-["23.62","Proizvodnja izdelkov iz mavca za gradbeništvo"],
-["23.63","Proizvodnja sveže betonske mešanice"],
-["23.64","Proizvodnja malte"],
-["23.65","Proizvodnja izdelkov iz vlaknatega cementa"],
-["23.69","Proizvodnja drugih izdelkov iz betona, cementa, mavca"],
-["23.70","Obdelava naravnega kamna"],
-["23.91","Proizvodnja brusilnih sredstev"],
-["23.99","Proizvodnja drugih nekovinskih mineralnih izdelkov"],
-["24.10","Proizvodnja surovega železa, jekla, ferozlitin"],
-["24.20","Proizvodnja jeklenih cevi, votlih profilov in fitingov"],
-["24.31","Hladno vlečenje profilov"],
-["24.32","Hladno valjanje traku"],
-["24.33","Hladno oblikovanje profilov in pregibanje"],
-["24.34","Hladno vlečenje žice"],
-["24.41","Proizvodnja plemenitih kovin"],
-["24.42","Proizvodnja aluminija"],
-["24.43","Proizvodnja svinca, cinka in kositra"],
-["24.44","Proizvodnja bakra"],
-["24.45","Proizvodnja drugih neželeznih kovin"],
-["24.46","Proizvodnja jedrskega goriva"],
-["24.51","Litje železa"],
-["24.52","Litje jekla"],
-["24.53","Litje lahkih kovin"],
-["24.54","Litje drugih neželeznih kovin"],
-["25.11","Proizvodnja kovinskih konstrukcij in njihovih delov"],
-["25.12","Proizvodnja kovinskega stavbnega pohištva"],
-["25.21","Proizvodnja radiatorjev in kotlov za centralno ogrevanje"],
-["25.29","Proizvodnja drugih kovinskih rezervoarjev in cistern"],
-["25.30","Proizvodnja parnih kotlov, razen kotlov za centralno ogrevanje"],
-["25.40","Proizvodnja orožja in streliva"],
-["25.50","Kovanje, stiskanje, vtiskovanje in valjanje kovin; prašna metalurgija"],
-["25.61","Površinska obdelava in prekrivanje kovin"],
-["25.62","Mehanska obdelava kovin"],
-["25.71","Proizvodnja rezil in jedilnega pribora"],
-["25.72","Proizvodnja ključavnic, okovja"],
-["25.73","Proizvodnja orodja"],
-["25.91","Proizvodnja jeklenih bobnov, sodov in podobnih posod"],
-["25.92","Proizvodnja lahke kovinske embalaže"],
-["25.93","Proizvodnja izdelkov iz žice, verig in vzmeti"],
-["25.94","Proizvodnja vijačnega materiala, vezi"],
-["25.99","Proizvodnja drugje nerazvrščenih kovinskih izdelkov"],
-["26.11","Proizvodnja elektronskih komponent"],
-["26.12","Proizvodnja elektronskih plošč"],
-["26.20","Proizvodnja računalnikov in perifernih naprav"],
-["26.30","Proizvodnja komunikacijskih naprav"],
-["26.40","Proizvodnja elektronskih naprav za široko rabo"],
-["26.51","Proizvodnja merilnih, preizkuševalnih in navigacijskih instrumentov in naprav"],
-["26.52","Proizvodnja ur"],
-["26.60","Proizvodnja sevalnih, elektromedicinskih in elektroterapevtskih naprav"],
-["26.70","Proizvodnja optičnih instrumentov in fotografske opreme"],
-["26.80","Proizvodnja magnetnih in optičnih nosilcev zapisa"],
-["27.11","Proizvodnja elektromotorjev, generatorjev in transformatorjev"],
-["27.12","Proizvodnja naprav za distribucijo in krmiljenje elektrike"],
-["27.20","Proizvodnja baterij in akumulatorjev"],
-["27.31","Proizvodnja kablov iz optičnih vlaken"],
-["27.32","Proizvodnja drugih električnih kablov in žic"],
-["27.33","Proizvodnja vtičnic, stikal in drugih naprav za ožičenje"],
-["27.40","Proizvodnja naprav in opreme za razsvetljavo"],
-["27.51","Proizvodnja električnih gospodinjskih naprav"],
-["27.52","Proizvodnja neelektričnih gospodinjskih naprav"],
-["27.90","Proizvodnja drugih električnih naprav"],
-["28.11","Proizvodnja motorjev in turbin, razen za letala in motorna vozila"],
-["28.12","Proizvodnja naprav za fluidno tehniko"],
-["28.13","Proizvodnja črpalk in kompresorjev"],
-["28.14","Proizvodnja pip in ventilov"],
-["28.15","Proizvodnja ležajev, zobnikov in elementov za mehanski prenos energije"],
-["28.21","Proizvodnja peči in gorilnikov"],
-["28.22","Proizvodnja dvigalnih in transportnih naprav"],
-["28.23","Proizvodnja pisarniških strojev in naprav (razen računalnikov in perifernih naprav)"],
-["28.24","Proizvodnja ročnih strojev in naprav"],
-["28.25","Proizvodnja hladilnih in prezračevalnih naprav, razen za gospodinjstva"],
-["28.29","Proizvodnja drugih strojev in naprav za splošne namene"],
-["28.30","Proizvodnja kmetijskih in gozdarskih strojev"],
-["28.41","Proizvodnja strojev za oblikovanje in obdelavo kovin"],
-["28.49","Proizvodnja drugih obdelovalnih strojev"],
-["28.91","Proizvodnja metalurških strojev"],
-["28.92","Proizvodnja rudarskih in gradbenih strojev"],
-["28.93","Proizvodnja strojev za živilsko in tobačno industrijo"],
-["28.94","Proizvodnja strojev za tekstilno, oblačilno in usnjarsko industrijo"],
-["28.95","Proizvodnja strojev za industrijo papirja in kartona"],
-["28.96","Proizvodnja strojev za plastiko in gumo"],
-["28.99","Proizvodnja strojev za druge posebne namene"],
-["29.10","Proizvodnja motornih vozil"],
-["29.20","Proizvodnja karoserij za vozila; proizvodnja prikolic, polprikolic"],
-["29.31","Proizvodnja električne in elektronske opreme za motorna vozila"],
-["29.32","Proizvodnja drugih delov in opreme za motorna vozila"],
-["30.11","Gradnja ladij in plavajočih konstrukcij"],
-["30.12","Proizvodnja čolnov za razvedrilo in šport"],
-["30.20","Proizvodnja železniških in drugih tirnih vozil"],
-["30.30","Proizvodnja zračnih in vesoljskih plovil"],
-["30.40","Proizvodnja bojnih vozil"],
-["30.91","Proizvodnja motornih koles"],
-["30.92","Proizvodnja koles in invalidskih vozičkov"],
-["30.99","Proizvodnja vprežnih in drugih vozil"],
-["31.01","Proizvodnja pohištva za poslovne in prodajne prostore"],
-["31.02","Proizvodnja kuhinjskega pohištva"],
-["31.03","Proizvodnja žimnic"],
-["31.09","Proizvodnja drugega pohištva"],
-["32.11","Kovanje kovancev"],
-["32.12","Proizvodnja nakita in podobnih izdelkov"],
-["32.13","Proizvodnja bižuterije"],
-["32.20","Proizvodnja glasbil"],
-["32.30","Proizvodnja športne opreme"],
-["32.40","Proizvodnja igrač in rekvizitov za igre in zabavo"],
-["32.50","Proizvodnja medicinskih instrumentov, naprav in pripomočkov"],
-["32.91","Proizvodnja metel in krtač"],
-["32.99","Drugje nerazvrščene predelovalne dejavnosti"],
-["33.11","Popravila kovinskih izdelkov"],
-["33.12","Popravila strojev in naprav"],
-["33.13","Popravila elektronskih in optičnih naprav"],
-["33.14","Popravila električnih naprav"],
-["33.15","Popravila in vzdrževanje ladij in čolnov"],
-["33.16","Popravila in vzdrževanje zračnih in vesoljskih plovil"],
-["33.17","Popravila in vzdrževanje drugih prevoznih sredstev"],
-["33.19","Popravila drugih naprav"],
-["33.20","Montaža industrijskih strojev in naprav"]
+["C","PREDELOVALNE DEJAVNOSTI","MANUFACTURING",[
+["10.11","Proizvodnja mesa, razen perutninskega","Processing and preserving of meat"],
+["10.12","Proizvodnja perutninskega mesa","Processing and preserving of poultry meat"],
+["10.13","Proizvodnja mesnih izdelkov","Production of meat and poultry meat products"],
+["10.20","Predelava in konzerviranje rib, rakov in mehkužcev","Processing and preserving of fish, crustaceans and molluscs"],
+["10.31","Predelava in konzerviranje krompirja","Processing and preserving of potatoes"],
+["10.32","Proizvodnja sadnih in zelenjavnih sokov","Manufacture of fruit and vegetable juice"],
+["10.39","Druga predelava in konzerviranje sadja in zelenjave","Other processing and preserving of fruit and vegetables"],
+["10.41","Proizvodnja olja in maščob","Manufacture of oils and fats"],
+["10.42","Proizvodnja margarine in podobnih jedilnih maščob","Manufacture of margarine and similar edible fats"],
+["10.51","Mlekarstvo in sirarstvo","Operation of dairies and cheese making"],
+["10.52","Proizvodnja sladoleda","Manufacture of ice cream"],
+["10.61","Mlinarstvo","Manufacture of grain mill products"],
+["10.62","Proizvodnja škroba in škrobnih izdelkov","Manufacture of starches and starch products"],
+["10.71","Proizvodnja kruha, svežega peciva in slaščic","Manufacture of bread; manufacture of fresh pastry goods and cakes"],
+["10.72","Proizvodnja prepečenca in piškotov; proizvodnja trajnega peciva in slaščic","Manufacture of rusks and biscuits; manufacture of preserved pastry goods and cakes"],
+["10.73","Proizvodnja testenin","Manufacture of macaroni, noodles, couscous and similar farinaceous products"],
+["10.81","Proizvodnja sladkorja","Manufacture of sugar"],
+["10.82","Proizvodnja kakava, čokolade in sladkornih izdelkov","Manufacture of cocoa, chocolate and sugar confectionery"],
+["10.83","Predelava čaja in kave","Processing of tea and coffee"],
+["10.84","Proizvodnja začimb, dišav in drugih dodatkov","Manufacture of condiments and seasonings"],
+["10.85","Proizvodnja pripravljenih jedi in obrokov","Manufacture of prepared meals and dishes"],
+["10.86","Proizvodnja homogeniziranih in dietetičnih živil","Manufacture of homogenised food preparations and dietetic food"],
+["10.89","Proizvodnja drugih prehrambenih izdelkov, drugje nerazvrščenih","Manufacture of other food products n.e.c."],
+["10.91","Proizvodnja krmil","Manufacture of prepared feeds for farm animals"],
+["10.92","Proizvodnja hrane za hišne živali","Manufacture of prepared pet foods"],
+["11.01","Proizvodnja žganih pijač","Distilling, rectifying and blending of spirits"],
+["11.02","Proizvodnja vina iz grozdja","Manufacture of wine from grape"],
+["11.03","Proizvodnja sadnih vin in podobnih fermentiranih pijač","Manufacture of cider and other fruit wines"],
+["11.04","Proizvodnja aromatiziranih vin iz grozdja","Manufacture of other non-distilled fermented beverages"],
+["11.05","Proizvodnja piva","Manufacture of beer"],
+["11.06","Proizvodnja slada","Manufacture of malt"],
+["11.07","Proizvodnja brezalkoholnih pijač, mineralnih in drugih stekleničenih vod","Manufacture of soft drinks; production of mineral waters and other bottled waters"],
+["12.00","Proizvodnja tobačnih izdelkov","Manufacture of tobacco products"],
+["13.10","Priprava in predenje tekstilnih vlaken","Preparation and spinning of textile fibres"],
+["13.20","Tkanje tekstilij","Weaving of textiles"],
+["13.30","Dodelava tekstilij","Finishing of textiles"],
+["13.91","Proizvodnja pletenih in kvačkanih materialov","Manufacture of knitted and crocheted fabrics"],
+["13.92","Proizvodnja končnih tekstilnih izdelkov, razen oblačil","Manufacture of made-up textile articles, except apparel"],
+["13.93","Proizvodnja preprog","Manufacture of carpets and rugs"],
+["13.94","Proizvodnja vrvi, vrvic in mrež","Manufacture of cordage, rope, twine and netting"],
+["13.95","Proizvodnja netkanih tekstilij in izdelkov iz njih, razen oblačil","Manufacture of non-wovens and articles made from non-wovens, except apparel"],
+["13.96","Proizvodnja tehničnega in industrijskega tekstila","Manufacture of other technical and industrial textiles"],
+["13.99","Proizvodnja drugje nerazvrščenih tekstilij","Manufacture of other textiles n.e.c."],
+["14.11","Proizvodnja usnjenih oblačil","Manufacture of leather clothes"],
+["14.12","Proizvodnja delovnih oblačil","Manufacture of workwear"],
+["14.13","Proizvodnja drugih vrhnjih oblačil","Manufacture of other outerwear"],
+["14.14","Proizvodnja spodnjega perila","Manufacture of underwear"],
+["14.19","Proizvodnja drugih oblačil, pokrival ter dodatkov","Manufacture of other wearing apparel and accessories"],
+["14.20","Proizvodnja krznenih izdelkov","Manufacture of articles of fur"],
+["14.31","Proizvodnja nogavic","Manufacture of knitted and crocheted hosiery"],
+["14.39","Proizvodnja drugih pletenih in kvačkanih oblačil","Manufacture of other knitted and crocheted apparel"],
+["15.11","Strojenje in dodelava usnja in krzna","Tanning and dressing of leather; dressing and dyeing of fur"],
+["15.12","Proizvodnja potovalne galanterije, sedlarskih in jermenarskih izdelkov","Manufacture of luggage, handbags and the like, saddlery and harness"],
+["15.20","Proizvodnja obutve","Manufacture of footwear"],
+["16.10","Žaganje, skobljanje in impregniranje lesa","Sawmilling and planing of wood"],
+["16.21","Proizvodnja furnirja in plošč na osnovi lesa","Manufacture of veneer sheets and wood-based panels"],
+["16.22","Proizvodnja sestavljenega parketa","Manufacture of assembled parquet floors"],
+["16.23","Stavbno mizarstvo in tesarstvo","Manufacture of other builders' carpentry and joinery"],
+["16.24","Proizvodnja lesene embalaže","Manufacture of wooden containers"],
+["16.29","Proizvodnja drugih izdelkov iz lesa, plute, slame in protja","Manufacture of other products of wood; manufacture of articles of cork, straw and plaiting materials"],
+["17.11","Proizvodnja vlaknin","Manufacture of pulp"],
+["17.12","Proizvodnja papirja in kartona","Manufacture of paper and paperboard"],
+["17.21","Proizvodnja valovitega papirja in kartona ter papirne in kartonske embalaže","Manufacture of corrugated paper and paperboard and of containers of paper and paperboard"],
+["17.22","Proizvodnja gospodinjskih, higienskih in toaletnih potrebščin iz papirja","Manufacture of household and sanitary goods and of toilet requisites"],
+["17.23","Proizvodnja pisarniških potrebščin iz papirja","Manufacture of paper stationery"],
+["17.24","Proizvodnja tapet","Manufacture of wallpaper"],
+["17.29","Proizvodnja drugih izdelkov iz papirja in kartona","Manufacture of other articles of paper and paperboard"],
+["18.11","Tiskanje časopisov","Printing of newspapers"],
+["18.12","Drugo tiskanje","Other printing"],
+["18.13","Priprava za tisk in objavo","Pre-press and pre-media services"],
+["18.14","Knjigoveštvo in sorodne dejavnosti","Binding and related services"],
+["18.20","Razmnoževanje posnetih nosilcev zapisa","Reproduction of recorded media"],
+["19.10","Proizvodnja koksa","Manufacture of coke oven products"],
+["19.20","Proizvodnja naftnih derivatov","Manufacture of refined petroleum products"],
+["20.11","Proizvodnja tehničnih plinov","Manufacture of industrial gases"],
+["20.12","Proizvodnja barvil in pigmentov","Manufacture of dyes and pigments"],
+["20.13","Proizvodnja drugih anorganskih osnovnih kemikalij","Manufacture of other inorganic basic chemicals"],
+["20.14","Proizvodnja drugih organskih osnovnih kemikalij","Manufacture of other organic basic chemicals"],
+["20.15","Proizvodnja gnojil in dušikovih spojin","Manufacture of fertilisers and nitrogen compounds"],
+["20.16","Proizvodnja plastičnih mas v primarni obliki","Manufacture of plastics in primary forms"],
+["20.17","Proizvodnja sintetičnega kavčuka v primarni obliki","Manufacture of synthetic rubber in primary forms"],
+["20.20","Proizvodnja razkužil, pesticidov in drugih agrokemičnih izdelkov","Manufacture of pesticides and other agrochemical products"],
+["20.30","Proizvodnja barv, lakov in podobnih premazov, tiskarskih barv in kitov","Manufacture of paints, varnishes and similar coatings, printing ink and mastics"],
+["20.41","Proizvodnja mil in pralnih sredstev, čistilnih in polirnih sredstev","Manufacture of soap and detergents, cleaning and polishing preparations"],
+["20.42","Proizvodnja parfumov in toaletnih sredstev","Manufacture of perfumes and toilet preparations"],
+["20.51","Proizvodnja razstreliv","Manufacture of explosives"],
+["20.52","Proizvodnja sredstev za lepljenje","Manufacture of glues"],
+["20.53","Proizvodnja eteričnih olj","Manufacture of essential oils"],
+["20.59","Proizvodnja drugih kemičnih izdelkov","Manufacture of other chemical products n.e.c."],
+["20.60","Proizvodnja umetnih vlaken","Manufacture of man-made fibres"],
+["21.10","Proizvodnja farmacevtskih surovin","Manufacture of basic pharmaceutical products"],
+["21.20","Proizvodnja farmacevtskih preparatov","Manufacture of pharmaceutical preparations"],
+["22.11","Proizvodnja in obnavljanje gumijastih plaščev in zračnic za vozila","Manufacture of rubber tyres and tubes; retreading and rebuilding of rubber tyres"],
+["22.19","Proizvodnja drugih izdelkov iz gume","Manufacture of other rubber products"],
+["22.21","Proizvodnja plošč, folij, cevi in profilov iz plastičnih mas","Manufacture of plastic plates, sheets, tubes and profiles"],
+["22.22","Proizvodnja embalaže iz plastičnih mas","Manufacture of plastic packing goods"],
+["22.23","Proizvodnja izdelkov iz plastičnih mas za gradbeništvo","Manufacture of builders' ware of plastic"],
+["22.29","Proizvodnja drugih izdelkov iz plastičnih mas","Manufacture of other plastic products"],
+["23.11","Proizvodnja ravnega stekla","Manufacture of flat glass"],
+["23.12","Oblikovanje in obdelava ravnega stekla","Shaping and processing of flat glass"],
+["23.13","Proizvodnja votlega stekla","Manufacture of hollow glass"],
+["23.14","Proizvodnja steklenih vlaken","Manufacture of glass fibres"],
+["23.19","Proizvodnja in oblikovanje drugih vrst stekla ter tehničnih steklenih izdelkov","Manufacture and processing of other glass, including technical glassware"],
+["23.20","Proizvodnja ognjevzdržne keramike","Manufacture of refractory products"],
+["23.31","Proizvodnja keramičnih ploščic in oblog","Manufacture of ceramic tiles and flags"],
+["23.32","Proizvodnja strešnikov, opeke in drugih gradbenih izdelkov iz žgane gline","Manufacture of bricks, tiles and construction products, in baked clay"],
+["23.41","Proizvodnja gospodinjske in okrasne keramike","Manufacture of ceramic household and ornamental articles"],
+["23.42","Proizvodnja sanitarne keramike","Manufacture of ceramic sanitary fixtures"],
+["23.43","Proizvodnja izolatorjev in izolacijskih elementov iz keramike","Manufacture of ceramic insulators and insulating fittings"],
+["23.44","Proizvodnja druge tehnične keramike","Manufacture of other technical ceramic products"],
+["23.49","Proizvodnja drugih keramičnih izdelkov","Manufacture of other ceramic products"],
+["23.51","Proizvodnja cementa","Manufacture of cement"],
+["23.52","Proizvodnja apna in mavca","Manufacture of lime and plaster"],
+["23.61","Proizvodnja betonskih izdelkov za gradbeništvo","Manufacture of concrete products for construction purposes"],
+["23.62","Proizvodnja izdelkov iz mavca za gradbeništvo","Manufacture of plaster products for construction purposes"],
+["23.63","Proizvodnja sveže betonske mešanice","Manufacture of ready-mixed concrete"],
+["23.64","Proizvodnja malte","Manufacture of mortars"],
+["23.65","Proizvodnja izdelkov iz vlaknatega cementa","Manufacture of fibre cement"],
+["23.69","Proizvodnja drugih izdelkov iz betona, cementa, mavca","Manufacture of other articles of concrete, plaster and cement"],
+["23.70","Obdelava naravnega kamna","Cutting, shaping and finishing of stone"],
+["23.91","Proizvodnja brusilnih sredstev","Production of abrasive products"],
+["23.99","Proizvodnja drugih nekovinskih mineralnih izdelkov","Manufacture of other non-metallic mineral products n.e.c."],
+["24.10","Proizvodnja surovega železa, jekla, ferozlitin","Manufacture of basic iron and steel and of ferro-alloys"],
+["24.20","Proizvodnja jeklenih cevi, votlih profilov in fitingov","Manufacture of tubes, pipes, hollow profiles and related fittings, of steel"],
+["24.31","Hladno vlečenje profilov","Cold drawing of bars"],
+["24.32","Hladno valjanje traku","Cold rolling of narrow strip"],
+["24.33","Hladno oblikovanje profilov in pregibanje","Cold forming or folding"],
+["24.34","Hladno vlečenje žice","Cold drawing of wire"],
+["24.41","Proizvodnja plemenitih kovin","Precious metals production"],
+["24.42","Proizvodnja aluminija","Aluminium production"],
+["24.43","Proizvodnja svinca, cinka in kositra","Lead, zinc and tin production"],
+["24.44","Proizvodnja bakra","Copper production"],
+["24.45","Proizvodnja drugih neželeznih kovin","Other non-ferrous metal production"],
+["24.46","Proizvodnja jedrskega goriva","Processing of nuclear fuel"],
+["24.51","Litje železa","Casting of iron"],
+["24.52","Litje jekla","Casting of steel"],
+["24.53","Litje lahkih kovin","Casting of light metals"],
+["24.54","Litje drugih neželeznih kovin","Casting of other non-ferrous metals"],
+["25.11","Proizvodnja kovinskih konstrukcij in njihovih delov","Manufacture of metal structures and parts of structures"],
+["25.12","Proizvodnja kovinskega stavbnega pohištva","Manufacture of doors and windows of metal"],
+["25.21","Proizvodnja radiatorjev in kotlov za centralno ogrevanje","Manufacture of central heating radiators and boilers"],
+["25.29","Proizvodnja drugih kovinskih rezervoarjev in cistern","Manufacture of other tanks, reservoirs and containers of metal"],
+["25.30","Proizvodnja parnih kotlov, razen kotlov za centralno ogrevanje","Manufacture of steam generators, except central heating hot water boilers"],
+["25.40","Proizvodnja orožja in streliva","Manufacture of weapons and ammunition"],
+["25.50","Kovanje, stiskanje, vtiskovanje in valjanje kovin; prašna metalurgija","Forging, pressing, stamping and roll-forming of metal; powder metallurgy"],
+["25.61","Površinska obdelava in prekrivanje kovin","Treatment and coating of metals"],
+["25.62","Mehanska obdelava kovin","Machining"],
+["25.71","Proizvodnja rezil in jedilnega pribora","Manufacture of cutlery"],
+["25.72","Proizvodnja ključavnic, okovja","Manufacture of locks and hinges"],
+["25.73","Proizvodnja orodja","Manufacture of tools"],
+["25.91","Proizvodnja jeklenih bobnov, sodov in podobnih posod","Manufacture of steel drums and similar containers"],
+["25.92","Proizvodnja lahke kovinske embalaže","Manufacture of light metal packaging"],
+["25.93","Proizvodnja izdelkov iz žice, verig in vzmeti","Manufacture of wire products, chain and springs"],
+["25.94","Proizvodnja vijačnega materiala, vezi","Manufacture of fasteners and screw machine products"],
+["25.99","Proizvodnja drugje nerazvrščenih kovinskih izdelkov","Manufacture of other fabricated metal products n.e.c."],
+["26.11","Proizvodnja elektronskih komponent","Manufacture of electronic components"],
+["26.12","Proizvodnja elektronskih plošč","Manufacture of loaded electronic boards"],
+["26.20","Proizvodnja računalnikov in perifernih naprav","Manufacture of computers and peripheral equipment"],
+["26.30","Proizvodnja komunikacijskih naprav","Manufacture of communication equipment"],
+["26.40","Proizvodnja elektronskih naprav za široko rabo","Manufacture of consumer electronics"],
+["26.51","Proizvodnja merilnih, preizkuševalnih in navigacijskih instrumentov in naprav","Manufacture of instruments and appliances for measuring, testing and navigation"],
+["26.52","Proizvodnja ur","Manufacture of watches and clocks"],
+["26.60","Proizvodnja sevalnih, elektromedicinskih in elektroterapevtskih naprav","Manufacture of irradiation, electromedical and electrotherapeutic equipment"],
+["26.70","Proizvodnja optičnih instrumentov in fotografske opreme","Manufacture of optical instruments and photographic equipment"],
+["26.80","Proizvodnja magnetnih in optičnih nosilcev zapisa","Manufacture of magnetic and optical media"],
+["27.11","Proizvodnja elektromotorjev, generatorjev in transformatorjev","Manufacture of electric motors, generators and transformers"],
+["27.12","Proizvodnja naprav za distribucijo in krmiljenje elektrike","Manufacture of electricity distribution and control apparatus"],
+["27.20","Proizvodnja baterij in akumulatorjev","Manufacture of batteries and accumulators"],
+["27.31","Proizvodnja kablov iz optičnih vlaken","Manufacture of fibre optic cables"],
+["27.32","Proizvodnja drugih električnih kablov in žic","Manufacture of other electronic and electric wires and cables"],
+["27.33","Proizvodnja vtičnic, stikal in drugih naprav za ožičenje","Manufacture of wiring devices"],
+["27.40","Proizvodnja naprav in opreme za razsvetljavo","Manufacture of electric lighting equipment"],
+["27.51","Proizvodnja električnih gospodinjskih naprav","Manufacture of electric domestic appliances"],
+["27.52","Proizvodnja neelektričnih gospodinjskih naprav","Manufacture of non-electric domestic appliances"],
+["27.90","Proizvodnja drugih električnih naprav","Manufacture of other electrical equipment"],
+["28.11","Proizvodnja motorjev in turbin, razen za letala in motorna vozila","Manufacture of engines and turbines, except aircraft, vehicle and cycle engines"],
+["28.12","Proizvodnja naprav za fluidno tehniko","Manufacture of fluid power equipment"],
+["28.13","Proizvodnja črpalk in kompresorjev","Manufacture of other pumps and compressors"],
+["28.14","Proizvodnja pip in ventilov","Manufacture of other taps and valves"],
+["28.15","Proizvodnja ležajev, zobnikov in elementov za mehanski prenos energije","Manufacture of bearings, gears, gearing and driving elements"],
+["28.21","Proizvodnja peči in gorilnikov","Manufacture of ovens, furnaces and furnace burners"],
+["28.22","Proizvodnja dvigalnih in transportnih naprav","Manufacture of lifting and handling equipment"],
+["28.23","Proizvodnja pisarniških strojev in naprav (razen računalnikov in perifernih naprav)","Manufacture of office machinery and equipment (except computers and peripheral equipment)"],
+["28.24","Proizvodnja ročnih strojev in naprav","Manufacture of power-driven hand tools"],
+["28.25","Proizvodnja hladilnih in prezračevalnih naprav, razen za gospodinjstva","Manufacture of non-domestic cooling and ventilation equipment"],
+["28.29","Proizvodnja drugih strojev in naprav za splošne namene","Manufacture of other general-purpose machinery n.e.c."],
+["28.30","Proizvodnja kmetijskih in gozdarskih strojev","Manufacture of agricultural and forestry machinery"],
+["28.41","Proizvodnja strojev za oblikovanje in obdelavo kovin","Manufacture of metal forming machinery"],
+["28.49","Proizvodnja drugih obdelovalnih strojev","Manufacture of other machine tools"],
+["28.91","Proizvodnja metalurških strojev","Manufacture of machinery for metallurgy"],
+["28.92","Proizvodnja rudarskih in gradbenih strojev","Manufacture of machinery for mining, quarrying and construction"],
+["28.93","Proizvodnja strojev za živilsko in tobačno industrijo","Manufacture of machinery for food, beverage and tobacco processing"],
+["28.94","Proizvodnja strojev za tekstilno, oblačilno in usnjarsko industrijo","Manufacture of machinery for textile, apparel and leather production"],
+["28.95","Proizvodnja strojev za industrijo papirja in kartona","Manufacture of machinery for paper and paperboard production"],
+["28.96","Proizvodnja strojev za plastiko in gumo","Manufacture of plastics and rubber machinery"],
+["28.99","Proizvodnja strojev za druge posebne namene","Manufacture of other special-purpose machinery n.e.c."],
+["29.10","Proizvodnja motornih vozil","Manufacture of motor vehicles"],
+["29.20","Proizvodnja karoserij za vozila; proizvodnja prikolic, polprikolic","Manufacture of bodies (coachwork) for motor vehicles; manufacture of trailers and semi-trailers"],
+["29.31","Proizvodnja električne in elektronske opreme za motorna vozila","Manufacture of electrical and electronic equipment for motor vehicles"],
+["29.32","Proizvodnja drugih delov in opreme za motorna vozila","Manufacture of other parts and accessories for motor vehicles"],
+["30.11","Gradnja ladij in plavajočih konstrukcij","Building of ships and floating structures"],
+["30.12","Proizvodnja čolnov za razvedrilo in šport","Building of pleasure and sporting boats"],
+["30.20","Proizvodnja železniških in drugih tirnih vozil","Manufacture of railway locomotives and rolling stock"],
+["30.30","Proizvodnja zračnih in vesoljskih plovil","Manufacture of air and spacecraft and related machinery"],
+["30.40","Proizvodnja bojnih vozil","Manufacture of military fighting vehicles"],
+["30.91","Proizvodnja motornih koles","Manufacture of motorcycles"],
+["30.92","Proizvodnja koles in invalidskih vozičkov","Manufacture of bicycles and invalid carriages"],
+["30.99","Proizvodnja vprežnih in drugih vozil","Manufacture of other transport equipment n.e.c."],
+["31.01","Proizvodnja pohištva za poslovne in prodajne prostore","Manufacture of office and shop furniture"],
+["31.02","Proizvodnja kuhinjskega pohištva","Manufacture of kitchen furniture"],
+["31.03","Proizvodnja žimnic","Manufacture of mattresses"],
+["31.09","Proizvodnja drugega pohištva","Manufacture of other furniture"],
+["32.11","Kovanje kovancev","Striking of coins"],
+["32.12","Proizvodnja nakita in podobnih izdelkov","Manufacture of jewellery and related articles"],
+["32.13","Proizvodnja bižuterije","Manufacture of imitation jewellery and related articles"],
+["32.20","Proizvodnja glasbil","Manufacture of musical instruments"],
+["32.30","Proizvodnja športne opreme","Manufacture of sports goods"],
+["32.40","Proizvodnja igrač in rekvizitov za igre in zabavo","Manufacture of games and toys"],
+["32.50","Proizvodnja medicinskih instrumentov, naprav in pripomočkov","Manufacture of medical and dental instruments and supplies"],
+["32.91","Proizvodnja metel in krtač","Manufacture of brooms and brushes"],
+["32.99","Drugje nerazvrščene predelovalne dejavnosti","Other manufacturing n.e.c."],
+["33.11","Popravila kovinskih izdelkov","Repair of fabricated metal products"],
+["33.12","Popravila strojev in naprav","Repair of machinery"],
+["33.13","Popravila elektronskih in optičnih naprav","Repair of electronic and optical equipment"],
+["33.14","Popravila električnih naprav","Repair of electrical equipment"],
+["33.15","Popravila in vzdrževanje ladij in čolnov","Repair and maintenance of ships and boats"],
+["33.16","Popravila in vzdrževanje zračnih in vesoljskih plovil","Repair and maintenance of aircraft and spacecraft"],
+["33.17","Popravila in vzdrževanje drugih prevoznih sredstev","Repair and maintenance of other transport equipment"],
+["33.19","Popravila drugih naprav","Repair of other equipment"],
+["33.20","Montaža industrijskih strojev in naprav","Installation of industrial machinery and equipment"]
 ]],
-["D","OSKRBA Z ELEKTRIČNO ENERGIJO, PLINOM IN PARO",[
-["35.11","Proizvodnja električne energije"],
-["35.12","Prenos električne energije"],
-["35.13","Distribucija električne energije"],
-["35.14","Trgovanje z električno energijo"],
-["35.21","Proizvodnja plina"],
-["35.22","Distribucija plinastih goriv po plinovodni mreži"],
-["35.23","Trgovanje s plinastimi gorivi po plinovodni mreži"],
-["35.30","Oskrba s paro in vročo vodo"]
+["D","OSKRBA Z ELEKTRIČNO ENERGIJO, PLINOM IN PARO","ELECTRICITY, GAS, STEAM AND AIR CONDITIONING SUPPLY",[
+["35.11","Proizvodnja električne energije","Production of electricity"],
+["35.12","Prenos električne energije","Transmission of electricity"],
+["35.13","Distribucija električne energije","Distribution of electricity"],
+["35.14","Trgovanje z električno energijo","Trade of electricity"],
+["35.21","Proizvodnja plina","Manufacture of gas"],
+["35.22","Distribucija plinastih goriv po plinovodni mreži","Distribution of gaseous fuels through mains"],
+["35.23","Trgovanje s plinastimi gorivi po plinovodni mreži","Trade of gas through mains"],
+["35.30","Oskrba s paro in vročo vodo","Steam and air conditioning supply"]
 ]],
-["E","OSKRBA Z VODO; RAVNANJE Z ODPLAKAMI IN ODPADKI; SANIRANJE OKOLJA",[
-["36.00","Zbiranje, prečiščevanje in distribucija vode"],
-["37.00","Ravnanje z odplakami"],
-["38.11","Zbiranje in odvoz nenevarnih odpadkov"],
-["38.12","Zbiranje in odvoz nevarnih odpadkov"],
-["38.21","Ravnanje z nenevarnimi odpadki"],
-["38.22","Ravnanje z nevarnimi odpadki"],
-["38.31","Demontaža odpadnih naprav"],
-["38.32","Pridobivanje sekundarnih surovin iz ostankov in odpadkov"],
-["39.00","Saniranje okolja in drugo ravnanje z odpadki"]
+["E","OSKRBA Z VODO; RAVNANJE Z ODPLAKAMI IN ODPADKI; SANIRANJE OKOLJA","WATER SUPPLY; SEWERAGE, WASTE MANAGEMENT AND REMEDIATION ACTIVITIES",[
+["36.00","Zbiranje, prečiščevanje in distribucija vode","Water collection, treatment and supply"],
+["37.00","Ravnanje z odplakami","Sewerage"],
+["38.11","Zbiranje in odvoz nenevarnih odpadkov","Collection of non-hazardous waste"],
+["38.12","Zbiranje in odvoz nevarnih odpadkov","Collection of hazardous waste"],
+["38.21","Ravnanje z nenevarnimi odpadki","Treatment and disposal of non-hazardous waste"],
+["38.22","Ravnanje z nevarnimi odpadki","Treatment and disposal of hazardous waste"],
+["38.31","Demontaža odpadnih naprav","Dismantling of wrecks"],
+["38.32","Pridobivanje sekundarnih surovin iz ostankov in odpadkov","Recovery of sorted materials"],
+["39.00","Saniranje okolja in drugo ravnanje z odpadki","Remediation activities and other waste management services"]
 ]],
-["F","GRADBENIŠTVO",[
-["41.10","Organizacija izvedbe stavbnih projektov"],
-["41.20","Gradnja stanovanjskih in nestanovanjskih stavb"],
-["42.11","Gradnja cest"],
-["42.12","Gradnja železnic in podzemnih železnic"],
-["42.13","Gradnja mostov in predorov"],
-["42.21","Gradnja objektov oskrbne infrastrukture za tekočine in pline"],
-["42.22","Gradnja objektov oskrbne infrastrukture za elektriko in telekomunikacije"],
-["42.91","Gradnja vodnih objektov"],
-["42.99","Gradnja drugih objektov nizke gradnje"],
-["43.11","Rušenje objektov"],
-["43.12","Zemeljska pripravljalna dela"],
-["43.13","Testno vrtanje in sondiranje"],
-["43.21","Inštaliranje električnih napeljav in naprav"],
-["43.22","Inštaliranje vodovodnih, plinskih, ogrevalnih napeljav in naprav"],
-["43.29","Drugo inštaliranje pri gradnjah"],
-["43.31","Fasaderska in štukaterska dela"],
-["43.32","Vgrajevanje stavbnega pohištva"],
-["43.33","Oblaganje tal in sten"],
-["43.34","Steklarska in pleskarska dela"],
-["43.39","Druga zaključna gradbena dela"],
-["43.91","Postavljanje ostrešij in krovska dela"],
-["43.99","Druga specializirana gradbena dela"]
+["F","GRADBENIŠTVO","CONSTRUCTION",[
+["41.10","Organizacija izvedbe stavbnih projektov","Real estate promotion"],
+["41.20","Gradnja stanovanjskih in nestanovanjskih stavb","Construction of residential and non-residential buildings"],
+["42.11","Gradnja cest","Construction of roads and motorways"],
+["42.12","Gradnja železnic in podzemnih železnic","Construction of surface and underground railways"],
+["42.13","Gradnja mostov in predorov","Construction of bridges and tunnels"],
+["42.21","Gradnja objektov oskrbne infrastrukture za tekočine in pline","Construction of utility networks"],
+["42.22","Gradnja objektov oskrbne infrastrukture za elektriko in telekomunikacije","Construction of electrical and telecommunications networks"],
+["42.91","Gradnja vodnih objektov","Construction of maritime and waterway structures"],
+["42.99","Gradnja drugih objektov nizke gradnje","Construction of other civil engineering works n.e.c."],
+["43.11","Rušenje objektov","Demolition work"],
+["43.12","Zemeljska pripravljalna dela","Site preparation work"],
+["43.13","Testno vrtanje in sondiranje","Drilling and boring"],
+["43.21","Inštaliranje električnih napeljav in naprav","Electrical installation"],
+["43.22","Inštaliranje vodovodnih, plinskih, ogrevalnih napeljav in naprav","Plumbing, heating and air-conditioning installation"],
+["43.29","Drugo inštaliranje pri gradnjah","Other installation work"],
+["43.31","Fasaderska in štukaterska dela","Plastering work"],
+["43.32","Vgrajevanje stavbnega pohištva","Carpentry work"],
+["43.33","Oblaganje tal in sten","Floor and wall covering work"],
+["43.34","Steklarska in pleskarska dela","Painting and glazing work"],
+["43.39","Druga zaključna gradbena dela","Other finishing work"],
+["43.91","Postavljanje ostrešij in krovska dela","Roofing work"],
+["43.99","Druga specializirana gradbena dela","Other specialized construction work n.e.c."]
 ]],
-["G","TRGOVINA; VZDRŽEVANJE IN POPRAVILA MOTORNIH VOZIL",[
-["45.11","Trgovina z avtomobili in lahkimi motornimi vozili"],
-["45.19","Trgovina z drugimi motornimi vozili"],
-["45.20","Vzdrževanje in popravila motornih vozil"],
-["45.31","Trgovina na debelo z rezervnimi deli in opremo za motorna vozila"],
-["45.32","Trgovina na drobno z rezervnimi deli in opremo za motorna vozila"],
-["45.40","Trgovina, vzdrževanje in popravila motornih koles; trgovina z njihovimi deli"],
-["46.11","Posredništvo pri prodaji kmetijskih surovin, živih živali, tekstilnih surovin, polizdelkov"],
-["46.12","Posredništvo pri prodaji goriv, rud, kovin, tehničnih kemikalij"],
-["46.13","Posredništvo pri prodaji lesa in gradbenega materiala"],
-["46.14","Posredništvo pri prodaji strojev, industrijske opreme, ladij, letal"],
-["46.15","Posredništvo pri prodaji pohištva, predmetov in naprav za gospodinjstvo"],
-["46.16","Posredništvo pri prodaji tekstila, oblačil, krzna, obutve, usnjenih izdelkov"],
-["46.17","Posredništvo pri prodaji živil, pijač, tobačnih izdelkov"],
-["46.18","Specializirano posredništvo pri prodaji drugih določenih izdelkov"],
-["46.19","Nespecializirano posredništvo pri prodaji raznovrstnih izdelkov"],
-["46.21","Trgovina na debelo z žiti, tobakom, semeni in krmo"],
-["46.22","Trgovina na debelo s cvetjem in rastlinami"],
-["46.23","Trgovina na debelo z živimi živalmi"],
-["46.24","Trgovina na debelo s kožami, usnjem"],
-["46.31","Trgovina na debelo s sadjem in zelenjavo"],
-["46.32","Trgovina na debelo z mesom in mesnimi izdelki"],
-["46.33","Trgovina na debelo z mlekom, mlečnimi izdelki, jajci, jedilnimi olji"],
-["46.34","Trgovina na debelo s pijačami"],
-["46.35","Trgovina na debelo s tobačnimi izdelki"],
-["46.36","Trgovina na debelo s sladkorjem, čokolado, sladkornimi izdelki"],
-["46.37","Trgovina na debelo s kavo, čajem, kakavom, začimbami"],
-["46.38","Trgovina na debelo z drugimi živili, tudi z ribami, raki, mehkužci"],
-["46.39","Nespecializirana trgovina na debelo z živili, pijačami, tobačnimi izdelki"],
-["46.41","Trgovina na debelo s tekstilom"],
-["46.42","Trgovina na debelo z oblačili in obutvijo"],
-["46.43","Trgovina na debelo z električnimi gospodinjskimi napravami"],
-["46.44","Trgovina na debelo s porcelanom, steklenino, čistili"],
-["46.45","Trgovina na debelo s parfumi in kozmetiko"],
-["46.46","Trgovina na debelo s farmacevtskimi izdelki ter medicinskimi potrebščinami"],
-["46.47","Trgovina na debelo s pohištvom, preprogami in svetili"],
-["46.48","Trgovina na debelo z urami in nakitom"],
-["46.49","Trgovina na debelo z drugimi izdelki široke porabe"],
-["46.51","Trgovina na debelo z računalniškimi napravami"],
-["46.52","Trgovina na debelo z elektronskimi in telekomunikacijskimi napravami"],
-["46.61","Trgovina na debelo s kmetijskimi stroji, priključki, opremo"],
-["46.62","Trgovina na debelo z obdelovalnimi stroji"],
-["46.63","Trgovina na debelo z rudarskimi in gradbenimi stroji"],
-["46.64","Trgovina na debelo s stroji za tekstilno industrijo"],
-["46.65","Trgovina na debelo s pisarniškim pohištvom"],
-["46.66","Trgovina na debelo s pisarniškimi stroji in opremo"],
-["46.69","Trgovina na debelo z drugimi napravami in opremo"],
-["46.71","Trgovina na debelo s trdimi, tekočimi in plinastimi gorivi"],
-["46.72","Trgovina na debelo s kovinami in rudami"],
-["46.73","Trgovina na debelo z lesom, gradbenim materialom in sanitarno opremo"],
-["46.74","Trgovina na debelo s kovinskimi proizvodi, inštalacijskim materialom"],
-["46.75","Trgovina na debelo s kemičnimi izdelki"],
-["46.76","Trgovina na debelo z drugimi polizdelki"],
-["46.77","Trgovina na debelo z ostanki in odpadki"],
-["46.90","Nespecializirana trgovina na debelo"],
-["47.11","Trgovina na drobno v nespecializiranih prodajalnah, pretežno z živili"],
-["47.19","Druga trgovina na drobno v nespecializiranih prodajalnah"],
-["47.21","Trgovina na drobno v specializiranih prodajalnah s sadjem in zelenjavo"],
-["47.22","Trgovina na drobno v specializiranih prodajalnah z mesom in mesnimi izdelki"],
-["47.23","Trgovina na drobno v specializiranih prodajalnah z ribami, raki, mehkužci"],
-["47.24","Trgovina na drobno v specializiranih prodajalnah s kruhom, pecivom"],
-["47.25","Trgovina na drobno v specializiranih prodajalnah s pijačami"],
-["47.26","Trgovina na drobno v specializiranih prodajalnah s tobačnimi izdelki"],
-["47.29","Druga trgovina na drobno v specializiranih prodajalnah z živili"],
-["47.30","Trgovina na drobno v specializiranih prodajalnah z motornimi gorivi"],
-["47.41","Trgovina na drobno v specializiranih prodajalnah z računalniškimi napravami"],
-["47.42","Trgovina na drobno v specializiranih prodajalnah s telekomunikacijskimi napravami"],
-["47.43","Trgovina na drobno v specializiranih prodajalnah z avdio in video napravami"],
-["47.51","Trgovina na drobno v specializiranih prodajalnah s tekstilom"],
-["47.52","Trgovina na drobno v specializiranih prodajalnah z gradbenim materialom"],
-["47.53","Trgovina na drobno v specializiranih prodajalnah s preprogami, talnimi oblogami"],
-["47.54","Trgovina na drobno v specializiranih prodajalnah z električnimi gospodinjskimi napravami"],
-["47.59","Trgovina na drobno v specializiranih prodajalnah s pohištvom, svetili"],
-["47.61","Trgovina na drobno v specializiranih prodajalnah s knjigami"],
-["47.62","Trgovina na drobno v specializiranih prodajalnah s časopisi, revijami"],
-["47.63","Trgovina na drobno v specializiranih prodajalnah z glasbenimi in video zapisi"],
-["47.64","Trgovina na drobno v specializiranih prodajalnah s športno opremo"],
-["47.65","Trgovina na drobno v specializiranih prodajalnah z igračami in rekviziti"],
-["47.71","Trgovina na drobno v specializiranih prodajalnah z oblačili"],
-["47.72","Trgovina na drobno v specializiranih prodajalnah z obutvijo in usnjenimi izdelki"],
-["47.73","Trgovina na drobno v specializiranih prodajalnah s farmacevtskimi izdelki"],
-["47.74","Trgovina na drobno v specializiranih prodajalnah z medicinskimi in ortopedskimi izdelki"],
-["47.75","Trgovina na drobno v specializiranih prodajalnah s kozmetičnimi in toaletnimi izdelki"],
-["47.76","Trgovina na drobno v specializiranih prodajalnah s cvetjem, rastlinami"],
-["47.77","Trgovina na drobno v specializiranih prodajalnah z urami in nakitom"],
-["47.78","Druga trgovina na drobno v specializiranih prodajalnah z novim blagom"],
-["47.79","Trgovina na drobno v prodajalnah z rabljenim blagom"],
-["47.81","Trgovina na drobno na stojnicah in tržnicah z živili, pijačami"],
-["47.82","Trgovina na drobno na stojnicah in tržnicah s tekstilijami in obutvijo"],
-["47.89","Trgovina na drobno na stojnicah in tržnicah z drugim blagom"],
-["47.91","Trgovina na drobno po pošti ali po internetu"],
-["47.99","Druga trgovina na drobno zunaj prodajaln, stojnic in tržnic"]
+["G","TRGOVINA; VZDRŽEVANJE IN POPRAVILA MOTORNIH VOZIL","WHOLESALE AND RETAIL TRADE; REPAIR OF MOTOR VEHICLES AND MOTORCYCLES",[
+["45.11","Trgovina z avtomobili in lahkimi motornimi vozili","Sale of cars and light motor vehicles"],
+["45.19","Trgovina z drugimi motornimi vozili","Sale of other motor vehicles"],
+["45.20","Vzdrževanje in popravila motornih vozil","Maintenance and repair of motor vehicles"],
+["45.31","Trgovina na debelo z rezervnimi deli in opremo za motorna vozila","Wholesale trade of motor vehicle parts and accessories"],
+["45.32","Trgovina na drobno z rezervnimi deli in opremo za motorna vozila","Retail trade of motor vehicle parts and accessories"],
+["45.40","Trgovina, vzdrževanje in popravila motornih koles; trgovina z njihovimi deli","Sale, maintenance and repair of motorcycles and related parts and accessories"],
+["46.11","Posredništvo pri prodaji kmetijskih surovin, živih živali, tekstilnih surovin, polizdelkov","Agents involved in the sale of agricultural raw materials, live animals, textile raw materials and semi-finished goods"],
+["46.12","Posredništvo pri prodaji goriv, rud, kovin, tehničnih kemikalij","Agents involved in the sale of fuels, ores, metals and industrial chemicals"],
+["46.13","Posredništvo pri prodaji lesa in gradbenega materiala","Agents involved in the sale of timber and building materials"],
+["46.14","Posredništvo pri prodaji strojev, industrijske opreme, ladij, letal","Agents involved in the sale of machinery, industrial equipment, ships and aircraft"],
+["46.15","Posredništvo pri prodaji pohištva, predmetov in naprav za gospodinjstvo","Agents involved in the sale of furniture, household goods, hardware and ironmongery"],
+["46.16","Posredništvo pri prodaji tekstila, oblačil, krzna, obutve, usnjenih izdelkov","Agents involved in the sale of textiles, clothing, fur, footwear and leather goods"],
+["46.17","Posredništvo pri prodaji živil, pijač, tobačnih izdelkov","Agents involved in the sale of food, beverages and tobacco"],
+["46.18","Specializirano posredništvo pri prodaji drugih določenih izdelkov","Agents specialised in the sale of other particular products"],
+["46.19","Nespecializirano posredništvo pri prodaji raznovrstnih izdelkov","Agents involved in the sale of a variety of goods"],
+["46.21","Trgovina na debelo z žiti, tobakom, semeni in krmo","Wholesale of grain, unmanufactured tobacco, seeds and animal feeds"],
+["46.22","Trgovina na debelo s cvetjem in rastlinami","Wholesale of flowers and plants"],
+["46.23","Trgovina na debelo z živimi živalmi","Wholesale of live animals"],
+["46.24","Trgovina na debelo s kožami, usnjem","Wholesale of hides, skins and leather"],
+["46.31","Trgovina na debelo s sadjem in zelenjavo","Wholesale of fruit and vegetables"],
+["46.32","Trgovina na debelo z mesom in mesnimi izdelki","Wholesale of meat and meat products"],
+["46.33","Trgovina na debelo z mlekom, mlečnimi izdelki, jajci, jedilnimi olji","Wholesale of dairy products, eggs and edible oils and fats"],
+["46.34","Trgovina na debelo s pijačami","Wholesale of beverages"],
+["46.35","Trgovina na debelo s tobačnimi izdelki","Wholesale of tobacco products"],
+["46.36","Trgovina na debelo s sladkorjem, čokolado, sladkornimi izdelki","Wholesale of sugar and chocolate and sugar confectionery"],
+["46.37","Trgovina na debelo s kavo, čajem, kakavom, začimbami","Wholesale of coffee, tea, cocoa and spices"],
+["46.38","Trgovina na debelo z drugimi živili, tudi z ribami, raki, mehkužci","Wholesale of other food, including fish, crustaceans and molluscs"],
+["46.39","Nespecializirana trgovina na debelo z živili, pijačami, tobačnimi izdelki","Non-specialised wholesale of food, beverages and tobacco"],
+["46.41","Trgovina na debelo s tekstilom","Wholesale of textiles"],
+["46.42","Trgovina na debelo z oblačili in obutvijo","Wholesale of clothing and footwear"],
+["46.43","Trgovina na debelo z električnimi gospodinjskimi napravami","Wholesale of electrical household appliances"],
+["46.44","Trgovina na debelo s porcelanom, steklenino, čistili","Wholesale of china and glassware and cleaning materials"],
+["46.45","Trgovina na debelo s parfumi in kozmetiko","Wholesale of perfume and cosmetics"],
+["46.46","Trgovina na debelo s farmacevtskimi izdelki ter medicinskimi potrebščinami","Wholesale of pharmaceutical goods"],
+["46.47","Trgovina na debelo s pohištvom, preprogami in svetili","Wholesale of furniture, carpets and lighting equipment"],
+["46.48","Trgovina na debelo z urami in nakitom","Wholesale of watches and jewellery"],
+["46.49","Trgovina na debelo z drugimi izdelki široke porabe","Wholesale of other household goods"],
+["46.51","Trgovina na debelo z računalniškimi napravami","Wholesale of computers, computer peripheral equipment and software"],
+["46.52","Trgovina na debelo z elektronskimi in telekomunikacijskimi napravami","Wholesale of electronic and telecommunications equipment and parts"],
+["46.61","Trgovina na debelo s kmetijskimi stroji, priključki, opremo","Wholesale of agricultural machinery, equipment and supplies"],
+["46.62","Trgovina na debelo z obdelovalnimi stroji","Wholesale of machine tools"],
+["46.63","Trgovina na debelo z rudarskimi in gradbenimi stroji","Wholesale of mining, construction and civil engineering machinery"],
+["46.64","Trgovina na debelo s stroji za tekstilno industrijo","Wholesale of machinery for the textile industry and of sewing and knitting machines"],
+["46.65","Trgovina na debelo s pisarniškim pohištvom","Wholesale of office furniture"],
+["46.66","Trgovina na debelo s pisarniškimi stroji in opremo","Wholesale of other office machinery and equipment"],
+["46.69","Trgovina na debelo z drugimi napravami in opremo","Wholesale of other machinery and equipment"],
+["46.71","Trgovina na debelo s trdimi, tekočimi in plinastimi gorivi","Wholesale of solid, liquid and gaseous fuels and related products"],
+["46.72","Trgovina na debelo s kovinami in rudami","Wholesale of metals and metal ores"],
+["46.73","Trgovina na debelo z lesom, gradbenim materialom in sanitarno opremo","Wholesale of wood, construction materials and sanitary equipment"],
+["46.74","Trgovina na debelo s kovinskimi proizvodi, inštalacijskim materialom","Wholesale of hardware, plumbing and heating equipment and supplies"],
+["46.75","Trgovina na debelo s kemičnimi izdelki","Wholesale of chemical products"],
+["46.76","Trgovina na debelo z drugimi polizdelki","Wholesale of other intermediate products"],
+["46.77","Trgovina na debelo z ostanki in odpadki","Wholesale of waste and scrap"],
+["46.90","Nespecializirana trgovina na debelo","Non-specialised wholesale trade"],
+["47.11","Trgovina na drobno v nespecializiranih prodajalnah, pretežno z živili","Retail sale in non-specialised stores with food, beverages or tobacco predominating"],
+["47.19","Druga trgovina na drobno v nespecializiranih prodajalnah","Other retail sale in non-specialised stores"],
+["47.21","Trgovina na drobno v specializiranih prodajalnah s sadjem in zelenjavo","Retail sale of fruit and vegetables in specialised stores"],
+["47.22","Trgovina na drobno v specializiranih prodajalnah z mesom in mesnimi izdelki","Retail sale of meat and meat products in specialised stores"],
+["47.23","Trgovina na drobno v specializiranih prodajalnah z ribami, raki, mehkužci","Retail sale of fish, crustaceans and molluscs in specialised stores"],
+["47.24","Trgovina na drobno v specializiranih prodajalnah s kruhom, pecivom","Retail sale of bread, cakes, flour confectionery and sugar confectionery in specialised stores"],
+["47.25","Trgovina na drobno v specializiranih prodajalnah s pijačami","Retail sale of beverages in specialised stores"],
+["47.26","Trgovina na drobno v specializiranih prodajalnah s tobačnimi izdelki","Retail sale of tobacco products in specialised stores"],
+["47.29","Druga trgovina na drobno v specializiranih prodajalnah z živili","Other retail sale of food in specialised stores"],
+["47.30","Trgovina na drobno v specializiranih prodajalnah z motornimi gorivi","Retail sale of automotive fuel in specialised stores"],
+["47.41","Trgovina na drobno v specializiranih prodajalnah z računalniškimi napravami","Retail sale of computers, peripheral units and software in specialised stores"],
+["47.42","Trgovina na drobno v specializiranih prodajalnah s telekomunikacijskimi napravami","Retail sale of telecommunications equipment in specialised stores"],
+["47.43","Trgovina na drobno v specializiranih prodajalnah z avdio in video napravami","Retail sale of audio and video equipment in specialised stores"],
+["47.51","Trgovina na drobno v specializiranih prodajalnah s tekstilom","Retail sale of textiles in specialised stores"],
+["47.52","Trgovina na drobno v specializiranih prodajalnah z gradbenim materialom","Retail sale of hardware, paints and glass in specialised stores"],
+["47.53","Trgovina na drobno v specializiranih prodajalnah s preprogami, talnimi oblogami","Retail sale of carpets, rugs, wall and floor coverings in specialised stores"],
+["47.54","Trgovina na drobno v specializiranih prodajalnah z električnimi gospodinjskimi napravami","Retail sale of electrical household appliances in specialised stores"],
+["47.59","Trgovina na drobno v specializiranih prodajalnah s pohištvom, svetili","Retail sale of furniture, lighting equipment and other household articles in specialised stores"],
+["47.61","Trgovina na drobno v specializiranih prodajalnah s knjigami","Retail sale of books in specialised stores"],
+["47.62","Trgovina na drobno v specializiranih prodajalnah s časopisi, revijami","Retail sale of newspapers and stationery in specialised stores"],
+["47.63","Trgovina na drobno v specializiranih prodajalnah z glasbenimi in video zapisi","Retail sale of music and video recordings in specialised stores"],
+["47.64","Trgovina na drobno v specializiranih prodajalnah s športno opremo","Retail sale of sporting equipment in specialised stores"],
+["47.65","Trgovina na drobno v specializiranih prodajalnah z igračami in rekviziti","Retail sale of games and toys in specialised stores"],
+["47.71","Trgovina na drobno v specializiranih prodajalnah z oblačili","Retail sale of clothing in specialised stores"],
+["47.72","Trgovina na drobno v specializiranih prodajalnah z obutvijo in usnjenimi izdelki","Retail sale of footwear and leather goods in specialised stores"],
+["47.73","Trgovina na drobno v specializiranih prodajalnah s farmacevtskimi izdelki","Dispensing chemist in specialised stores"],
+["47.74","Trgovina na drobno v specializiranih prodajalnah z medicinskimi in ortopedskimi izdelki","Retail sale of medical and orthopaedic goods in specialised stores"],
+["47.75","Trgovina na drobno v specializiranih prodajalnah s kozmetičnimi in toaletnimi izdelki","Retail sale of cosmetic and toilet articles in specialised stores"],
+["47.76","Trgovina na drobno v specializiranih prodajalnah s cvetjem, rastlinami","Retail sale of flowers, plants, seeds, fertilisers, pet animals and pet food in specialised stores"],
+["47.77","Trgovina na drobno v specializiranih prodajalnah z urami in nakitom","Retail sale of watches and jewellery in specialised stores"],
+["47.78","Druga trgovina na drobno v specializiranih prodajalnah z novim blagom","Other retail sale of new goods in specialised stores"],
+["47.79","Trgovina na drobno v prodajalnah z rabljenim blagom","Retail sale of second-hand goods in stores"],
+["47.81","Trgovina na drobno na stojnicah in tržnicah z živili, pijačami","Retail sale via stalls and markets of food, beverages and tobacco products"],
+["47.82","Trgovina na drobno na stojnicah in tržnicah s tekstilijami in obutvijo","Retail sale via stalls and markets of textiles, clothing and footwear"],
+["47.89","Trgovina na drobno na stojnicah in tržnicah z drugim blagom","Retail sale via stalls and markets of other goods"],
+["47.91","Trgovina na drobno po pošti ali po internetu","Retail sale via mail order houses or via Internet"],
+["47.99","Druga trgovina na drobno zunaj prodajaln, stojnic in tržnic","Other retail sale not in stores, stalls or markets"]
 ]],
-["H","PROMET IN SKLADIŠČENJE",[
-["49.10","Železniški potniški promet"],
-["49.20","Železniški tovorni promet"],
-["49.31","Mestni in primestni kopenski potniški promet"],
-["49.32","Dejavnost taksistov"],
-["49.39","Drug kopenski potniški promet"],
-["49.41","Cestni tovorni promet"],
-["49.42","Selitvena dejavnost"],
-["49.50","Cevovodni transport"],
-["50.10","Pomorski potniški promet"],
-["50.20","Pomorski tovorni promet"],
-["50.30","Potniški promet po celinskih vodah"],
-["50.40","Tovorni promet po celinskih vodah"],
-["51.10","Potniški zračni promet"],
-["51.21","Tovorni zračni promet"],
-["51.22","Vesoljski promet"],
-["52.10","Skladiščenje"],
-["52.21","Spremljajoče storitvene dejavnosti v kopenskem prometu"],
-["52.22","Spremljajoče storitvene dejavnosti v vodnem prometu"],
-["52.23","Spremljajoče storitvene dejavnosti v zračnem prometu"],
-["52.24","Pretovarjanje"],
-["52.29","Špedicija in druge spremljajoče prometne dejavnosti"],
-["53.10","Izvajanje univerzalne poštne storitve"],
-["53.20","Druga poštna in kurirska dejavnost"]
+["H","PROMET IN SKLADIŠČENJE","TRANSPORTATION AND STORAGE",[
+["49.10","Železniški potniški promet","Passenger rail transport, interurban"],
+["49.20","Železniški tovorni promet","Freight rail transport"],
+["49.31","Mestni in primestni kopenski potniški promet","Urban and suburban passenger land transport"],
+["49.32","Dejavnost taksistov","Taxi operation"],
+["49.39","Drug kopenski potniški promet","Other passenger land transport n.e.c."],
+["49.41","Cestni tovorni promet","Freight transport by road"],
+["49.42","Selitvena dejavnost","Removal services"],
+["49.50","Cevovodni transport","Transport via pipeline"],
+["50.10","Pomorski potniški promet","Sea and coastal passenger water transport"],
+["50.20","Pomorski tovorni promet","Sea and coastal freight water transport"],
+["50.30","Potniški promet po celinskih vodah","Inland passenger water transport"],
+["50.40","Tovorni promet po celinskih vodah","Inland freight water transport"],
+["51.10","Potniški zračni promet","Passenger air transport"],
+["51.21","Tovorni zračni promet","Freight air transport"],
+["51.22","Vesoljski promet","Space transport"],
+["52.10","Skladiščenje","Warehousing and storage"],
+["52.21","Spremljajoče storitvene dejavnosti v kopenskem prometu","Service activities incidental to land transportation"],
+["52.22","Spremljajoče storitvene dejavnosti v vodnem prometu","Service activities incidental to water transportation"],
+["52.23","Spremljajoče storitvene dejavnosti v zračnem prometu","Service activities incidental to air transportation"],
+["52.24","Pretovarjanje","Cargo handling"],
+["52.29","Špedicija in druge spremljajoče prometne dejavnosti","Other transportation support activities"],
+["53.10","Izvajanje univerzalne poštne storitve","Postal activities under universal service obligation"],
+["53.20","Druga poštna in kurirska dejavnost","Other postal and courier activities"]
 ]],
-["I","GOSTINSTVO",[
-["55.10","Dejavnost hotelov in podobnih nastanitvenih obratov"],
-["55.20","Dejavnost počitniških domov in podobnih nastanitvenih obratov za kratkotrajno bivanje"],
-["55.30","Dejavnost avtokampov, taborov"],
-["55.90","Dejavnost dijaških in študentskih domov ter druge nastanitve"],
-["56.10","Dejavnost restavracij in druga strežba jedi"],
-["56.21","Priložnostna priprava in dostava jedi"],
-["56.29","Druga oskrba z jedmi"],
-["56.30","Strežba pijač"]
+["I","GOSTINSTVO","ACCOMMODATION AND FOOD SERVICE ACTIVITIES",[
+["55.10","Dejavnost hotelov in podobnih nastanitvenih obratov","Hotels and similar accommodation"],
+["55.20","Dejavnost počitniških domov in podobnih nastanitvenih obratov za kratkotrajno bivanje","Holiday and other short-stay accommodation"],
+["55.30","Dejavnost avtokampov, taborov","Camping grounds, recreational vehicle parks and trailer parks"],
+["55.90","Dejavnost dijaških in študentskih domov ter druge nastanitve","Other accommodation"],
+["56.10","Dejavnost restavracij in druga strežba jedi","Restaurants and mobile food service activities"],
+["56.21","Priložnostna priprava in dostava jedi","Event catering activities"],
+["56.29","Druga oskrba z jedmi","Other food service activities"],
+["56.30","Strežba pijač","Beverage serving activities"]
 ]],
-["J","INFORMACIJSKE IN KOMUNIKACIJSKE DEJAVNOSTI",[
-["58.11","Izdajanje knjig"],
-["58.12","Izdajanje imenikov in adresarjev"],
-["58.13","Izdajanje časopisov"],
-["58.14","Izdajanje revij in druge periodike"],
-["58.19","Drugo založništvo"],
-["58.21","Izdajanje računalniških iger"],
-["58.29","Drugo izdajanje programja"],
-["59.11","Produkcija filmov, video filmov, televizijskih oddaj"],
-["59.12","Post produkcijske dejavnosti pri izdelavi filmov, video filmov, televizijskih oddaj"],
-["59.13","Distribucija filmov, video filmov, televizijskih oddaj"],
-["59.14","Kinematografska dejavnost"],
-["59.20","Snemanje in izdajanje zvočnih zapisov in muzikalij"],
-["60.10","Radijska dejavnost"],
-["60.20","Televizijska dejavnost"],
-["61.10","Telekomunikacijske dejavnosti po vodih"],
-["61.20","Brezžične telekomunikacijske dejavnosti"],
-["61.30","Satelitske telekomunikacijske dejavnosti"],
-["61.90","Druge telekomunikacijske dejavnosti"],
-["62.01","Računalniško programiranje"],
-["62.02","Svetovanje o računalniških napravah in programih"],
-["62.03","Upravljanje računalniških naprav in sistemov"],
-["62.09","Druge z informacijsko tehnologijo in računalniškimi storitvami povezane dejavnosti"],
-["63.11","Obdelava podatkov in s tem povezane dejavnosti"],
-["63.12","Obratovanje spletnih portalov"],
-["63.91","Dejavnost tiskovnih agencij"],
-["63.99","Drugo informiranje"]
+["J","INFORMACIJSKE IN KOMUNIKACIJSKE DEJAVNOSTI","INFORMATION AND COMMUNICATION",[
+["58.11","Izdajanje knjig","Book publishing"],
+["58.12","Izdajanje imenikov in adresarjev","Publishing of directories and mailing lists"],
+["58.13","Izdajanje časopisov","Publishing of newspapers"],
+["58.14","Izdajanje revij in druge periodike","Publishing of journals and periodicals"],
+["58.19","Drugo založništvo","Other publishing activities"],
+["58.21","Izdajanje računalniških iger","Publishing of computer games"],
+["58.29","Drugo izdajanje programja","Other software publishing"],
+["59.11","Produkcija filmov, video filmov, televizijskih oddaj","Motion picture, video and television programme production activities"],
+["59.12","Post produkcijske dejavnosti pri izdelavi filmov, video filmov, televizijskih oddaj","Motion picture, video and television programme post-production activities"],
+["59.13","Distribucija filmov, video filmov, televizijskih oddaj","Motion picture, video and television programme distribution activities"],
+["59.14","Kinematografska dejavnost","Motion picture projection activities"],
+["59.20","Snemanje in izdajanje zvočnih zapisov in muzikalij","Sound recording and music publishing activities"],
+["60.10","Radijska dejavnost","Radio broadcasting"],
+["60.20","Televizijska dejavnost","Television programming and broadcasting activities"],
+["61.10","Telekomunikacijske dejavnosti po vodih","Wired telecommunications activities"],
+["61.20","Brezžične telekomunikacijske dejavnosti","Wireless telecommunications activities"],
+["61.30","Satelitske telekomunikacijske dejavnosti","Satellite telecommunications activities"],
+["61.90","Druge telekomunikacijske dejavnosti","Other telecommunications activities"],
+["62.01","Računalniško programiranje","Computer programming activities"],
+["62.02","Svetovanje o računalniških napravah in programih","Computer consultancy activities"],
+["62.03","Upravljanje računalniških naprav in sistemov","Computer facilities management activities"],
+["62.09","Druge z informacijsko tehnologijo in računalniškimi storitvami povezane dejavnosti","Other information technology and computer service activities"],
+["63.11","Obdelava podatkov in s tem povezane dejavnosti","Data processing, hosting and related activities"],
+["63.12","Obratovanje spletnih portalov","Web portals"],
+["63.91","Dejavnost tiskovnih agencij","News agency activities"],
+["63.99","Drugo informiranje","Other information service activities n.e.c."]
 ]],
-["K","FINANČNE IN ZAVAROVALNIŠKE DEJAVNOSTI",[
-["64.11","Dejavnost centralne banke"],
-["64.19","Drugo denarno posredništvo"],
-["64.20","Dejavnost holdingov"],
-["64.30","Dejavnost skrbniških in drugih skladov ter podobnih finančnih subjektov"],
-["64.91","Dejavnost finančnega zakupa"],
-["64.92","Drugo kreditiranje"],
-["64.99","Drugje nerazvrščene dejavnosti finančnih storitev, razen zavarovalništva in dejavnosti pokojninskih skladov"],
-["65.11","Dejavnost življenjskega zavarovanja"],
-["65.12","Dejavnosti zavarovanja, razen življenjskega"],
-["65.20","Dejavnost pozavarovanja"],
-["65.30","Dejavnost pokojninskih skladov"],
-["66.11","Upravljanje finančnih trgov"],
-["66.12","Posredništvo pri trgovanju z vrednostnimi papirji in borznim blagom"],
-["66.19","Druge pomožne dejavnosti za finančne storitve, razen za zavarovalništvo in pokojninske sklade"],
-["66.21","Vrednotenje tveganja in škode"],
-["66.22","Dejavnost zavarovalniških agentov"],
-["66.29","Druge pomožne dejavnosti za zavarovalništvo in pokojninske sklade"],
-["66.30","Upravljanje finančnih skladov"]
+["K","FINANČNE IN ZAVAROVALNIŠKE DEJAVNOSTI","FINANCIAL AND INSURANCE ACTIVITIES",[
+["64.11","Dejavnost centralne banke","Central banking"],
+["64.19","Drugo denarno posredništvo","Other monetary intermediation"],
+["64.20","Dejavnost holdingov","Activities of holding companies"],
+["64.30","Dejavnost skrbniških in drugih skladov ter podobnih finančnih subjektov","Trusts, funds and similar financial entities"],
+["64.91","Dejavnost finančnega zakupa","Financial leasing"],
+["64.92","Drugo kreditiranje","Other credit granting"],
+["64.99","Drugje nerazvrščene dejavnosti finančnih storitev, razen zavarovalništva in dejavnosti pokojninskih skladov","Other financial service activities, except insurance and pension funding n.e.c."],
+["65.11","Dejavnost življenjskega zavarovanja","Life insurance"],
+["65.12","Dejavnosti zavarovanja, razen življenjskega","Non-life insurance"],
+["65.20","Dejavnost pozavarovanja","Reinsurance"],
+["65.30","Dejavnost pokojninskih skladov","Pension funding"],
+["66.11","Upravljanje finančnih trgov","Administration of financial markets"],
+["66.12","Posredništvo pri trgovanju z vrednostnimi papirji in borznim blagom","Security and commodity contracts brokerage"],
+["66.19","Druge pomožne dejavnosti za finančne storitve, razen za zavarovalništvo in pokojninske sklade","Other activities auxiliary to financial services, except insurance and pension funding"],
+["66.21","Vrednotenje tveganja in škode","Risk and damage evaluation"],
+["66.22","Dejavnost zavarovalniških agentov","Activities of insurance agents and brokers"],
+["66.29","Druge pomožne dejavnosti za zavarovalništvo in pokojninske sklade","Other activities auxiliary to insurance and pension funding"],
+["66.30","Upravljanje finančnih skladov","Fund management activities"]
 ]],
-["L","POSLOVANJE Z NEPREMIČNINAMI",[
-["68.10","Trgovanje z lastnimi nepremičninami"],
-["68.20","Oddajanje in obratovanje lastnih ali najetih nepremičnin"],
-["68.31","Posredništvo v prometu z nepremičninami"],
-["68.32","Upravljanje nepremičnin za plačilo ali po pogodbi"]
+["L","POSLOVANJE Z NEPREMIČNINAMI","REAL ESTATE ACTIVITIES",[
+["68.10","Trgovanje z lastnimi nepremičninami","Buying and selling of own real estate"],
+["68.20","Oddajanje in obratovanje lastnih ali najetih nepremičnin","Rental and operating of own or leased real estate"],
+["68.31","Posredništvo v prometu z nepremičninami","Real estate agencies"],
+["68.32","Upravljanje nepremičnin za plačilo ali po pogodbi","Management of real estate on a fee or contract basis"]
 ]],
-["M","STROKOVNE, ZNANSTVENE IN TEHNIČNE DEJAVNOSTI",[
-["69.10","Pravne dejavnosti"],
-["69.20","Računovodske, knjigovodske in revizijske dejavnosti; davčno svetovanje"],
-["70.10","Dejavnost uprav podjetij"],
-["70.21","Dejavnost stikov z javnostjo"],
-["70.22","Drugo podjetniško in poslovno svetovanje"],
-["71.11","Arhitekturna in urbanistična dejavnost"],
-["71.12","Tehnično projektiranje in s tem povezano svetovanje"],
-["71.20","Tehnično preizkušanje in analiziranje"],
-["72.11","Raziskovalna in razvojna dejavnost na področju biotehnologije"],
-["72.19","Raziskovalna in razvojna dejavnost na drugih področjih naravoslovja in tehnologije"],
-["72.20","Raziskovalna in razvojna dejavnost na področju družboslovja in humanistike"],
-["73.11","Dejavnost oglaševalskih agencij"],
-["73.12","Posredovanje oglaševalskega prostora"],
-["73.20","Raziskovanje trga in javnega mnenja"],
-["74.10","Oblikovanje, aranžerstvo, dekoraterstvo"],
-["74.20","Fotografska dejavnost"],
-["74.30","Prevajanje in tolmačenje"],
-["74.90","Drugje nerazvrščene strokovne in tehnične dejavnosti"],
-["75.00","Veterinarstvo"]
+["M","STROKOVNE, ZNANSTVENE IN TEHNIČNE DEJAVNOSTI","PROFESSIONAL, SCIENTIFIC AND TECHNICAL ACTIVITIES",[
+["69.10","Pravne dejavnosti","Legal activities"],
+["69.20","Računovodske, knjigovodske in revizijske dejavnosti; davčno svetovanje","Accounting, bookkeeping and auditing activities; tax consultancy"],
+["70.10","Dejavnost uprav podjetij","Activities of head offices"],
+["70.21","Dejavnost stikov z javnostjo","Public relations and communication activities"],
+["70.22","Drugo podjetniško in poslovno svetovanje","Business and other management consultancy activities"],
+["71.11","Arhitekturna in urbanistična dejavnost","Architectural activities"],
+["71.12","Tehnično projektiranje in s tem povezano svetovanje","Engineering activities and related technical consultancy"],
+["71.20","Tehnično preizkušanje in analiziranje","Technical testing and analysis"],
+["72.11","Raziskovalna in razvojna dejavnost na področju biotehnologije","Research and experimental development on biotechnology"],
+["72.19","Raziskovalna in razvojna dejavnost na drugih področjih naravoslovja in tehnologije","Other research and experimental development on natural sciences and engineering"],
+["72.20","Raziskovalna in razvojna dejavnost na področju družboslovja in humanistike","Research and experimental development on social sciences and humanities"],
+["73.11","Dejavnost oglaševalskih agencij","Advertising agencies"],
+["73.12","Posredovanje oglaševalskega prostora","Media representation"],
+["73.20","Raziskovanje trga in javnega mnenja","Market research and public opinion polling"],
+["74.10","Oblikovanje, aranžerstvo, dekoraterstvo","Specialised design activities"],
+["74.20","Fotografska dejavnost","Photographic activities"],
+["74.30","Prevajanje in tolmačenje","Translation and interpretation activities"],
+["74.90","Drugje nerazvrščene strokovne in tehnične dejavnosti","Other professional, scientific and technical activities n.e.c."],
+["75.00","Veterinarstvo","Veterinary activities"]
 ]],
-["N","DRUGE RAZNOVRSTNE POSLOVNE DEJAVNOSTI",[
-["77.11","Dajanje lahkih motornih vozil v najem in zakup"],
-["77.12","Dajanje tovornjakov v najem in zakup"],
-["77.21","Dajanje športne opreme v najem in zakup"],
-["77.22","Dajanje videokaset in plošč v najem"],
-["77.29","Dajanje drugih izdelkov za široko rabo v najem in zakup"],
-["77.31","Dajanje kmetijskih strojev in opreme v najem in zakup"],
-["77.32","Dajanje gradbenih strojev in opreme v najem in zakup"],
-["77.33","Dajanje pisarniške opreme in računalniških naprav v najem in zakup"],
-["77.34","Dajanje vodnih plovil v najem in zakup"],
-["77.35","Dajanje zračnih plovil v najem in zakup"],
-["77.39","Dajanje drugih strojev, naprav in opredmetenih sredstev v najem in zakup"],
-["77.40","Dajanje pravic uporabe intelektualne lastnine v zakup, razen avtorsko zaščitenih del"],
-["78.10","Dejavnost pri iskanju zaposlitve"],
-["78.20","Posredovanje začasne delovne sile"],
-["78.30","Druga oskrba s človeškimi viri"],
-["79.11","Dejavnost potovalnih agencij"],
-["79.12","Dejavnost organizatorjev potovanj"],
-["79.90","Rezervacije in druge s potovanji povezane dejavnosti"],
-["80.10","Varovanje"],
-["80.20","Nadzorovanje delovanja varovalnih sistemov"],
-["80.30","Poizvedovalne dejavnosti"],
-["81.10","Vzdrževanje objektov in hišniška dejavnost"],
-["81.21","Splošno čiščenje stavb"],
-["81.22","Drugo čiščenje stavb, industrijskih naprav in opreme"],
-["81.29","Čiščenje cest in drugo čiščenje"],
-["81.30","Urejanje in vzdrževanje zelenih površin in okolice"],
-["82.11","Nudenje celovitih pisarniških storitev"],
-["82.19","Fotokopiranje, priprava dokumentov in druge posamične pisarniške dejavnosti"],
-["82.20","Dejavnost klicnih centrov"],
-["82.30","Organiziranje razstav, sejmov, srečanj"],
-["82.91","Zbiranje terjatev in ocenjevanje kreditne sposobnosti"],
-["82.92","Pakiranje"],
-["82.99","Drugje nerazvrščene spremljajoče dejavnosti za poslovanje"]
+["N","DRUGE RAZNOVRSTNE POSLOVNE DEJAVNOSTI","ADMINISTRATIVE AND SUPPORT SERVICE ACTIVITIES",[
+["77.11","Dajanje lahkih motornih vozil v najem in zakup","Rental and leasing of cars and light motor vehicles"],
+["77.12","Dajanje tovornjakov v najem in zakup","Rental and leasing of trucks"],
+["77.21","Dajanje športne opreme v najem in zakup","Rental and leasing of recreational and sports goods"],
+["77.22","Dajanje videokaset in plošč v najem","Rental of video tapes and disks"],
+["77.29","Dajanje drugih izdelkov za široko rabo v najem in zakup","Rental and leasing of other personal and household goods"],
+["77.31","Dajanje kmetijskih strojev in opreme v najem in zakup","Rental and leasing of agricultural machinery and equipment"],
+["77.32","Dajanje gradbenih strojev in opreme v najem in zakup","Rental and leasing of construction and civil engineering machinery and equipment"],
+["77.33","Dajanje pisarniške opreme in računalniških naprav v najem in zakup","Rental and leasing of office machinery and equipment (including computers)"],
+["77.34","Dajanje vodnih plovil v najem in zakup","Rental and leasing of water transport equipment"],
+["77.35","Dajanje zračnih plovil v najem in zakup","Rental and leasing of air transport equipment"],
+["77.39","Dajanje drugih strojev, naprav in opredmetenih sredstev v najem in zakup","Rental and leasing of other machinery, equipment and tangible goods n.e.c."],
+["77.40","Dajanje pravic uporabe intelektualne lastnine v zakup, razen avtorsko zaščitenih del","Leasing of intellectual property and similar products, except copyrighted works"],
+["78.10","Dejavnost pri iskanju zaposlitve","Activities of employment placement agencies"],
+["78.20","Posredovanje začasne delovne sile","Temporary employment agency activities"],
+["78.30","Druga oskrba s človeškimi viri","Other human resources provision"],
+["79.11","Dejavnost potovalnih agencij","Travel agency activities"],
+["79.12","Dejavnost organizatorjev potovanj","Tour operator activities"],
+["79.90","Rezervacije in druge s potovanji povezane dejavnosti","Other reservation service and related activities"],
+["80.10","Varovanje","Private security activities"],
+["80.20","Nadzorovanje delovanja varovalnih sistemov","Security systems service activities"],
+["80.30","Poizvedovalne dejavnosti","Investigation activities"],
+["81.10","Vzdrževanje objektov in hišniška dejavnost","Combined facilities support activities"],
+["81.21","Splošno čiščenje stavb","General cleaning of buildings"],
+["81.22","Drugo čiščenje stavb, industrijskih naprav in opreme","Other building and industrial cleaning activities"],
+["81.29","Čiščenje cest in drugo čiščenje","Other cleaning activities"],
+["81.30","Urejanje in vzdrževanje zelenih površin in okolice","Landscape service activities"],
+["82.11","Nudenje celovitih pisarniških storitev","Combined office administrative service activities"],
+["82.19","Fotokopiranje, priprava dokumentov in druge posamične pisarniške dejavnosti","Photocopying, document preparation and other specialised office support activities"],
+["82.20","Dejavnost klicnih centrov","Activities of call centres"],
+["82.30","Organiziranje razstav, sejmov, srečanj","Organisation of conventions and trade shows"],
+["82.91","Zbiranje terjatev in ocenjevanje kreditne sposobnosti","Activities of collection agencies and credit bureaus"],
+["82.92","Pakiranje","Packaging activities"],
+["82.99","Drugje nerazvrščene spremljajoče dejavnosti za poslovanje","Other business support service activities n.e.c."]
 ]],
-["O","DEJAVNOST JAVNE UPRAVE IN OBRAMBE; DEJAVNOST OBVEZNE SOCIALNE VARNOSTI",[
-["84.11","Splošna dejavnost javne uprave"],
-["84.12","Urejanje zdravstva, izobraževanja, kulturnih in drugih socialnih storitev, razen obvezne socialne varnosti"],
-["84.13","Urejanje gospodarskih področij za učinkovitejše poslovanje"],
-["84.21","Urejanje zunanjih zadev"],
-["84.22","Obramba"],
-["84.23","Sodstvo"],
-["84.24","Dejavnosti za javni red in varnost"],
-["84.25","Zaščita in reševanje pri požarih in nesrečah"],
-["84.30","Dejavnost obvezne socialne varnosti"]
+["O","DEJAVNOST JAVNE UPRAVE IN OBRAMBE; DEJAVNOST OBVEZNE SOCIALNE VARNOSTI","PUBLIC ADMINISTRATION AND DEFENCE; COMPULSORY SOCIAL SECURITY",[
+["84.11","Splošna dejavnost javne uprave","General public administration activities"],
+["84.12","Urejanje zdravstva, izobraževanja, kulturnih in drugih socialnih storitev, razen obvezne socialne varnosti","Regulation of the activities of providing health care, education, cultural services and other social services, excluding social security"],
+["84.13","Urejanje gospodarskih področij za učinkovitejše poslovanje","Regulation of and contribution to more efficient operation of businesses"],
+["84.21","Urejanje zunanjih zadev","Foreign affairs"],
+["84.22","Obramba","Defence activities"],
+["84.23","Sodstvo","Justice and judicial activities"],
+["84.24","Dejavnosti za javni red in varnost","Public order and safety activities"],
+["84.25","Zaščita in reševanje pri požarih in nesrečah","Fire service activities"],
+["84.30","Dejavnost obvezne socialne varnosti","Compulsory social security activities"]
 ]],
-["P","IZOBRAŽEVANJE",[
-["85.10","Predšolska vzgoja"],
-["85.20","Osnovnošolsko izobraževanje"],
-["85.31","Srednješolsko splošno izobraževanje"],
-["85.32","Srednješolsko poklicno in strokovno izobraževanje"],
-["85.41","Posrednješolsko neterciarno izobraževanje"],
-["85.42","Višješolsko in visokošolsko izobraževanje"],
-["85.51","Izobraževanje, izpopolnjevanje in usposabljanje na področju športa in rekreacije"],
-["85.52","Izobraževanje, izpopolnjevanje in usposabljanje na področju kulture in umetnosti"],
-["85.53","Dejavnost vozniških šol"],
-["85.59","Drugje nerazvrščeno izobraževanje, izpopolnjevanje in usposabljanje"],
-["85.60","Pomožne dejavnosti za izobraževanje"]
+["P","IZOBRAŽEVANJE","EDUCATION",[
+["85.10","Predšolska vzgoja","Pre-primary education"],
+["85.20","Osnovnošolsko izobraževanje","Primary education"],
+["85.31","Srednješolsko splošno izobraževanje","General secondary education"],
+["85.32","Srednješolsko poklicno in strokovno izobraževanje","Technical and vocational secondary education"],
+["85.41","Posrednješolsko neterciarno izobraževanje","Post-secondary non-tertiary education"],
+["85.42","Višješolsko in visokošolsko izobraževanje","Tertiary education"],
+["85.51","Izobraževanje, izpopolnjevanje in usposabljanje na področju športa in rekreacije","Sports and recreation education"],
+["85.52","Izobraževanje, izpopolnjevanje in usposabljanje na področju kulture in umetnosti","Cultural education"],
+["85.53","Dejavnost vozniških šol","Driving school activities"],
+["85.59","Drugje nerazvrščeno izobraževanje, izpopolnjevanje in usposabljanje","Other education n.e.c."],
+["85.60","Pomožne dejavnosti za izobraževanje","Educational support activities"]
 ]],
-["Q","ZDRAVSTVO IN SOCIALNO VARSTVO",[
-["86.10","Bolnišnična zdravstvena dejavnost"],
-["86.21","Splošna zunajbolnišnična zdravstvena dejavnost"],
-["86.22","Specialistična zunajbolnišnična zdravstvena dejavnost"],
-["86.23","Zobozdravstvena dejavnost"],
-["86.90","Druge dejavnosti za zdravje"],
-["87.10","Dejavnost nastanitvenih ustanov za bolniško nego"],
-["87.20","Dejavnost nastanitvenih ustanov za oskrbo duševno prizadetih, duševno obolelih in zasvojenih oseb"],
-["87.30","Dejavnost nastanitvenih ustanov za oskrbo starejših in invalidnih oseb"],
-["87.90","Drugo socialno varstvo z nastanitvijo"],
-["88.10","Socialno varstvo brez nastanitve za starejše in invalidne osebe"],
-["88.91","Dnevno varstvo otrok"],
-["88.99","Drugje nerazvrščeno socialno varstvo brez nastanitve"]
+["Q","ZDRAVSTVO IN SOCIALNO VARSTVO","HUMAN HEALTH AND SOCIAL WORK ACTIVITIES",[
+["86.10","Bolnišnična zdravstvena dejavnost","Hospital activities"],
+["86.21","Splošna zunajbolnišnična zdravstvena dejavnost","General medical practice activities"],
+["86.22","Specialistična zunajbolnišnična zdravstvena dejavnost","Specialist medical practice activities"],
+["86.23","Zobozdravstvena dejavnost","Dental practice activities"],
+["86.90","Druge dejavnosti za zdravje","Other human health activities"],
+["87.10","Dejavnost nastanitvenih ustanov za bolniško nego","Residential nursing care activities"],
+["87.20","Dejavnost nastanitvenih ustanov za oskrbo duševno prizadetih, duševno obolelih in zasvojenih oseb","Residential care activities for mental retardation, mental health and substance abuse"],
+["87.30","Dejavnost nastanitvenih ustanov za oskrbo starejših in invalidnih oseb","Residential care activities for the elderly and disabled"],
+["87.90","Drugo socialno varstvo z nastanitvijo","Other residential care activities"],
+["88.10","Socialno varstvo brez nastanitve za starejše in invalidne osebe","Social work activities without accommodation for the elderly and disabled"],
+["88.91","Dnevno varstvo otrok","Child day-care activities"],
+["88.99","Drugje nerazvrščeno socialno varstvo brez nastanitve","Other social work activities without accommodation n.e.c."]
 ]],
-["R","KULTURNE, RAZVEDRILNE IN REKREACIJSKE DEJAVNOSTI",[
-["90.01","Umetniško uprizarjanje"],
-["90.02","Spremljajoče dejavnosti za umetniško uprizarjanje"],
-["90.03","Umetniško ustvarjanje"],
-["90.04","Obratovanje objektov za kulturne prireditve"],
-["91.01","Dejavnost knjižnic in arhivov"],
-["91.02","Dejavnost muzejev"],
-["91.03","Varstvo kulturne dediščine"],
-["91.04","Dejavnost botaničnih in živalskih vrtov, varstvo naravnih vrednot"],
-["92.00","Prirejanje iger na srečo"],
-["93.11","Obratovanje športnih objektov"],
-["93.12","Dejavnost športnih klubov"],
-["93.13","Obratovanje fitnes objektov"],
-["93.19","Druge športne dejavnosti"],
-["93.21","Dejavnosti zabaviščnih parkov"],
-["93.29","Drugje nerazvrščene dejavnosti za prosti čas"]
+["R","KULTURNE, RAZVEDRILNE IN REKREACIJSKE DEJAVNOSTI","ARTS, ENTERTAINMENT AND RECREATION",[
+["90.01","Umetniško uprizarjanje","Performing arts"],
+["90.02","Spremljajoče dejavnosti za umetniško uprizarjanje","Support activities to performing arts"],
+["90.03","Umetniško ustvarjanje","Artistic creation"],
+["90.04","Obratovanje objektov za kulturne prireditve","Operation of arts facilities"],
+["91.01","Dejavnost knjižnic in arhivov","Library and archives activities"],
+["91.02","Dejavnost muzejev","Museums activities"],
+["91.03","Varstvo kulturne dediščine","Operation of historical sites and buildings and similar visitor attractions"],
+["91.04","Dejavnost botaničnih in živalskih vrtov, varstvo naravnih vrednot","Botanical and zoological gardens and nature reserves activities"],
+["92.00","Prirejanje iger na srečo","Gambling and betting activities"],
+["93.11","Obratovanje športnih objektov","Operation of sports facilities"],
+["93.12","Dejavnost športnih klubov","Activities of sports clubs"],
+["93.13","Obratovanje fitnes objektov","Fitness facilities"],
+["93.19","Druge športne dejavnosti","Other sports activities"],
+["93.21","Dejavnosti zabaviščnih parkov","Activities of amusement parks and theme parks"],
+["93.29","Drugje nerazvrščene dejavnosti za prosti čas","Other amusement and recreation activities"]
 ]],
-["S","DRUGE DEJAVNOSTI",[
-["94.11","Dejavnost poslovnih in delodajalskih združenj"],
-["94.12","Dejavnost strokovnih združenj"],
-["94.20","Dejavnost sindikatov"],
-["94.91","Dejavnost verskih organizacij"],
-["94.92","Dejavnost političnih organizacij"],
-["94.99","Dejavnost drugje nerazvrščenih članskih organizacij"],
-["95.11","Popravila in vzdrževanje računalnikov in perifernih enot"],
-["95.12","Popravila komunikacijskih naprav"],
-["95.21","Popravila elektronskih naprav za široko rabo"],
-["95.22","Popravila gospodinjskih in hišnih naprav in opreme"],
-["95.23","Popravila obutve in usnjene galanterije"],
-["95.24","Popravila pohištva"],
-["95.25","Popravila ur in nakita"],
-["95.29","Popravila drugih osebnih ali gospodinjskih izdelkov"],
-["96.01","Dejavnost pralnic in kemičnih čistilnic"],
-["96.02","Frizerska, kozmetična in pedikerska dejavnost"],
-["96.03","Pogrebna dejavnost"],
-["96.04","Dejavnosti za nego telesa"],
-["96.09","Druge storitvene dejavnosti, drugje nerazvrščene"]
+["S","DRUGE DEJAVNOSTI","OTHER SERVICE ACTIVITIES",[
+["94.11","Dejavnost poslovnih in delodajalskih združenj","Activities of business and employers membership organisations"],
+["94.12","Dejavnost strokovnih združenj","Activities of professional membership organisations"],
+["94.20","Dejavnost sindikatov","Activities of trade unions"],
+["94.91","Dejavnost verskih organizacij","Activities of religious organisations"],
+["94.92","Dejavnost političnih organizacij","Activities of political organisations"],
+["94.99","Dejavnost drugje nerazvrščenih članskih organizacij","Activities of other membership organisations n.e.c."],
+["95.11","Popravila in vzdrževanje računalnikov in perifernih enot","Repair of computers and peripheral equipment"],
+["95.12","Popravila komunikacijskih naprav","Repair of communication equipment"],
+["95.21","Popravila elektronskih naprav za široko rabo","Repair of consumer electronics"],
+["95.22","Popravila gospodinjskih in hišnih naprav in opreme","Repair of household appliances and home and garden equipment"],
+["95.23","Popravila obutve in usnjene galanterije","Repair of footwear and leather goods"],
+["95.24","Popravila pohištva","Repair of furniture and home furnishings"],
+["95.25","Popravila ur in nakita","Repair of watches, clocks and jewellery"],
+["95.29","Popravila drugih osebnih ali gospodinjskih izdelkov","Repair of other personal and household goods"],
+["96.01","Dejavnost pralnic in kemičnih čistilnic","Washing and (dry-)cleaning of textile and fur products"],
+["96.02","Frizerska, kozmetična in pedikerska dejavnost","Hairdressing and other beauty treatment"],
+["96.03","Pogrebna dejavnost","Funeral and related activities"],
+["96.04","Dejavnosti za nego telesa","Physical well-being activities"],
+["96.09","Druge storitvene dejavnosti, drugje nerazvrščene","Other personal service activities n.e.c."]
 ]],
-["T","DEJAVNOST GOSPODINJSTEV Z ZAPOSLENIM HIŠNIM OSEBJEM; PROIZVODNJA ZA LASTNO RABO",[
-["97.00","Dejavnost gospodinjstev z zaposlenim hišnim osebjem"],
-["98.10","Raznovrstna proizvodnja dobrin v gospodinjstvih za lastno rabo"],
-["98.20","Raznovrstna proizvodnja storitev v gospodinjstvih za lastno rabo"]
+["T","DEJAVNOST GOSPODINJSTEV Z ZAPOSLENIM HIŠNIM OSEBJEM; PROIZVODNJA ZA LASTNO RABO","ACTIVITIES OF HOUSEHOLDS AS EMPLOYERS; UNDIFFERENTIATED GOODS- AND SERVICES-PRODUCING ACTIVITIES OF HOUSEHOLDS FOR OWN USE",[
+["97.00","Dejavnost gospodinjstev z zaposlenim hišnim osebjem","Activities of households as employers of domestic personnel"],
+["98.10","Raznovrstna proizvodnja dobrin v gospodinjstvih za lastno rabo","Undifferentiated goods-producing activities of private households for own use"],
+["98.20","Raznovrstna proizvodnja storitev v gospodinjstvih za lastno rabo","Undifferentiated service-producing activities of private households for own use"]
 ]],
-["U","DEJAVNOST EKSTERITORIALNIH ORGANIZACIJ IN TELES",[
-["99.00","Dejavnost eksteritorialnih organizacij in teles"]
+["U","DEJAVNOST EKSTERITORIALNIH ORGANIZACIJ IN TELES","ACTIVITIES OF EXTRATERRITORIAL ORGANISATIONS AND BODIES",[
+["99.00","Dejavnost eksteritorialnih organizacij in teles","Activities of extraterritorial organisations and bodies"]
 ]]
 ];
 
-// Napolni <select> z vsemi kodami, razvrščenimi po sekcijah (optgroup).
-function populateNaceSelect(selectId) {
+// ISO država: [koda, sl_ime, en_ime]. Vrednost pri oddaji je vedno
+// 2-črkovna ISO koda (jezikovno nevtralna) — prikazano ime se prevaja.
+const COUNTRY_DATA = [
+  ["AT","Avstrija","Austria"], ["BE","Belgija","Belgium"], ["BG","Bolgarija","Bulgaria"],
+  ["CY","Ciper","Cyprus"], ["CZ","Češka","Czechia"], ["DK","Danska","Denmark"],
+  ["EE","Estonija","Estonia"], ["FI","Finska","Finland"], ["FR","Francija","France"],
+  ["GR","Grčija","Greece"], ["IE","Irska","Ireland"], ["IT","Italija","Italy"],
+  ["LV","Latvija","Latvia"], ["LT","Litva","Lithuania"], ["LU","Luksemburg","Luxembourg"],
+  ["MT","Malta","Malta"], ["HU","Madžarska","Hungary"], ["DE","Nemčija","Germany"],
+  ["NL","Nizozemska","Netherlands"], ["PL","Poljska","Poland"], ["PT","Portugalska","Portugal"],
+  ["RO","Romunija","Romania"], ["SK","Slovaška","Slovakia"], ["SI","Slovenija","Slovenia"],
+  ["ES","Španija","Spain"], ["SE","Švedska","Sweden"], ["HR","Hrvaška","Croatia"]
+];
+
+// Napolni <select> z vsemi NACE kodami, razvrščenimi po sekcijah
+// (optgroup). Vrednost (value) ostane vedno v slovenščini (kanonična
+// oblika, ki gre v bazo), prikazano besedilo (text) sledi jeziku strani.
+function populateNaceSelect(selectId, lang) {
   const sel = document.getElementById(selectId);
-  if (!sel || sel.dataset.filled) return;
-  let html = '<option value="">— Izberite dejavnost —</option>';
-  NACE_DATA.forEach(([letter, title, codes]) => {
-    html += `<optgroup label="${letter} — ${title}">`;
-    codes.forEach(([code, desc]) => {
-      html += `<option value="${code} — ${desc}">${code} — ${desc}</option>`;
+  if (!sel) return;
+  lang = lang || localStorage.getItem('lang') || 'sl';
+  const prevValue = sel.value;
+  const placeholder = lang === 'en' ? '— Select activity —' : '— Izberite dejavnost —';
+  let html = `<option value="">${placeholder}</option>`;
+  NACE_DATA.forEach(([letter, slTitle, enTitle, codes]) => {
+    const groupLabel = letter + ' — ' + (lang === 'en' ? enTitle : slTitle);
+    html += `<optgroup label="${groupLabel}">`;
+    codes.forEach(([code, slDesc, enDesc]) => {
+      const value = code + ' — ' + slDesc;
+      const text  = code + ' — ' + (lang === 'en' ? enDesc : slDesc);
+      html += `<option value="${value}">${text}</option>`;
     });
     html += '</optgroup>';
   });
   sel.innerHTML = html;
-  sel.dataset.filled = '1';
+  if (prevValue) sel.value = prevValue;
 }
+
+// Napolni <select> z državami. Vrednost je vedno 2-črkovna ISO koda.
+function populateCountrySelect(selectId, lang) {
+  const sel = document.getElementById(selectId);
+  if (!sel) return;
+  lang = lang || localStorage.getItem('lang') || 'sl';
+  const prevValue = sel.value;
+  const placeholder = lang === 'en' ? '— Select —' : '— Izberite —';
+  let html = `<option value="">${placeholder}</option>`;
+  COUNTRY_DATA.forEach(([code, slName, enName]) => {
+    html += `<option value="${code}">${lang === 'en' ? enName : slName}</option>`;
+  });
+  sel.innerHTML = html;
+  if (prevValue) sel.value = prevValue;
+}
+
 populateNaceSelect('m-reg-nace');
+populateCountrySelect('m-reg-country');
+
 
 function generateAuthCaptcha(prefix) {
   const a = Math.floor(Math.random() * 9) + 1;
@@ -5388,23 +5468,24 @@ async function submitSignInM(e) {
   const btn   = document.getElementById('m-signin-btn');
   errEl.style.display = 'none';
 
+  const L = i18nM[currentLang] || i18nM.sl;
   if (ansEl.value.trim() !== ansEl.dataset.answer) {
-    errEl.textContent = 'Napačen odgovor na captcha.';
+    errEl.textContent = L.signin_captcha_wrong;
     errEl.style.display = '';
     generateAuthCaptcha('m-signin');
     return;
   }
 
-  btn.disabled = true; btn.textContent = 'Prijavljam…';
+  btn.disabled = true; btn.textContent = L.signin_loading;
   const email = document.getElementById('m-signin-email').value.trim();
   const pw    = document.getElementById('m-signin-pw').value;
   const { data, error } = await sbM.auth.signInWithPassword({ email, password: pw });
-  btn.disabled = false; btn.textContent = 'Prijavi se →';
+  btn.disabled = false; btn.textContent = L.signin_btn;
 
   if (error) {
     errEl.textContent = error.message.includes('confirm') || error.message.includes('Email not confirmed')
-      ? 'E-pošta še ni potrjena. Preverite inbox.'
-      : 'Napačen e-naslov ali geslo.';
+      ? L.signin_email_unconfirmed
+      : L.signin_bad_credentials;
     errEl.style.display = '';
     generateAuthCaptcha('m-signin');
     return;
@@ -5446,7 +5527,8 @@ async function submitRegM(e) {
   }
   termsErr.style.display = 'none';
 
-  btn.disabled = true; btn.textContent = 'Registriram…';
+  const L = i18nM[currentLang] || i18nM.sl;
+  btn.disabled = true; btn.textContent = L.reg_loading;
   const fd = new FormData(document.getElementById('m-reg-form'));
   const { data, error } = await sbM.auth.signUp({
     email: fd.get('email'),
@@ -5466,13 +5548,13 @@ async function submitRegM(e) {
       }
     }
   });
-  btn.disabled = false; btn.textContent = 'Registriraj se →';
+  btn.disabled = false; btn.textContent = L.reg_btn;
 
   const isDuplicate = (error && (error.message.toLowerCase().includes('already') || error.message.toLowerCase().includes('unique')))
     || (!error && data.user && Array.isArray(data.user.identities) && data.user.identities.length === 0);
 
   if (isDuplicate) {
-    errEl.textContent = 'Ta e-naslov je že registriran. Prosim prijavite se.';
+    errEl.textContent = L.reg_duplicate_email;
     errEl.style.display = '';
     return;
   }
@@ -5496,7 +5578,7 @@ async function submitRegM(e) {
       p_nace:         fd.get('nace')
     });
     if (rpcErr) {
-      errEl.textContent = 'Račun je bil ustvarjen, vendar vpis v register ni uspel: ' + rpcErr.message;
+      errEl.textContent = L.reg_rpc_error_prefix + rpcErr.message;
       errEl.style.display = '';
       // Still show success below — the auth account was created either way.
     }
@@ -5504,7 +5586,7 @@ async function submitRegM(e) {
 
   document.getElementById('m-reg-form').style.display = 'none';
   document.getElementById('m-reg-success-msg').textContent =
-    `Poslali smo potrditveni link na ${fd.get('email')}. Kliknite nanj, da aktivirate račun. Po aktivaciji lahko takoj brskate po trgu — za oddajo oglasov ali nakup pa boste morali v Nastavitvah oddati verifikacijo računa.`;
+    L.reg_success_msg.replace('{email}', fd.get('email'));
   document.getElementById('m-reg-success').style.display = '';
 }
 
