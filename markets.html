@@ -4164,8 +4164,8 @@ updateFilters();
       <div class="wiz-field">
         <label>Teža</label>
         <div class="wiz-row">
-          <input class="wiz-input" type="number" id="wiz-weight" placeholder="npr. 100" min="0" step="any" />
-          <select class="wiz-unit-select" id="wiz-weight-unit">
+          <input class="wiz-input" type="number" id="wiz-weight" placeholder="npr. 100" min="0" step="any" oninput="updateWizTotalPrice()" />
+          <select class="wiz-unit-select" id="wiz-weight-unit" onchange="updateWizTotalPrice()">
             <option value="g">g</option>
             <option value="kg" selected>kg</option>
             <option value="t">t</option>
@@ -4176,7 +4176,8 @@ updateFilters();
       </div>
       <div class="wiz-field">
         <label>Cena (USD / enota)</label>
-        <input class="wiz-input" type="number" id="wiz-price" placeholder="npr. 2.50" min="0" step="any" />
+        <input class="wiz-input" type="number" id="wiz-price" placeholder="npr. 2.50" min="0" step="any" oninput="updateWizTotalPrice()" />
+        <div id="wiz-total-price-hint" style="font-size:12px;color:var(--gold-lt);margin-top:6px;min-height:16px;"></div>
       </div>
       <div class="wiz-field">
         <label>Oblika / produkt</label>
@@ -4305,6 +4306,11 @@ updateFilters();
           <label>Minimalna (rezervna) cena (USD)</label>
           <input class="wiz-input" type="number" id="wiz-reserve-price" placeholder="npr. 100" min="0" step="any" />
           <div style="font-size:11px;color:var(--muted);margin-top:4px;">Najnižja cena, pod katero blaga ne boste prodali.</div>
+        </div>
+        <div class="wiz-field">
+          <label>Kupi takoj — cena (USD, neobvezno)</label>
+          <input class="wiz-input" type="number" id="wiz-buy-now-price" placeholder="npr. 500" min="0" step="any" />
+          <div style="font-size:11px;color:var(--muted);margin-top:4px;">Če nastavite, lahko kupec kadarkoli pred koncem dražbe kupi takoj po tej ceni, namesto da čaka ali oddaja ponudbe.</div>
         </div>
         <div class="wiz-field">
           <label>Trajanje dražbe</label>
@@ -4656,6 +4662,14 @@ async function loadDbListings() {
   updateFilters();
 }
 
+// price_usd/price_eur na oglasu je vedno CENA NA ENOTO (glede na
+// weight_unit) — skupna cena oglasa je cena na enoto × teža. Če teža
+// ni znana (stari oglasi brez vnesene teže), vrni samo ceno na enoto.
+function listingTotalPrice(l, unitPrice) {
+  if (unitPrice == null) return null;
+  return l.weightRaw ? unitPrice * l.weightRaw : unitPrice;
+}
+
 function dbToListing(row) {
   return {
     id: 'db-' + row.id,
@@ -4667,6 +4681,8 @@ function dbToListing(row) {
     sub: row.description || '',
     shape: row.shape || 'other',
     weight: row.weight ? (row.weight + ' ' + (row.weight_unit || 'kg')) : '',
+    weightRaw: row.weight || null,
+    weightUnit: row.weight_unit || 'kg',
     purity: '—',
     priceUsd: row.price_usd || 0,
     priceEur: row.price_usd ? Math.round(row.price_usd * 0.92 * 100) / 100 : 0,
@@ -4679,6 +4695,7 @@ function dbToListing(row) {
     materialLabel: row.material_label || row.name,
     saleType: row.sale_type || 'spot',
     reservePrice: row.reserve_price || 0,
+    buyNowPrice: row.buy_now_price || null,
     auctionEndAt: row.auction_end_at || null,
     currentBid: row.current_bid || 0,
     currentBidderId: row.current_bidder_id || null,
@@ -5723,6 +5740,7 @@ const wiz = {
   description: '',
   saleType: 'spot',
   reservePrice: '',
+  buyNowPrice: null,
   auctionDuration: 7,
   imageFiles: [],
   imagePreviews: [],
@@ -5733,7 +5751,8 @@ function openWizard() {
   wiz.step = 1; wiz.category = null; wiz.treeNode = null;
   wiz.name = ''; wiz.weight = ''; wiz.weightUnit = 'kg';
   wiz.priceUsd = ''; wiz.shape = ''; wiz.description = '';
-  wiz.saleType = 'spot'; wiz.reservePrice = ''; wiz.auctionDuration = 7;
+  wiz.saleType = 'spot'; wiz.reservePrice = ''; wiz.buyNowPrice = null; wiz.auctionDuration = 7;
+  document.getElementById('wiz-buy-now-price').value = '';
   wiz.imageFiles = []; wiz.imagePreviews = [];
   wiz.certFiles = {}; wiz.existingCertFiles = {};
   // Reset cert checkboxes and upload zones
@@ -5824,6 +5843,17 @@ function wizNext() {
       if (!res) { errEl.textContent = 'Vnesite minimalno (rezervno) ceno za dražbo.'; errEl.style.display = ''; return; }
       wiz.reservePrice = parseFloat(res);
       wiz.auctionDuration = parseInt(document.getElementById('wiz-auction-duration').value);
+      const buyNow = document.getElementById('wiz-buy-now-price').value.trim();
+      if (buyNow) {
+        wiz.buyNowPrice = parseFloat(buyNow);
+        if (wiz.buyNowPrice <= wiz.reservePrice) {
+          errEl.textContent = 'Cena "Kupi takoj" mora biti višja od rezervne cene.';
+          errEl.style.display = '';
+          return;
+        }
+      } else {
+        wiz.buyNowPrice = null;
+      }
     }
     errEl.style.display = 'none';
     wiz.name = name;
@@ -5850,6 +5880,20 @@ function prefillDetails() {
   document.getElementById('wiz-price').value = '';
   document.getElementById('wiz-shape').value = '';
   document.getElementById('wiz-description').value = '';
+  updateWizTotalPrice();
+}
+
+// Živo preračunavanje skupne cene v 3. koraku: cena je vedno na enoto
+// (glede na izbrano enoto teže), skupna cena = cena na enoto × teža.
+function updateWizTotalPrice() {
+  const hint = document.getElementById('wiz-total-price-hint');
+  if (!hint) return;
+  const weight = parseFloat(document.getElementById('wiz-weight').value);
+  const price  = parseFloat(document.getElementById('wiz-price').value);
+  const unit   = document.getElementById('wiz-weight-unit').value;
+  if (!weight || !price || weight <= 0 || price <= 0) { hint.textContent = ''; return; }
+  const total = weight * price;
+  hint.textContent = `Skupna cena: $${total.toLocaleString('sl-SI', {minimumFractionDigits:2, maximumFractionDigits:2})}  (${weight} ${unit} × $${price}/${unit})`;
 }
 
 // ── WIZARD TREE ──
@@ -6116,6 +6160,7 @@ async function submitListing() {
       images: imageUrls.length ? imageUrls : undefined,
       sale_type: wiz.saleType,
       reserve_price: wiz.saleType === 'auction' ? wiz.reservePrice : null,
+      buy_now_price: wiz.saleType === 'auction' ? (wiz.buyNowPrice || null) : null,
       auction_end_at: auctionEndAt,
       current_bid: 0,
       cert_auth:     document.getElementById('wiz-cert-auth').checked,
@@ -6233,6 +6278,7 @@ function prefillDetailsEdit() {
   document.getElementById('wiz-price').value = wiz.priceUsd;
   document.getElementById('wiz-shape').value = wiz.shape;
   document.getElementById('wiz-description').value = wiz.description;
+  updateWizTotalPrice();
   document.getElementById('wiz-cert-auth').checked     = wiz.cert?.auth     || false;
   document.getElementById('wiz-cert-serial').checked   = wiz.cert?.serial   || false;
   document.getElementById('wiz-cert-mint').checked     = wiz.cert?.mint     || false;
@@ -6380,6 +6426,7 @@ renderListings = function(list) {
     // DB listing
     const price = cur === 'usd' ? l.priceUsd : l.priceEur;
     const sym   = cur === 'usd' ? '$' : '€';
+    const totalPrice = listingTotalPrice(l, price);
     const imgHtml = l.images && l.images[0]
       ? `<img class="listing-img" src="${esc(l.images[0])}" alt="${esc(l.name)}" />`
       : `<div class="listing-material-icon" style="color:rgba(201,162,39,0.25);">${l.material || '⬡'}</div>`;
@@ -6416,24 +6463,31 @@ renderListings = function(list) {
         const urgent = l.auctionEndAt && (new Date(l.auctionEndAt) - new Date()) < 3600000;
         const bidStr = l.currentBid > 0 ? `$${l.currentBid.toLocaleString()}` : 'Ni ponudb';
         const canBid = currentUser && !isOwner;
+        const buyNowBtn = (canBid && l.buyNowPrice)
+          ? `<button class="btn-buy-spot" onclick="event.stopPropagation(); buyNowAuction('${l.dbId}')">Kupi takoj $${l.buyNowPrice.toLocaleString('sl-SI')}</button>`
+          : '';
         bottomSection = `<div class="auction-bar">
           <div class="auction-bar-left">
             <div class="${l.currentBid > 0 ? 'auction-current-bid' : 'auction-no-bid'}">${bidStr}</div>
             <div class="auction-timer${urgent ? ' urgent' : ''}">⏱ ${timeStr}</div>
           </div>
-          ${canBid ? `<button class="btn-bid" onclick="event.stopPropagation(); openBidModal('${l.dbId}')">Ponudi 🔨</button>` : !currentUser ? `<button class="btn-bid" onclick="event.stopPropagation(); openAuthModal('signin')">Prijavi se</button>` : ''}
+          <div style="display:flex; gap:6px; align-items:center;">
+            ${canBid ? `<button class="btn-bid" onclick="event.stopPropagation(); openBidModal('${l.dbId}')">Ponudi 🔨</button>` : !currentUser ? `<button class="btn-bid" onclick="event.stopPropagation(); openAuthModal('signin')">Prijavi se</button>` : ''}
+            ${buyNowBtn}
+          </div>
         </div>`;
       }
     } else {
       // Spot — show buy button
       const canBuy = currentUser && !isOwner;
       if (canBuy) {
+        const totalUsd = listingTotalPrice(l, l.priceUsd);
         bottomSection = `<div class="auction-bar" style="background:rgba(72,199,142,0.03);">
           <div class="auction-bar-left">
-            <div class="auction-current-bid" style="color:var(--gold-lt);">${price > 0 ? sym + price.toLocaleString('sl-SI') : 'Cena na poizvedbo'}</div>
-            <div class="auction-timer">Spot nakup</div>
+            <div class="auction-current-bid" style="color:var(--gold-lt);">${totalPrice ? sym + totalPrice.toLocaleString('sl-SI', {minimumFractionDigits:2, maximumFractionDigits:2}) : 'Cena na poizvedbo'}</div>
+            <div class="auction-timer">${price > 0 && l.weightRaw ? `${sym}${price.toLocaleString('sl-SI')}/${esc(l.weightUnit||'kg')} · Spot nakup` : 'Spot nakup'}</div>
           </div>
-          <button class="btn-buy-spot" onclick="event.stopPropagation(); showPaymentInfo('${l.dbId}', ${l.priceUsd})">Kupi zdaj</button>
+          <button class="btn-buy-spot" onclick="event.stopPropagation(); showPaymentInfo('${l.dbId}', ${totalUsd || l.priceUsd})">Kupi zdaj</button>
         </div>`;
       }
     }
@@ -6453,7 +6507,7 @@ renderListings = function(list) {
         <div class="listing-card-meta">
           ${l.shape ? `<span class="listing-meta-tag">${esc(shapeLabel[l.shape]||l.shape)}</span>` : ''}
           ${weightDisplay ? `<span class="listing-meta-tag">${esc(weightDisplay)}</span>` : ''}
-          ${isAuction ? `<span class="listing-meta-tag">Zač. $${esc(String(l.priceUsd))}</span>` : ''}
+          ${isAuction && totalPrice ? `<span class="listing-meta-tag">Zač. $${esc(totalPrice.toLocaleString('sl-SI'))}</span>` : ''}
         </div>
         <button class="listing-details-toggle" onclick="event.stopPropagation(); toggleListingDetails('${l.dbId}', this)">› Podrobnosti</button>
       </div>
@@ -6466,7 +6520,9 @@ renderListings = function(list) {
           ${l.shape ? `<div class="listing-details-row"><span class="listing-details-lbl">Oblika</span><span class="listing-details-val">${esc(shapeLabel[l.shape]||l.shape)}</span></div>` : ''}
           ${weightDisplay ? `<div class="listing-details-row"><span class="listing-details-lbl">Teža</span><span class="listing-details-val">${esc(weightDisplay)}</span></div>` : ''}
           ${l.sub ? `<div class="listing-details-row"><span class="listing-details-lbl">Opis</span><span class="listing-details-val">${esc(l.sub)}</span></div>` : ''}
-          ${price > 0 ? `<div class="listing-details-row"><span class="listing-details-lbl">Cena</span><span class="listing-details-val" style="color:var(--gold-lt);font-weight:700;">${sym}${price.toLocaleString('sl-SI')}</span></div>` : ''}
+          ${price > 0 ? `<div class="listing-details-row"><span class="listing-details-lbl">Cena na enoto</span><span class="listing-details-val">${sym}${price.toLocaleString('sl-SI')} / ${esc(l.weightUnit||'kg')}</span></div>` : ''}
+          ${totalPrice ? `<div class="listing-details-row"><span class="listing-details-lbl">Skupna cena</span><span class="listing-details-val" style="color:var(--gold-lt);font-weight:700;">${sym}${totalPrice.toLocaleString('sl-SI', {minimumFractionDigits:2, maximumFractionDigits:2})}</span></div>` : ''}
+          ${isAuction && l.buyNowPrice ? `<div class="listing-details-row"><span class="listing-details-lbl">Kupi takoj cena</span><span class="listing-details-val" style="color:rgba(72,199,142,0.9);font-weight:700;">$${l.buyNowPrice.toLocaleString('sl-SI')}</span></div>` : ''}
           ${!isOwner ? `<button class="listing-contact-btn" style="width:100%;margin-top:12px;" onclick="event.stopPropagation(); openContact('${l.dbId}')">✉ Sporočilo prodajalcu</button>` : ''}
         </div>
       </div>
@@ -6564,6 +6620,43 @@ async function submitBid() {
   } finally {
     btn.disabled = false;
     btn.textContent = '🔨 Oddaj ponudbo';
+  }
+}
+
+// ── BUY NOW (na aktivni dražbi) ──
+// Konča dražbo takoj v korist kupca po prodajalčevi "kupi takoj" ceni —
+// ponovno uporabi isti plačilni tok (showPaymentInfo → confirmPurchase)
+// kot pri zaključeni zmagani dražbi, saj RPC spodaj postavi current_bid /
+// current_bidder_id / auction_end_at enako, kot bi veljalo ob pravi zmagi.
+async function buyNowAuction(dbId) {
+  if (!currentUser) { openAuthModal('signin'); return; }
+  if (!(await checkMarketplaceApproved())) {
+    alert('Za nakup morate imeti verificiran račun. Pojdite v Nastavitve → Verifikacija in oddajte dokazila — administrator jih bo pregledal in potrdil.');
+    return;
+  }
+  try {
+    const { data, error } = await sbM.rpc('buy_now_auction', { p_listing_id: dbId });
+    if (error) throw error;
+    if (data && data.error) {
+      const msgs = {
+        not_authenticated:  'Prijaviti se morate.',
+        listing_not_found:  'Oglas ni bil najden.',
+        not_an_auction:     'Ta oglas ni dražba.',
+        no_buy_now_price:   'Za ta oglas ni nastavljena cena "Kupi takoj".',
+        auction_ended:      'Dražba je že zaključena.',
+        own_listing:        'Ne morete kupiti lastnega oglasa.',
+      };
+      alert(msgs[data.error] || ('Napaka: ' + data.error));
+      await loadDbListings();
+      renderListings(getFiltered());
+      return;
+    }
+    if (data && data.success) {
+      await loadDbListings();
+      showPaymentInfo(dbId, data.amount);
+    }
+  } catch (e) {
+    alert('Napaka pri nakupu: ' + (e.message || e));
   }
 }
 
