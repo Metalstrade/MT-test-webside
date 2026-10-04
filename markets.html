@@ -946,6 +946,32 @@
     .wiz-slot-placeholder { display: flex; flex-direction: column; align-items: center; gap: 6px; }
     .wiz-slot-placeholder svg { color: var(--muted); }
     .wiz-slot-placeholder span { font-size: 10px; color: var(--muted); letter-spacing: 0.04em; }
+    .wiz-img-uploading {
+      position: absolute; inset: 0; z-index: 2;
+      background: rgba(13,17,23,0.55); backdrop-filter: blur(1px);
+      display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 8px;
+    }
+    .wiz-img-uploading span { font-size: 10px; color: #E8EEF2; letter-spacing: 0.04em; }
+    .wiz-img-progress-track {
+      width: 70%; height: 4px; border-radius: 2px;
+      background: rgba(255,255,255,0.15); overflow: hidden;
+    }
+    .wiz-img-progress-bar {
+      width: 40%; height: 100%; border-radius: 2px;
+      background: linear-gradient(90deg, var(--gold-dk), var(--gold-lt));
+      animation: wizImgProgress 1.1s ease-in-out infinite;
+    }
+    @keyframes wizImgProgress {
+      0%   { transform: translateX(-100%); }
+      100% { transform: translateX(250%); }
+    }
+    .wiz-img-uploaded-badge {
+      position: absolute; top: 6px; left: 6px; z-index: 2;
+      width: 20px; height: 20px; border-radius: 50%;
+      background: rgba(72,199,142,0.85); color: #fff;
+      font-size: 11px; font-weight: 700;
+      display: flex; align-items: center; justify-content: center;
+    }
 
     /* Wizard footer */
     .wizard-footer {
@@ -5843,6 +5869,14 @@ const wiz = {
   auctionDuration: 7,
   imageFiles: [],
   imagePreviews: [],
+  // Slike se naložijo na strežnik TAKOJ ko jih uporabnik izbere (ne šele
+  // ob objavi), da je sama objava skoraj takojšnja. imageUrls hrani že
+  // naloženo javno URL vsake reže, imagePaths pot v storageu (za
+  // morebiten izbris, če uporabnik sliko odstrani/zamenja pred objavo),
+  // imageUploading pa trenutno stanje nalaganja po reži.
+  imageUrls: [],
+  imagePaths: [],
+  imageUploading: [],
 };
 
 function openWizard() {
@@ -5853,6 +5887,7 @@ function openWizard() {
   wiz.saleType = 'spot'; wiz.reservePrice = ''; wiz.buyNowPrice = null; wiz.auctionDuration = 7;
   document.getElementById('wiz-buy-now-price').value = '';
   wiz.imageFiles = []; wiz.imagePreviews = [];
+  wiz.imageUrls = [null, null, null]; wiz.imagePaths = [null, null, null]; wiz.imageUploading = [false, false, false];
   wiz.certFiles = {}; wiz.existingCertFiles = {};
   // Reset cert checkboxes and upload zones
   ['auth','serial','mint','assay','quality','weight','analysis'].forEach(k => {
@@ -6158,46 +6193,118 @@ function triggerImageInput(slotIndex) {
   document.getElementById('img-file-input').click();
 }
 
+const WIZ_IMG_ALLOWED_MIME = ['image/jpeg', 'image/png', 'image/webp', 'image/gif'];
+const WIZ_IMG_EXT_MAP = { 'image/jpeg':'jpg', 'image/png':'png', 'image/webp':'webp', 'image/gif':'gif' };
+
 function handleImageFile(event) {
   const file = event.target.files[0];
   if (!file) return;
+  const i = _imgSlotTarget;
+  if (!WIZ_IMG_ALLOWED_MIME.includes(file.type)) {
+    document.getElementById('wiz-img-error').textContent = 'Dovoljene so samo slike (JPG, PNG, WebP, GIF).';
+    document.getElementById('wiz-img-error').style.display = '';
+    return;
+  }
   if (file.size > 5 * 1024 * 1024) {
     document.getElementById('wiz-img-error').textContent = 'Slika je prevelika (max 5 MB).';
     document.getElementById('wiz-img-error').style.display = '';
     return;
   }
   document.getElementById('wiz-img-error').style.display = 'none';
+
+  // Pot staro naloženo sliko v tej reži (če uporabnik zamenja izbiro)
+  // počisti iz shrambe, da ne ostajajo osiroteli zapisi.
+  const oldPath = wiz.imagePaths[i];
+  if (oldPath) sbM.storage.from('listing-images').remove([oldPath]).catch(() => {});
+
   const reader = new FileReader();
   reader.onload = (e) => {
-    wiz.imageFiles[_imgSlotTarget] = file;
-    wiz.imagePreviews[_imgSlotTarget] = e.target.result;
-    updateImgSlot(_imgSlotTarget);
+    wiz.imageFiles[i] = file;
+    wiz.imagePreviews[i] = e.target.result; // takojšnji lokalni predogled
+    wiz.imageUrls[i] = null;
+    wiz.imagePaths[i] = null;
+    wiz.imageUploading[i] = true;
+    updateImgSlot(i);
+    uploadWizImage(i, file);
   };
   reader.readAsDataURL(file);
+}
+
+// Naloži sliko na strežnik TAKOJ ko je izbrana (ne šele ob objavi
+// oglasa), tako da je sama objava skoraj takojšnja — slike so takrat
+// že nameščene, submitListing() samo prebere že pripravljene URL-je.
+async function uploadWizImage(i, file) {
+  if (!currentUser) {
+    wiz.imageUploading[i] = false;
+    wiz.imagePreviews[i] = null;
+    wiz.imageFiles[i] = null;
+    updateImgSlot(i);
+    document.getElementById('wiz-img-error').textContent = 'Za nalaganje slik morate biti prijavljeni.';
+    document.getElementById('wiz-img-error').style.display = '';
+    return;
+  }
+  const ext = WIZ_IMG_EXT_MAP[file.type] || 'jpg';
+  const path = `${currentUser.id}/${Date.now()}-${Math.random().toString(36).slice(2,6)}-${i}.${ext}`;
+  try {
+    const { data: upData, error: upErr } = await sbM.storage.from('listing-images').upload(path, file, { cacheControl: '3600', upsert: false });
+    if (upErr) throw upErr;
+    const { data: urlData } = sbM.storage.from('listing-images').getPublicUrl(upData.path);
+    // Reža je med nalaganjem lahko bila odstranjena/zamenjana — ne
+    // prikaži rezultata, ki ne sodi več sem.
+    if (wiz.imageFiles[i] !== file) { sbM.storage.from('listing-images').remove([upData.path]).catch(() => {}); return; }
+    wiz.imageUrls[i] = urlData?.publicUrl || null;
+    wiz.imagePaths[i] = upData.path;
+    wiz.imageUploading[i] = false;
+    updateImgSlot(i);
+  } catch (err) {
+    if (wiz.imageFiles[i] !== file) return;
+    wiz.imageUploading[i] = false;
+    wiz.imagePreviews[i] = null;
+    wiz.imageFiles[i] = null;
+    updateImgSlot(i);
+    document.getElementById('wiz-img-error').textContent = `Slika ${i+1} ni bila naložena: ${err.message || 'napaka'}`;
+    document.getElementById('wiz-img-error').style.display = '';
+  }
 }
 
 function updateImgSlot(i) {
   const slot = document.getElementById('img-slot-' + i);
   const preview = wiz.imagePreviews[i];
+  const uploading = wiz.imageUploading[i];
   if (preview) {
     slot.classList.add('filled');
-    slot.innerHTML = `<img src="${preview}" style="width:100%;height:100%;object-fit:cover;" /><button class="slot-remove" onclick="removeImg(event,${i})">×</button>`;
+    slot.innerHTML = `<img src="${preview}" style="width:100%;height:100%;object-fit:cover;" />` + (
+      uploading
+        ? `<div class="wiz-img-uploading"><div class="wiz-img-progress-track"><div class="wiz-img-progress-bar"></div></div><span>Nalagam…</span></div>`
+        : `<div class="wiz-img-uploaded-badge">✓</div><button class="slot-remove" onclick="removeImg(event,${i})">×</button>`
+    );
   } else {
     slot.classList.remove('filled');
     slot.innerHTML = `<div class="wiz-slot-placeholder"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg><span>Dodaj sliko</span></div>`;
   }
+  const anyUploading = wiz.imageUploading.some(Boolean);
+  const nextBtn = document.getElementById('wiz-btn-next');
+  if (nextBtn) nextBtn.disabled = anyUploading;
 }
 
 function removeImg(event, i) {
   event.stopPropagation();
+  const path = wiz.imagePaths[i];
+  if (path) sbM.storage.from('listing-images').remove([path]).catch(() => {});
   wiz.imageFiles[i] = null;
   wiz.imagePreviews[i] = null;
+  wiz.imageUrls[i] = null;
+  wiz.imagePaths[i] = null;
+  wiz.imageUploading[i] = false;
   updateImgSlot(i);
 }
 
 function resetImgSlots() {
   wiz.imageFiles = [null, null, null];
   wiz.imagePreviews = [null, null, null];
+  wiz.imageUrls = [null, null, null];
+  wiz.imagePaths = [null, null, null];
+  wiz.imageUploading = [false, false, false];
   [0,1,2].forEach(i => updateImgSlot(i));
 }
 
@@ -6211,36 +6318,20 @@ async function submitListing() {
     alert('Za oddajo oglasa morate imeti verificiran račun. Pojdite v Nastavitve → Verifikacija in oddajte dokazila.');
     return;
   }
+  if (wiz.imageUploading.some(Boolean)) {
+    document.getElementById('wiz-img-error').textContent = 'Počakajte, da se nalaganje slik zaključi.';
+    document.getElementById('wiz-img-error').style.display = '';
+    return;
+  }
   const nextBtn = document.getElementById('wiz-btn-next');
   nextBtn.disabled = true;
   nextBtn.textContent = 'Objavljam…';
 
   try {
-    const ALLOWED_MIME = ['image/jpeg', 'image/png', 'image/webp', 'image/gif'];
-    const imageUrls = [];
-    for (let i = 0; i < 3; i++) {
-      const file = wiz.imageFiles[i];
-      if (!file) {
-        // In edit mode: keep existing image URL if slot has a preview but no new file
-        const existing = wiz.imagePreviews[i];
-        if (existing && typeof existing === 'string' && existing.startsWith('http')) {
-          imageUrls.push(existing);
-        }
-        continue;
-      }
-      if (!ALLOWED_MIME.includes(file.type)) { alert('Dovoljene so samo slike (JPG, PNG, WebP, GIF).'); continue; }
-      if (file.size > 5 * 1024 * 1024) { alert('Slika je prevelika. Največja dovoljena velikost je 5 MB.'); continue; }
-      const ext = { 'image/jpeg':'jpg', 'image/png':'png', 'image/webp':'webp', 'image/gif':'gif' }[file.type] || 'jpg';
-      const path = `${currentUser.id}/${Date.now()}-${Math.random().toString(36).slice(2,6)}-${i}.${ext}`;
-      const { data: upData, error: upErr } = await sbM.storage.from('listing-images').upload(path, file, { cacheControl: '3600', upsert: false });
-      if (upErr) {
-        console.error(`Slika ${i+1} ni bila naložena:`, upErr.message);
-        alert(`Slika ${i+1} ni bila naložena: ${upErr.message}`);
-        continue;
-      }
-      const { data: urlData } = sbM.storage.from('listing-images').getPublicUrl(upData.path);
-      if (urlData?.publicUrl) imageUrls.push(urlData.publicUrl);
-    }
+    // Slike so bile naložene že ob izbiri (glej uploadWizImage) — tu
+    // samo poberemo že pripravljene URL-je, zato je objava skoraj
+    // takojšnja ne glede na velikost/število slik.
+    const imageUrls = wiz.imageUrls.filter(Boolean);
 
     const auctionEndAt = wiz.saleType === 'auction'
       ? new Date(Date.now() + wiz.auctionDuration * 24 * 60 * 60 * 1000).toISOString()
@@ -6347,16 +6438,15 @@ async function openEditListing(dbId) {
   if (catEl) catEl.classList.add('selected');
 
   resetImgSlots();
-  // Show existing images as previews (from URLs)
+  // Show existing images as previews (from URLs) — already "uploaded"
+  // (imageUrls set directly), so submitListing() includes them as-is
+  // unless the user replaces/removes a slot.
   if (data.images && data.images.length) {
     data.images.forEach((url, i) => {
       if (i >= 3) return;
       wiz.imagePreviews[i] = url;
-      const slot = document.getElementById('img-slot-' + i);
-      if (slot) {
-        slot.classList.add('filled');
-        slot.innerHTML = `<img src="${url}" style="width:100%;height:100%;object-fit:cover;" /><button class="slot-remove" onclick="removeImg(event,${i})">×</button>`;
-      }
+      wiz.imageUrls[i] = url;
+      updateImgSlot(i);
     });
   }
 
