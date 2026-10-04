@@ -1136,6 +1136,34 @@
     .bid-input { width: 100%; background: var(--ink-3); border: 1px solid rgba(143,163,177,0.2); border-radius: 3px; padding: 10px 12px; color: #E8EEF2; font-size: 16px; font-family: 'Inter', sans-serif; outline: none; }
     .bid-input:focus { border-color: rgba(201,162,39,0.4); }
     .bid-error { font-size: 12px; color: #f0645a; margin-bottom: 12px; display: none; }
+    .bid-agent-row {
+      display: flex; align-items: center; justify-content: space-between; gap: 12px;
+      background: var(--ink-3); border: 1px solid rgba(201,162,39,0.15);
+      border-radius: 4px; padding: 12px 14px; margin-bottom: 14px;
+    }
+    .bid-agent-title { font-size: 13px; font-weight: 600; color: #E8EEF2; margin-bottom: 3px; }
+    .bid-agent-sub { font-size: 11px; color: var(--muted); line-height: 1.4; }
+    .bid-agent-switch { position: relative; display: inline-block; width: 40px; height: 22px; flex-shrink: 0; }
+    .bid-agent-switch input { opacity: 0; width: 0; height: 0; }
+    .bid-agent-slider {
+      position: absolute; cursor: pointer; inset: 0;
+      background: rgba(143,163,177,0.25); border-radius: 22px; transition: background 0.15s;
+    }
+    .bid-agent-slider::before {
+      content: ''; position: absolute; width: 16px; height: 16px; left: 3px; top: 3px;
+      background: #E8EEF2; border-radius: 50%; transition: transform 0.15s;
+    }
+    .bid-agent-switch input:checked + .bid-agent-slider { background: var(--gold); }
+    .bid-agent-switch input:checked + .bid-agent-slider::before { transform: translateX(18px); background: var(--ink); }
+    .bid-agent-status {
+      font-size: 11px; color: rgba(72,199,142,0.9); background: rgba(72,199,142,0.08);
+      border: 1px solid rgba(72,199,142,0.2); border-radius: 3px; padding: 8px 10px; margin-bottom: 14px;
+      display: flex; align-items: center; justify-content: space-between; gap: 8px;
+    }
+    .bid-agent-status button {
+      background: none; border: none; color: #f0645a; font-size: 11px; text-decoration: underline;
+      cursor: pointer; font-family: 'Inter', sans-serif; padding: 0;
+    }
     .btn-submit-bid {
       width: 100%; padding: 12px; border-radius: 3px; font-size: 12px; font-weight: 600;
       letter-spacing: 0.08em; text-transform: uppercase; cursor: pointer;
@@ -4381,9 +4409,25 @@ updateFilters();
         <div class="bid-stat-val" id="bid-timer-val">—</div>
       </div>
     </div>
-    <div class="bid-input-wrap">
+    <div class="bid-agent-row">
+      <div>
+        <div class="bid-agent-title">🤖 Agent za dražbo</div>
+        <div class="bid-agent-sub">Samodejno bida namesto vas, kadar vas kdo prehiti — do cene, ki jo nastavite spodaj.</div>
+      </div>
+      <label class="bid-agent-switch">
+        <input type="checkbox" id="bid-agent-toggle" onchange="toggleBidAgentUI()" />
+        <span class="bid-agent-slider"></span>
+      </label>
+    </div>
+    <div class="bid-agent-status" id="bid-agent-status" style="display:none;"></div>
+
+    <div class="bid-input-wrap" id="bid-input-wrap-manual">
       <label>Vaša ponudba (USD) — mora biti višja od trenutne</label>
       <input class="bid-input" type="number" id="bid-amount-input" placeholder="npr. 1500" min="0" step="any" />
+    </div>
+    <div class="bid-input-wrap" id="bid-agent-max-wrap" style="display:none;">
+      <label>Najvišja cena agenta (USD)</label>
+      <input class="bid-input" type="number" id="bid-agent-max-input" placeholder="npr. 2500" min="0" step="any" />
     </div>
     <div class="bid-error" id="bid-error"></div>
     <button class="btn-submit-bid" id="bid-submit-btn" onclick="submitBid()">🔨 Oddaj ponudbo</button>
@@ -6579,12 +6623,45 @@ async function openBidModal(dbId) {
   const inp = document.getElementById('bid-amount-input');
   inp.value = minBid;
   inp.min = minBid;
+  document.getElementById('bid-agent-max-input').value = '';
+  document.getElementById('bid-agent-toggle').checked = false;
   document.getElementById('bid-error').textContent = '';
+  toggleBidAgentUI();
   document.getElementById('bid-overlay').classList.add('open');
+
+  // Preveri, ali kupec za ta oglas že ima aktivnega agenta — če da,
+  // pokaži stanje in možnost izklopa namesto praznega obrazca.
+  const { data } = await sbM.rpc('get_my_auction_agent', { p_listing_id: dbId });
+  const statusEl = document.getElementById('bid-agent-status');
+  if (data && data.active) {
+    statusEl.innerHTML = `Agent je vklopljen — bida do $${Number(data.max_amount).toLocaleString('sl-SI')}. <button onclick="cancelMyAgent()">Izklopi</button>`;
+    statusEl.style.display = 'flex';
+  } else {
+    statusEl.style.display = 'none';
+  }
+}
+
+function toggleBidAgentUI() {
+  const on = document.getElementById('bid-agent-toggle').checked;
+  document.getElementById('bid-agent-max-wrap').style.display = on ? '' : 'none';
+  document.getElementById('bid-input-wrap-manual').style.display = on ? 'none' : '';
+  document.getElementById('bid-submit-btn').textContent = on ? '🤖 Aktiviraj agenta' : '🔨 Oddaj ponudbo';
+  document.getElementById('bid-error').textContent = '';
+}
+
+async function cancelMyAgent() {
+  if (!bidListingId) return;
+  await sbM.rpc('cancel_auction_agent', { p_listing_id: bidListingId });
+  document.getElementById('bid-agent-status').style.display = 'none';
+  document.getElementById('bid-agent-toggle').checked = false;
+  toggleBidAgentUI();
 }
 
 async function submitBid() {
   if (!bidListingId) return;
+  const agentOn = document.getElementById('bid-agent-toggle').checked;
+  if (agentOn) return submitBidAgent();
+
   const amount = parseFloat(document.getElementById('bid-amount-input').value);
   const errEl  = document.getElementById('bid-error');
   const btn    = document.getElementById('bid-submit-btn');
@@ -6619,7 +6696,49 @@ async function submitBid() {
     errEl.textContent = 'Napaka pri oddaji ponudbe.';
   } finally {
     btn.disabled = false;
-    btn.textContent = '🔨 Oddaj ponudbo';
+    btn.textContent = agentOn ? '🤖 Aktiviraj agenta' : '🔨 Oddaj ponudbo';
+  }
+}
+
+// Vklopi / posodobi agenta za dražbo: od zdaj naprej bo samodejno
+// (na strežniku, brez prisotnosti uporabnika) bidal namesto kupca,
+// kadar ga kdo prehiti, do nastavljene najvišje cene.
+async function submitBidAgent() {
+  if (!bidListingId) return;
+  const amount = parseFloat(document.getElementById('bid-agent-max-input').value);
+  const errEl  = document.getElementById('bid-error');
+  const btn    = document.getElementById('bid-submit-btn');
+  errEl.textContent = '';
+  if (!amount || amount <= 0) { errEl.textContent = 'Vnesite veljavno najvišjo ceno.'; return; }
+
+  btn.disabled = true;
+  btn.textContent = 'Shranjujem…';
+  try {
+    const { data, error } = await sbM.rpc('set_auction_agent', { p_listing_id: bidListingId, p_max_amount: amount });
+    if (error) throw error;
+    if (data && data.error) {
+      const msgs = {
+        not_authenticated: 'Prijaviti se morate.',
+        listing_not_found: 'Oglas ni bil najden.',
+        not_an_auction:    'Ta oglas ni dražba.',
+        auction_ended:     'Dražba je že zaključena.',
+        own_listing:       'Ne morete bidati za lasten oglas.',
+        invalid_amount:    'Vnesite veljavno najvišjo ceno.',
+        below_reserve:     `Najvišja cena mora biti vsaj $${data.reserve_price} (rezervna cena).`,
+      };
+      errEl.textContent = msgs[data.error] || `Napaka: ${data.error}`;
+    } else if (data && data.success) {
+      closeOverlay('bid-overlay');
+      await loadDbListings();
+      renderListings(getFiltered());
+    } else {
+      errEl.textContent = 'Napaka pri aktivaciji agenta.';
+    }
+  } catch (e) {
+    errEl.textContent = 'Napaka pri aktivaciji agenta.';
+  } finally {
+    btn.disabled = false;
+    btn.textContent = '🤖 Aktiviraj agenta';
   }
 }
 
