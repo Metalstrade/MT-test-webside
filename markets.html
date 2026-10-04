@@ -1000,18 +1000,56 @@
       display: flex; gap: 6px; padding: 8px 16px;
       border-top: 1px solid rgba(143,163,177,0.08);
     }
-    .listing-details-toggle {
-      display: inline-block; font-size: 11px; font-weight: 600; color: var(--gold);
-      letter-spacing: 0.04em; cursor: pointer; margin-top: 8px;
-      background: none; border: none; padding: 0; font-family: 'Inter', sans-serif;
-      transition: color 0.15s;
+    /* Listing detail page (full-page view, opened by clicking a card) */
+    .lp-container { max-width: 880px; margin: 0 auto; padding: 32px 24px 64px; }
+    .lp-back-btn {
+      background: none; border: none; color: var(--muted); font-size: 12px;
+      font-family: 'Inter', sans-serif; cursor: pointer; padding: 0; margin-bottom: 20px;
+      transition: color 0.15s; display: inline-flex; align-items: center; gap: 6px;
     }
-    .listing-details-toggle:hover { color: var(--gold-lt); }
-    .listing-details-panel {
-      display: none; padding: 14px 16px 0;
-      border-top: 1px solid rgba(201,162,39,0.1);
+    .lp-back-btn:hover { color: var(--gold-lt); }
+    .lp-gallery { display: grid; grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); gap: 8px; margin-bottom: 20px; }
+    .lp-gallery img {
+      width: 100%; height: 180px; object-fit: cover; border-radius: 4px;
+      border: 1px solid rgba(201,162,39,0.15); cursor: zoom-in; transition: opacity 0.15s;
     }
-    .listing-details-panel.open { display: block; }
+    .lp-gallery img:hover { opacity: 0.85; }
+    .lp-gallery-empty {
+      height: 180px; display: flex; align-items: center; justify-content: center;
+      font-size: 48px; color: rgba(201,162,39,0.2); background: var(--ink-2);
+      border-radius: 4px; margin-bottom: 20px; font-family: 'Cormorant Garamond', serif;
+    }
+    .lp-badges { display: flex; gap: 8px; margin-bottom: 10px; }
+    .lp-title { font-family: 'Cormorant Garamond', serif; font-size: 32px; margin: 0 0 4px; color: #E8EEF2; }
+    .lp-sub { font-size: 14px; color: var(--muted); margin-bottom: 24px; }
+    .lp-tabs { display: flex; gap: 4px; border-bottom: 1px solid rgba(143,163,177,0.12); margin-bottom: 18px; }
+    .lp-tab {
+      background: none; border: none; padding: 10px 16px; font-size: 12px; font-weight: 600;
+      letter-spacing: 0.05em; text-transform: uppercase; color: var(--muted); cursor: pointer;
+      font-family: 'Inter', sans-serif; border-bottom: 2px solid transparent; transition: color 0.15s, border-color 0.15s;
+    }
+    .lp-tab:hover { color: #E8EEF2; }
+    .lp-tab.active { color: var(--gold-lt); border-bottom-color: var(--gold); }
+    .lp-tab-panel { margin-bottom: 20px; }
+    .lp-empty-note { color: var(--muted); font-size: 13px; }
+    .lp-signin-note { color: var(--muted); font-size: 13px; }
+    .lp-signin-note a { color: var(--gold); text-decoration: underline; cursor: pointer; }
+    .cert-verify-list { display: flex; flex-direction: column; gap: 6px; }
+    .cert-verify-row {
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 10px 14px; border-radius: 3px;
+      background: rgba(201,162,39,0.04); border: 1px solid rgba(201,162,39,0.12);
+      font-size: 13px;
+    }
+    .cert-verify-label { color: #C0CDD6; }
+    .cert-no-file { font-size: 11px; color: var(--muted); font-style: italic; }
+    .btn-view-cert {
+      padding: 5px 12px; border-radius: 2px; font-size: 11px; font-weight: 600;
+      cursor: pointer; background: rgba(201,162,39,0.1);
+      border: 1px solid rgba(201,162,39,0.25); color: var(--gold-lt);
+      font-family: 'Inter', sans-serif; transition: background 0.15s;
+    }
+    .btn-view-cert:hover { background: rgba(201,162,39,0.2); }
     .listing-details-imgs {
       display: grid; grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
       gap: 6px; margin-bottom: 12px;
@@ -1737,6 +1775,14 @@
       <!-- Cards rendered by JS -->
     </div>
   </main>
+</div>
+
+<!-- ── LISTING DETAIL PAGE (full page, opened by clicking a card) ── -->
+<div id="listing-page-view" style="display:none;">
+  <div class="lp-container">
+    <button class="lp-back-btn" onclick="closeListingPage()">← Nazaj na seznam</button>
+    <div id="lp-content"><!-- rendered by JS --></div>
+  </div>
 </div>
 
 <script>
@@ -4695,6 +4741,15 @@ sbM.auth.onAuthStateChange((event, session) => {
   if (editId && currentUser) {
     openEditListing(editId);
   }
+  // Če URL kaže na posamezen oglas (?listing=ID), takoj odpri polno stran
+  // oglasa namesto seznama. setTimeout 0 ker je openListingPage definiran
+  // v poznejšem <script> bloku, ki ob tej točki (po awaitu zgoraj) morda
+  // še ni izvršen — makro-task zagotovi, da je do takrat cel dokument že
+  // razčlenjen (enak razlog kot pri setLang()/NACE funkcijah v tej datoteki).
+  const viewId = new URLSearchParams(window.location.search).get('listing');
+  if (viewId) {
+    setTimeout(() => { if (typeof openListingPage === 'function') openListingPage(viewId, true); }, 0);
+  }
 })();
 
 async function loadDbListings() {
@@ -6468,24 +6523,13 @@ renderListings = function(list) {
     }
 
     // DB listing
-    const price = cur === 'usd' ? l.priceUsd : l.priceEur;
-    const sym   = cur === 'usd' ? '$' : '€';
-    const totalPrice = listingTotalPrice(l, price);
+    const act = buildListingActions(l, cur);
+    const { price, sym, totalPrice, isOwner, isAuction, auctionEnded, bottomSection, ownerBar } = act;
     const imgHtml = l.images && l.images[0]
       ? `<img class="listing-img" src="${esc(l.images[0])}" alt="${esc(l.name)}" />`
       : `<div class="listing-material-icon" style="color:rgba(201,162,39,0.25);">${l.material || '⬡'}</div>`;
-    const isOwner = currentUser && currentUser.id === l.user_id;
-    const isAuction = l.saleType === 'auction';
-    const auctionEnded = isAuction && l.auctionEndAt && new Date(l.auctionEndAt) <= new Date();
-    const iWon = auctionEnded && currentUser && l.currentBidderId === currentUser.id;
-    const canDelete = !auctionEnded;
-    const ownerBar = isOwner ? `
-      <div class="listing-owner-bar">
-        <button class="btn-edit-listing" onclick="event.stopPropagation(); openEditListing('${l.dbId}')">✎ Uredi</button>
-        ${canDelete ? `<button class="btn-delete-listing" onclick="event.stopPropagation(); deleteListing('${l.dbId}', this.closest('.listing-card'))">Izbriši</button>` : `<span style="font-size:10px;color:var(--muted);padding:4px 8px;">Dražba zaključena — brisanje ni možno</span>`}
-      </div>` : '';
     const isFavListing = getFavListings().includes(l.dbId);
-    const favBtn = `<button class="listing-fav-btn${isFavListing ? ' active' : ''}" onclick="toggleFavListing('${l.dbId}', this)" title="Dodaj med priljubljene">
+    const favBtn = `<button class="listing-fav-btn${isFavListing ? ' active' : ''}" onclick="event.stopPropagation(); toggleFavListing('${l.dbId}', this)" title="Dodaj med priljubljene">
       <svg viewBox="0 0 24 24" fill="${isFavListing ? '#C9A227' : 'none'}" stroke="${isFavListing ? '#C9A227' : 'rgba(255,255,255,0.7)'}" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
     </button>`;
     const typeLabels = { ferrous:'Železno', nonferrous:'Neželezno', precious:'Plemenito', nonmetals:'Nekovina' };
@@ -6493,51 +6537,8 @@ renderListings = function(list) {
     const weightDisplay = l.weight ? l.weight : '';
     const shapeLabel = { bar:'Palica/Ingot', coin:'Kovanec', granule:'Granule', sheet:'List/Folija', jewelry:'Nakit', powder:'Zrno/Prah', industrial:'Industrijsko', other:'Ostalo' };
 
-    // Auction bottom bar
-    let bottomSection = '';
-    if (isAuction) {
-      if (auctionEnded) {
-        if (iWon) {
-          bottomSection = `<div class="auction-won-banner" onclick="event.stopPropagation(); showPaymentInfo('${l.dbId}', ${l.currentBid})">🏆 Zmagali ste z $${l.currentBid.toLocaleString()} — Kliknite za plačilo</div>`;
-        } else {
-          bottomSection = `<div class="auction-ended-banner">DRAŽBA ZAKLJUČENA — Zmagovalec: ${l.currentBid > 0 ? '$' + l.currentBid.toLocaleString() : 'Ni ponudb'}</div>`;
-        }
-      } else {
-        const timeStr = formatCountdown(l.auctionEndAt);
-        const urgent = l.auctionEndAt && (new Date(l.auctionEndAt) - new Date()) < 3600000;
-        const bidStr = l.currentBid > 0 ? `$${l.currentBid.toLocaleString()}` : 'Ni ponudb';
-        const canBid = currentUser && !isOwner;
-        const buyNowBtn = (canBid && l.buyNowPrice)
-          ? `<button class="btn-buy-spot" onclick="event.stopPropagation(); buyNowAuction('${l.dbId}')">Kupi takoj $${l.buyNowPrice.toLocaleString('sl-SI')}</button>`
-          : '';
-        bottomSection = `<div class="auction-bar">
-          <div class="auction-bar-left">
-            <div class="${l.currentBid > 0 ? 'auction-current-bid' : 'auction-no-bid'}">${bidStr}</div>
-            <div class="auction-timer${urgent ? ' urgent' : ''}">⏱ ${timeStr}</div>
-          </div>
-          <div style="display:flex; gap:6px; align-items:center;">
-            ${canBid ? `<button class="btn-bid" onclick="event.stopPropagation(); openBidModal('${l.dbId}')">Ponudi 🔨</button>` : !currentUser ? `<button class="btn-bid" onclick="event.stopPropagation(); openAuthModal('signin')">Prijavi se</button>` : ''}
-            ${buyNowBtn}
-          </div>
-        </div>`;
-      }
-    } else {
-      // Spot — show buy button
-      const canBuy = currentUser && !isOwner;
-      if (canBuy) {
-        const totalUsd = listingTotalPrice(l, l.priceUsd);
-        bottomSection = `<div class="auction-bar" style="background:rgba(72,199,142,0.03);">
-          <div class="auction-bar-left">
-            <div class="auction-current-bid" style="color:var(--gold-lt);">${totalPrice ? sym + totalPrice.toLocaleString('sl-SI', {minimumFractionDigits:2, maximumFractionDigits:2}) : 'Cena na poizvedbo'}</div>
-            <div class="auction-timer">${price > 0 && l.weightRaw ? `${sym}${price.toLocaleString('sl-SI')}/${esc(l.weightUnit||'kg')} · Spot nakup` : 'Spot nakup'}</div>
-          </div>
-          <button class="btn-buy-spot" onclick="event.stopPropagation(); showPaymentInfo('${l.dbId}', ${totalUsd || l.priceUsd})">Kupi zdaj</button>
-        </div>`;
-      }
-    }
-
     return `
-    <div class="listing-card">
+    <div class="listing-card" style="cursor:pointer;" onclick="openListingPage('${l.dbId}')">
       <div class="listing-card-img" style="background:linear-gradient(135deg, var(--ink-3), #1e2a30);">
         ${imgHtml}
         <div class="listing-card-img-overlay"></div>
@@ -6553,22 +6554,6 @@ renderListings = function(list) {
           ${weightDisplay ? `<span class="listing-meta-tag">${esc(weightDisplay)}</span>` : ''}
           ${isAuction && totalPrice ? `<span class="listing-meta-tag">Zač. $${esc(totalPrice.toLocaleString('sl-SI'))}</span>` : ''}
         </div>
-        <button class="listing-details-toggle" onclick="event.stopPropagation(); toggleListingDetails('${l.dbId}', this)">› Podrobnosti</button>
-      </div>
-      <div class="listing-details-panel" id="details-${l.dbId}">
-        ${l.images && l.images.length ? `<div class="listing-details-imgs">${l.images.map(src => `<img src="${esc(src)}" alt="" onclick="event.stopPropagation(); openLightbox('${esc(src)}')">`).join('')}</div>` : ''}
-        <div style="padding-bottom:12px;">
-          ${l.name ? `<div class="listing-details-row"><span class="listing-details-lbl">Naziv</span><span class="listing-details-val">${esc(l.name)}</span></div>` : ''}
-          ${l.materialLabel ? `<div class="listing-details-row"><span class="listing-details-lbl">Material</span><span class="listing-details-val">${esc(l.materialLabel)}</span></div>` : ''}
-          ${typeLabels[l.type] ? `<div class="listing-details-row"><span class="listing-details-lbl">Tip</span><span class="listing-details-val">${typeLabels[l.type]}</span></div>` : ''}
-          ${l.shape ? `<div class="listing-details-row"><span class="listing-details-lbl">Oblika</span><span class="listing-details-val">${esc(shapeLabel[l.shape]||l.shape)}</span></div>` : ''}
-          ${weightDisplay ? `<div class="listing-details-row"><span class="listing-details-lbl">Teža</span><span class="listing-details-val">${esc(weightDisplay)}</span></div>` : ''}
-          ${l.sub ? `<div class="listing-details-row"><span class="listing-details-lbl">Opis</span><span class="listing-details-val">${esc(l.sub)}</span></div>` : ''}
-          ${price > 0 ? `<div class="listing-details-row"><span class="listing-details-lbl">Cena na enoto</span><span class="listing-details-val">${sym}${price.toLocaleString('sl-SI')} / ${esc(l.weightUnit||'kg')}</span></div>` : ''}
-          ${totalPrice ? `<div class="listing-details-row"><span class="listing-details-lbl">Skupna cena</span><span class="listing-details-val" style="color:var(--gold-lt);font-weight:700;">${sym}${totalPrice.toLocaleString('sl-SI', {minimumFractionDigits:2, maximumFractionDigits:2})}</span></div>` : ''}
-          ${isAuction && l.buyNowPrice ? `<div class="listing-details-row"><span class="listing-details-lbl">Kupi takoj cena</span><span class="listing-details-val" style="color:rgba(72,199,142,0.9);font-weight:700;">$${l.buyNowPrice.toLocaleString('sl-SI')}</span></div>` : ''}
-          ${!isOwner ? `<button class="listing-contact-btn" style="width:100%;margin-top:12px;" onclick="event.stopPropagation(); openContact('${l.dbId}')">✉ Sporočilo prodajalcu</button>` : ''}
-        </div>
       </div>
       ${bottomSection}
       ${ownerBar}
@@ -6576,11 +6561,183 @@ renderListings = function(list) {
   }).join('');
 };
 
-function toggleListingDetails(dbId, btn) {
-  const panel = document.getElementById('details-' + dbId);
-  if (!panel) return;
-  const open = panel.classList.toggle('open');
-  btn.textContent = open ? '‹ Zapri' : '› Podrobnosti';
+// Zgradi akcijski del oglasa (spodnja vrstica z vodilno ponudbo/kupi
+// takoj/zmagano dražbo + vrstica lastnika) — skupno za kartico v
+// mreži IN polno stran oglasa, da se logika ne podvaja.
+function buildListingActions(l, cur) {
+  const price = cur === 'usd' ? l.priceUsd : l.priceEur;
+  const sym   = cur === 'usd' ? '$' : '€';
+  const totalPrice = listingTotalPrice(l, price);
+  const isOwner = currentUser && currentUser.id === l.user_id;
+  const isAuction = l.saleType === 'auction';
+  const auctionEnded = isAuction && l.auctionEndAt && new Date(l.auctionEndAt) <= new Date();
+  const iWon = auctionEnded && currentUser && l.currentBidderId === currentUser.id;
+  const canDelete = !auctionEnded;
+  const ownerBar = isOwner ? `
+    <div class="listing-owner-bar">
+      <button class="btn-edit-listing" onclick="event.stopPropagation(); openEditListing('${l.dbId}')">✎ Uredi</button>
+      ${canDelete ? `<button class="btn-delete-listing" onclick="event.stopPropagation(); deleteListing('${l.dbId}', this.closest('.listing-card'))">Izbriši</button>` : `<span style="font-size:10px;color:var(--muted);padding:4px 8px;">Dražba zaključena — brisanje ni možno</span>`}
+    </div>` : '';
+
+  let bottomSection = '';
+  if (isAuction) {
+    if (auctionEnded) {
+      if (iWon) {
+        bottomSection = `<div class="auction-won-banner" onclick="event.stopPropagation(); showPaymentInfo('${l.dbId}', ${l.currentBid})">🏆 Zmagali ste z $${l.currentBid.toLocaleString()} — Kliknite za plačilo</div>`;
+      } else {
+        bottomSection = `<div class="auction-ended-banner">DRAŽBA ZAKLJUČENA — Zmagovalec: ${l.currentBid > 0 ? '$' + l.currentBid.toLocaleString() : 'Ni ponudb'}</div>`;
+      }
+    } else {
+      const timeStr = formatCountdown(l.auctionEndAt);
+      const urgent = l.auctionEndAt && (new Date(l.auctionEndAt) - new Date()) < 3600000;
+      const bidStr = l.currentBid > 0 ? `$${l.currentBid.toLocaleString()}` : 'Ni ponudb';
+      const canBid = currentUser && !isOwner;
+      const buyNowBtn = (canBid && l.buyNowPrice)
+        ? `<button class="btn-buy-spot" onclick="event.stopPropagation(); buyNowAuction('${l.dbId}')">Kupi takoj $${l.buyNowPrice.toLocaleString('sl-SI')}</button>`
+        : '';
+      bottomSection = `<div class="auction-bar">
+        <div class="auction-bar-left">
+          <div class="${l.currentBid > 0 ? 'auction-current-bid' : 'auction-no-bid'}">${bidStr}</div>
+          <div class="auction-timer${urgent ? ' urgent' : ''}">⏱ ${timeStr}</div>
+        </div>
+        <div style="display:flex; gap:6px; align-items:center;">
+          ${canBid ? `<button class="btn-bid" onclick="event.stopPropagation(); openBidModal('${l.dbId}')">Ponudi 🔨</button>` : !currentUser ? `<button class="btn-bid" onclick="event.stopPropagation(); openAuthModal('signin')">Prijavi se</button>` : ''}
+          ${buyNowBtn}
+        </div>
+      </div>`;
+    }
+  } else {
+    const canBuy = currentUser && !isOwner;
+    if (canBuy) {
+      const totalUsd = listingTotalPrice(l, l.priceUsd);
+      bottomSection = `<div class="auction-bar" style="background:rgba(72,199,142,0.03);">
+        <div class="auction-bar-left">
+          <div class="auction-current-bid" style="color:var(--gold-lt);">${totalPrice ? sym + totalPrice.toLocaleString('sl-SI', {minimumFractionDigits:2, maximumFractionDigits:2}) : 'Cena na poizvedbo'}</div>
+          <div class="auction-timer">${price > 0 && l.weightRaw ? `${sym}${price.toLocaleString('sl-SI')}/${esc(l.weightUnit||'kg')} · Spot nakup` : 'Spot nakup'}</div>
+        </div>
+        <button class="btn-buy-spot" onclick="event.stopPropagation(); showPaymentInfo('${l.dbId}', ${totalUsd || l.priceUsd})">Kupi zdaj</button>
+      </div>`;
+    }
+  }
+
+  return { price, sym, totalPrice, isOwner, isAuction, auctionEnded, iWon, bottomSection, ownerBar };
+}
+
+// ── LISTING DETAIL PAGE (full page, opened by clicking a card) ──
+function openListingPage(dbId, skipPush) {
+  if (!skipPush) history.pushState({ listing: dbId }, '', '?listing=' + dbId);
+  document.getElementById('section-market-layout').style.display = 'none';
+  document.getElementById('listing-page-view').style.display = 'block';
+  window.scrollTo(0, 0);
+  renderListingPage(dbId);
+}
+
+function closeListingPage(skipPush) {
+  if (!skipPush) history.pushState({}, '', 'markets.html');
+  document.getElementById('listing-page-view').style.display = 'none';
+  document.getElementById('section-market-layout').style.display = 'grid';
+}
+
+window.addEventListener('popstate', () => {
+  const id = new URLSearchParams(location.search).get('listing');
+  if (id) openListingPage(id, true);
+  else closeListingPage(true);
+});
+
+function renderListingPage(dbId) {
+  const content = document.getElementById('lp-content');
+  const l = dbListings.find(x => x.dbId === dbId);
+  if (!l) {
+    content.innerHTML = `<p class="lp-empty-note">Oglas ni bil najden — morda je bil odstranjen ali prodan.</p>`;
+    return;
+  }
+
+  const cur = state.currency;
+  const act = buildListingActions(l, cur);
+  const { price, sym, totalPrice, isOwner, isAuction, auctionEnded } = act;
+  const typeLabels = { ferrous:'Železno', nonferrous:'Neželezno', precious:'Plemenito', nonmetals:'Nekovina' };
+  const badgeClasses = { ferrous:'badge-ferrous', nonferrous:'badge-nonferrous', precious:'badge-nonferrous', nonmetals:'badge-ferrous' };
+  const shapeLabel = { bar:'Palica/Ingot', coin:'Kovanec', granule:'Granule', sheet:'List/Folija', jewelry:'Nakit', powder:'Zrno/Prah', industrial:'Industrijsko', other:'Ostalo' };
+  const weightDisplay = l.weight ? l.weight : '';
+
+  const galleryHtml = (l.images && l.images.length)
+    ? `<div class="lp-gallery">${l.images.map(src => `<img src="${esc(src)}" alt="" onclick="openLightbox('${esc(src)}')">`).join('')}</div>`
+    : `<div class="lp-gallery-empty">${l.material || '⬡'}</div>`;
+
+  const detailsRows = `
+    ${l.materialLabel ? `<div class="listing-details-row"><span class="listing-details-lbl">Material</span><span class="listing-details-val">${esc(l.materialLabel)}</span></div>` : ''}
+    ${typeLabels[l.type] ? `<div class="listing-details-row"><span class="listing-details-lbl">Tip</span><span class="listing-details-val">${typeLabels[l.type]}</span></div>` : ''}
+    ${l.shape ? `<div class="listing-details-row"><span class="listing-details-lbl">Oblika</span><span class="listing-details-val">${esc(shapeLabel[l.shape]||l.shape)}</span></div>` : ''}
+    ${weightDisplay ? `<div class="listing-details-row"><span class="listing-details-lbl">Teža</span><span class="listing-details-val">${esc(weightDisplay)}</span></div>` : ''}
+    ${l.sub ? `<div class="listing-details-row"><span class="listing-details-lbl">Opis</span><span class="listing-details-val">${esc(l.sub)}</span></div>` : ''}
+    ${price > 0 ? `<div class="listing-details-row"><span class="listing-details-lbl">Cena na enoto</span><span class="listing-details-val">${sym}${price.toLocaleString('sl-SI')} / ${esc(l.weightUnit||'kg')}</span></div>` : ''}
+    ${totalPrice ? `<div class="listing-details-row"><span class="listing-details-lbl">Skupna cena</span><span class="listing-details-val" style="color:var(--gold-lt);font-weight:700;">${sym}${totalPrice.toLocaleString('sl-SI', {minimumFractionDigits:2, maximumFractionDigits:2})}</span></div>` : ''}
+    ${isAuction && l.buyNowPrice ? `<div class="listing-details-row"><span class="listing-details-lbl">Kupi takoj cena</span><span class="listing-details-val" style="color:rgba(72,199,142,0.9);font-weight:700;">$${l.buyNowPrice.toLocaleString('sl-SI')}</span></div>` : ''}
+  `;
+
+  content.innerHTML = `
+    ${galleryHtml}
+    <div class="lp-badges">
+      <span class="listing-badge ${badgeClasses[l.type]||'badge-nonferrous'}">${typeLabels[l.type]||l.type}</span>
+      <span class="listing-badge ${isAuction ? (auctionEnded ? 'badge-ended' : 'badge-auction') : 'badge-spot'}">${isAuction ? (auctionEnded ? 'ZAKLJUČENO' : 'DRAŽBA') : 'SPOT'}</span>
+    </div>
+    <h1 class="lp-title">${esc(l.name)}</h1>
+    <div class="lp-sub">${esc(l.materialLabel)}${l.sub ? ' · ' + esc(l.sub) : ''}</div>
+
+    <div class="lp-tabs">
+      <button class="lp-tab active" id="lp-tab-details" onclick="switchListingTab('details')">Podrobnosti</button>
+      <button class="lp-tab" id="lp-tab-certs" onclick="switchListingTab('certs')">Certifikati</button>
+    </div>
+    <div class="lp-tab-panel" id="lp-panel-details">${detailsRows}</div>
+    <div class="lp-tab-panel" id="lp-panel-certs" style="display:none;">${renderCertsTab(l)}</div>
+
+    ${act.bottomSection}
+    ${act.ownerBar}
+    ${!isOwner ? `<button class="listing-contact-btn" style="width:100%;margin-top:16px;" onclick="openContact('${l.dbId}')">✉ Sporočilo prodajalcu</button>` : ''}
+  `;
+}
+
+function switchListingTab(tab) {
+  document.getElementById('lp-panel-details').style.display = tab === 'details' ? '' : 'none';
+  document.getElementById('lp-panel-certs').style.display = tab === 'certs' ? '' : 'none';
+  document.getElementById('lp-tab-details').classList.toggle('active', tab === 'details');
+  document.getElementById('lp-tab-certs').classList.toggle('active', tab === 'certs');
+}
+
+// Certifikati prodajalca — prej vidni samo adminu, zdaj na strani
+// oglasa za vsakega prijavljenega uporabnika (ista storage politika
+// 'listing-certs' to že dovoljuje vsakemu prijavljenemu).
+function renderCertsTab(l) {
+  const certLabelMap = { auth:'Certifikat pristnosti', serial:'Serijska številka', mint:'Žig livarne', assay:'Assay certifikat', quality:'Certifikat kakovosti', weight:'Certifikat teže', analysis:'Analiza materiala' };
+  const checked = ['auth','serial','mint','assay','quality','weight','analysis'].filter(k => l.cert && l.cert[k]);
+  if (!checked.length) {
+    return `<p class="lp-empty-note">Prodajalec za ta oglas ni označil nobenih certifikatov.</p>`;
+  }
+  if (!currentUser) {
+    return `<p class="lp-signin-note">Za ogled certifikatov se morate <a onclick="openAuthModal('signin')">prijaviti</a>.</p>`;
+  }
+  return `<div class="cert-verify-list">${checked.map(k => {
+    const fp = (l.certFiles || {})[k];
+    return `<div class="cert-verify-row">
+      <span class="cert-verify-label">${certLabelMap[k]}</span>
+      ${fp ? `<button class="btn-view-cert" onclick="viewListingCert('${l.dbId}','${k}')">👁 Poglej</button>` : `<span class="cert-no-file">ni datoteke</span>`}
+    </div>`;
+  }).join('')}</div>`;
+}
+
+async function viewListingCert(dbId, key) {
+  const l = dbListings.find(x => x.dbId === dbId);
+  const fp = l && l.certFiles && l.certFiles[key];
+  if (!fp) return;
+  const win = window.open('', '_blank');
+  const { data, error } = await sbM.storage.from('listing-certs').createSignedUrl(fp, 3600);
+  if (error || !data) {
+    if (win) win.close();
+    alert('Napaka pri odpiranju certifikata: ' + (error?.message || 'neznana napaka'));
+    return;
+  }
+  if (win) win.location.href = data.signedUrl;
+  else window.open(data.signedUrl, '_blank');
 }
 
 function openLightbox(src) {
