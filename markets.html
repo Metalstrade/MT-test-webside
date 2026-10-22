@@ -2823,6 +2823,107 @@ const NONMETALS_TREE_DATA = [
   ]},
 ];
 
+// ── OBLIKA / PRODUKT — odvisno od KONKRETNEGA MATERIALA (ne le kategorije) ──
+// Sama kategorija (železne/neželezne/plemenite/nekovine) ni dovolj
+// natančna: "Nekovine" pri nas pomeni papir/karton/tekstil/plastiko/
+// gumo — te med sabo nimajo nič skupnih oblik. Tudi znotraj kovin ima
+// marsikateri material svojo prevladujočo, v praksi pogosto trgovano
+// obliko (svinec → akumulatorji, aluminij → pločevinke/platišča,
+// baker → kabelski odpadek, Pt/Pd → avtokatalizatorji, srebro →
+// fotografski/rentgenski odpadek ...). Seznam je zato po matKey
+// (ujema se z node.matKey v *_TREE_DATA); če za material ni seznama,
+// se uporabi splošen seznam glede na kategorijo kot varovalo.
+const SHAPE_OPTIONS_BY_MATERIAL = {
+  // ── Plemenite kovine ──
+  Au: [['bar','Palica / Ingot'], ['coin','Kovanec'], ['jewelry','Nakit'], ['powder','Zrno / Prah'], ['foil','Folija / Lističi'], ['dental','Zobozdravstveni odpadek'], ['escrap','Elektronski odpadek'], ['other','Ostalo']],
+  Ag: [['bar','Palica / Ingot'], ['coin','Kovanec'], ['jewelry','Nakit / Srebrnina'], ['powder','Zrno / Prah'], ['photo','Fotografski / rentgenski odpadek'], ['escrap','Elektronski odpadek'], ['other','Ostalo']],
+  Pt: [['bar','Palica / Ingot'], ['jewelry','Nakit'], ['powder','Zrno / Prah'], ['catalyst','Avtokatalizator'], ['lab','Laboratorijska oprema'], ['other','Ostalo']],
+  Pd: [['bar','Palica / Ingot'], ['powder','Zrno / Prah'], ['catalyst','Avtokatalizator'], ['escrap','Elektronski odpadek'], ['other','Ostalo']],
+  Rh: [['powder','Prah'], ['catalyst','Avtokatalizator'], ['other','Ostalo']],
+  Ru: [['powder','Prah'], ['escrap','Elektronski odpadek'], ['other','Ostalo']],
+  Os: [['powder','Prah'], ['other','Ostalo']],
+  // ── Neželezne kovine ──
+  Cu: [['bar','Palica / Ingot'], ['sheet','Pločevina'], ['profile','Profil'], ['pipe','Cev'], ['wire','Žica'], ['cable','Kabelski odpadek'], ['coil','Zvitek (kolut)'], ['granule','Granule / Zrno'], ['scrap','Odpadek / Ostružki'], ['other','Ostalo']],
+  Al: [['bar','Palica / Ingot'], ['sheet','Pločevina'], ['profile','Profil'], ['wire','Žica'], ['foil','Folija'], ['cans','Pločevinke'], ['rims','Platišča / Litine koles'], ['scrap','Odpadek / Ostružki'], ['other','Ostalo']],
+  Ms: [['bar','Palica'], ['sheet','Pločevina'], ['profile','Profil'], ['pipe','Cev'], ['scrap','Odpadek / Ostružki'], ['other','Ostalo']],
+  Pb: [['bar','Palica / Ingot'], ['sheet','Pločevina'], ['battery','Akumulator / Baterija'], ['scrap','Odpadek'], ['other','Ostalo']],
+  Zn: [['bar','Palica / Ingot'], ['sheet','Pločevina'], ['granule','Granule'], ['scrap','Odpadek'], ['other','Ostalo']],
+  Sn: [['bar','Palica / Ingot'], ['wire','Žica (spajka)'], ['scrap','Odpadek'], ['other','Ostalo']],
+  Ti: [['bar','Palica'], ['sheet','Pločevina'], ['profile','Profil'], ['scrap','Odpadek'], ['other','Ostalo']],
+  Ni: [['bar','Palica / Ingot'], ['sheet','Pločevina'], ['granule','Granule'], ['scrap','Odpadek'], ['other','Ostalo']],
+  W:  [['bar','Palica'], ['powder','Prah'], ['carbide','Karbidni odpadek'], ['other','Ostalo']],
+  V:  [['powder','Prah'], ['scrap','Odpadek'], ['other','Ostalo']],
+  Mo: [['bar','Palica'], ['powder','Prah'], ['scrap','Odpadek'], ['other','Ostalo']],
+  // ── Železne kovine ──
+  Fe: [['sheet','Pločevina / Plošča'], ['profile','Profil'], ['bar','Palica / Okroglica'], ['pipe','Cev'], ['wire','Žica'], ['ingot','Blok / Ingot'], ['scrap','Odpadek / Ostružki'], ['other','Ostalo']],
+  CastIron: [['ingot','Blok / Ulitek'], ['scrap','Odpadek / Ostružki'], ['other','Ostalo']],
+  Steel: [['sheet','Pločevina / Plošča'], ['cut','Rezano na mere'], ['profile','Profil (I/H/U/L)'], ['rebar','Armaturna palica'], ['pipe','Cev'], ['wire','Žica'], ['coil','Zvitek (kolut)'], ['scrap','Odpadek / Ostružki'], ['other','Ostalo']],
+  Inox: [['sheet','Pločevina / Plošča'], ['profile','Profil'], ['bar','Palica'], ['pipe','Cev'], ['wire','Žica'], ['scrap','Odpadek / Ostružki'], ['other','Ostalo']],
+  // ── Nekovine (papir/karton/tekstil/plastika/guma) ──
+  Papir:    [['bale','Bala'], ['roll','Rola'], ['loose','Razsuto / nesortirano'], ['shredded','Sekano'], ['other','Ostalo']],
+  Karton:   [['bale','Bala'], ['flat','Zloženo (ploščato)'], ['roll','Rola'], ['other','Ostalo']],
+  Tekstil:  [['bale','Bala'], ['loose','Razsuto'], ['rags','Krpe (rezano)'], ['other','Ostalo']],
+  Plastika: [['bale','Bala'], ['granule','Granulat / Regranulat'], ['film','Folija'], ['flakes','Mleto (flakes)'], ['containers','Kosi / Posode'], ['other','Ostalo']],
+  Guma:     [['tires','Cele gume'], ['crumb','Zdrobljeno (granulat)'], ['bale','Bala'], ['other','Ostalo']],
+};
+// Varovalo, če material (matKey) ni znan — splošen seznam po kategoriji.
+const SHAPE_OPTIONS_BY_CATEGORY = {
+  ferrous:    SHAPE_OPTIONS_BY_MATERIAL.Steel,
+  nonferrous: SHAPE_OPTIONS_BY_MATERIAL.Cu,
+  precious:   SHAPE_OPTIONS_BY_MATERIAL.Au,
+  nonmetals:  SHAPE_OPTIONS_BY_MATERIAL.Plastika,
+};
+// Stare oblike, ki so obstajale pred uvedbo materialno-odvisnih
+// seznamov (za oglase, objavljene pred to spremembo).
+const LEGACY_SHAPE_LABELS = { bar:'Palica/Ingot', coin:'Kovanec', granule:'Granule', sheet:'List/Folija', jewelry:'Nakit', powder:'Zrno/Prah', industrial:'Industrijsko', other:'Ostalo' };
+
+function getShapeOptionsFor(category, matKey) {
+  return SHAPE_OPTIONS_BY_MATERIAL[matKey] || SHAPE_OPTIONS_BY_CATEGORY[category] || [];
+}
+
+function populateWizShapeSelect(category, matKey, ensureValue) {
+  const sel = document.getElementById('wiz-shape');
+  if (!sel) return;
+  const prevValue = ensureValue !== undefined ? ensureValue : sel.value;
+  const opts = getShapeOptionsFor(category, matKey);
+  let html = '<option value="">— Izberite obliko —</option>';
+  opts.forEach(([v, label]) => { html += `<option value="${v}">${label}</option>`; });
+  if (prevValue && !opts.some(([v]) => v === prevValue)) {
+    // Stara ali drugo-materialna vrednost, ki je trenutni seznam nima —
+    // dodaj jo kot dodatno opcijo, da se pri urejanju ne izgubi.
+    html += `<option value="${prevValue}">${shapeLabelFor(category, matKey, prevValue)}</option>`;
+  }
+  sel.innerHTML = html;
+  if (prevValue) sel.value = prevValue;
+  toggleWizShapeOther();
+}
+
+// Če na seznamu manjka prava oblika, lahko uporabnik izbere "Ostalo"
+// in jo vpiše sam — ta prosti vnos postane dejanska shranjena vrednost
+// (ne ostane 'other'), zato ves obstoječi prikaz (shapeLabelFor) to
+// brez dodatnih sprememb pravilno pokaže kot navaden besedilni opis.
+function toggleWizShapeOther() {
+  const sel = document.getElementById('wiz-shape');
+  const other = document.getElementById('wiz-shape-other');
+  if (!sel || !other) return;
+  other.style.display = sel.value === 'other' ? '' : 'none';
+}
+
+// Najde prikazno oznako za shape vrednost — najprej znotraj LASTNEGA
+// materiala oglasa, nato kategorije, nato kot varovalo po vseh
+// materialih, nazadnje po starih (pred-materialnih) oblikah.
+function shapeLabelFor(type, matKey, shapeValue) {
+  if (!shapeValue) return '';
+  const ownList = getShapeOptionsFor(type, matKey);
+  const own = ownList.find(([v]) => v === shapeValue);
+  if (own) return own[1];
+  for (const key in SHAPE_OPTIONS_BY_MATERIAL) {
+    const found = SHAPE_OPTIONS_BY_MATERIAL[key].find(([v]) => v === shapeValue);
+    if (found) return found[1];
+  }
+  return LEGACY_SHAPE_LABELS[shapeValue] || shapeValue;
+}
+
 // ── LABEL TRANSLATION MAP ──
 const LABEL_EN = {
   // ── Metal top-level labels ──
@@ -4322,17 +4423,10 @@ updateFilters();
       <div id="wiz-total-price-hint" style="font-size:12px;color:var(--gold-lt);margin:-8px 0 8px;min-height:16px;"></div>
       <div class="wiz-field">
         <label>Oblika / produkt</label>
-        <select class="wiz-input wiz-unit-select" id="wiz-shape" style="width:100%;">
+        <select class="wiz-input wiz-unit-select" id="wiz-shape" style="width:100%;" onchange="toggleWizShapeOther()">
           <option value="">— Izberite obliko —</option>
-          <option value="bar">Palica / Ingot</option>
-          <option value="coin">Kovanec</option>
-          <option value="granule">Granule</option>
-          <option value="sheet">List / Folija</option>
-          <option value="jewelry">Nakit</option>
-          <option value="powder">Zrno / Prah</option>
-          <option value="industrial">Industrijsko</option>
-          <option value="other">Ostalo</option>
         </select>
+        <input class="wiz-input" type="text" id="wiz-shape-other" placeholder="Vnesite obliko izdelka ..." style="display:none; margin-top:8px;" />
       </div>
       <div class="wiz-field">
         <label>Opis (neobvezno)</label>
@@ -6050,7 +6144,9 @@ function wizNext() {
     wiz.weight = document.getElementById('wiz-weight').value.trim();
     wiz.weightUnit = document.getElementById('wiz-weight-unit').value;
     wiz.priceUsd = priceResult.pricePerWeightUnit;
-    wiz.shape = document.getElementById('wiz-shape').value;
+    const shapeSel = document.getElementById('wiz-shape').value;
+    const shapeOtherText = document.getElementById('wiz-shape-other').value.trim();
+    wiz.shape = (shapeSel === 'other' && shapeOtherText) ? shapeOtherText : shapeSel;
     wiz.description = document.getElementById('wiz-description').value.trim();
     renderWizStep(4);
   } else if (wiz.step === 4) {
@@ -6069,7 +6165,10 @@ function prefillDetails() {
   document.getElementById('wiz-weight').value = '';
   document.getElementById('wiz-price-total').value = '';
   document.getElementById('wiz-price-perunit').value = '';
+  populateWizShapeSelect(wiz.category, wiz.treeNode?.matKey);
   document.getElementById('wiz-shape').value = '';
+  document.getElementById('wiz-shape-other').value = '';
+  toggleWizShapeOther();
   document.getElementById('wiz-description').value = '';
   setPriceMode('total');
 }
@@ -6597,7 +6696,7 @@ function prefillDetailsEdit() {
   setPriceMode('perunit');
   document.getElementById('wiz-price-perunit').value = wiz.priceUsd;
   document.getElementById('wiz-price-unit').value = wiz.weightUnit;
-  document.getElementById('wiz-shape').value = wiz.shape;
+  populateWizShapeSelect(wiz.category, wiz.treeNode?.matKey, wiz.shape);
   document.getElementById('wiz-description').value = wiz.description;
   updateWizTotalPrice();
   document.getElementById('wiz-cert-auth').checked     = wiz.cert?.auth     || false;
@@ -6757,7 +6856,6 @@ renderListings = function(list) {
     const typeLabels = { ferrous:'Železno', nonferrous:'Neželezno', precious:'Plemenito', nonmetals:'Nekovina' };
     const badgeClasses = { ferrous:'badge-ferrous', nonferrous:'badge-nonferrous', precious:'badge-nonferrous', nonmetals:'badge-ferrous' };
     const weightDisplay = l.weight ? l.weight : '';
-    const shapeLabel = { bar:'Palica/Ingot', coin:'Kovanec', granule:'Granule', sheet:'List/Folija', jewelry:'Nakit', powder:'Zrno/Prah', industrial:'Industrijsko', other:'Ostalo' };
 
     return `
     <div class="listing-card" style="cursor:pointer;" onclick="openListingPage('${l.dbId}')">
@@ -6772,7 +6870,7 @@ renderListings = function(list) {
         <div class="listing-card-name">${esc(l.name)}</div>
         <div class="listing-card-sub">${esc(l.materialLabel)}${l.sub ? ' · ' + esc(l.sub) : ''}</div>
         <div class="listing-card-meta">
-          ${l.shape ? `<span class="listing-meta-tag">${esc(shapeLabel[l.shape]||l.shape)}</span>` : ''}
+          ${l.shape ? `<span class="listing-meta-tag">${esc(shapeLabelFor(l.type, l.material, l.shape))}</span>` : ''}
           ${weightDisplay ? `<span class="listing-meta-tag">${esc(weightDisplay)}</span>` : ''}
           ${isAuction && totalPrice ? `<span class="listing-meta-tag">Zač. $${esc(totalPrice.toLocaleString('sl-SI'))}</span>` : ''}
         </div>
@@ -6881,7 +6979,6 @@ function renderListingPage(dbId) {
   const { price, sym, totalPrice, isOwner, isAuction, auctionEnded } = act;
   const typeLabels = { ferrous:'Železno', nonferrous:'Neželezno', precious:'Plemenito', nonmetals:'Nekovina' };
   const badgeClasses = { ferrous:'badge-ferrous', nonferrous:'badge-nonferrous', precious:'badge-nonferrous', nonmetals:'badge-ferrous' };
-  const shapeLabel = { bar:'Palica/Ingot', coin:'Kovanec', granule:'Granule', sheet:'List/Folija', jewelry:'Nakit', powder:'Zrno/Prah', industrial:'Industrijsko', other:'Ostalo' };
   const weightDisplay = l.weight ? l.weight : '';
 
   const galleryHtml = (l.images && l.images.length)
@@ -6891,7 +6988,7 @@ function renderListingPage(dbId) {
   const detailsRows = `
     ${l.materialLabel ? `<div class="listing-details-row"><span class="listing-details-lbl">Material</span><span class="listing-details-val">${esc(l.materialLabel)}</span></div>` : ''}
     ${typeLabels[l.type] ? `<div class="listing-details-row"><span class="listing-details-lbl">Tip</span><span class="listing-details-val">${typeLabels[l.type]}</span></div>` : ''}
-    ${l.shape ? `<div class="listing-details-row"><span class="listing-details-lbl">Oblika</span><span class="listing-details-val">${esc(shapeLabel[l.shape]||l.shape)}</span></div>` : ''}
+    ${l.shape ? `<div class="listing-details-row"><span class="listing-details-lbl">Oblika</span><span class="listing-details-val">${esc(shapeLabelFor(l.type, l.material, l.shape))}</span></div>` : ''}
     ${weightDisplay ? `<div class="listing-details-row"><span class="listing-details-lbl">Teža</span><span class="listing-details-val">${esc(weightDisplay)}</span></div>` : ''}
     ${l.sub ? `<div class="listing-details-row"><span class="listing-details-lbl">Opis</span><span class="listing-details-val">${esc(l.sub)}</span></div>` : ''}
     ${price > 0 ? `<div class="listing-details-row"><span class="listing-details-lbl">Cena na enoto</span><span class="listing-details-val">${sym}${price.toLocaleString('sl-SI')} / ${esc(l.weightUnit||'kg')}</span></div>` : ''}
