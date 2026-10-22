@@ -893,11 +893,49 @@
     textarea { resize: vertical; min-height: 120px; }
 
 
-    /* ── DASHBOARD NAV (4 buttons; each opens its own full page) ── */
+    /* ── PERSONALIZED DASHBOARD: Moji Favoriti (above the 4 nav buttons,
+       shown whenever the user isn't inside one of the 4 dash pages) ── */
     /* 130px clears the fixed nav (72px) + fixed ticker bar (34px) below
        it, now that the hero (which used to provide that clearance via
        its own min-height:100vh centering) is hidden for logged-in users. */
-    #dash-nav-section { display: none; padding: 130px 0 48px; }
+    #dash-favs-section { display: none; padding: 130px 0 32px; }
+    .dash-greeting {
+      font-size: 11px; letter-spacing: 0.1em; text-transform: uppercase;
+      color: var(--gold); font-weight: 500; margin-bottom: 8px;
+      display: flex; align-items: center; gap: 8px;
+    }
+    .dash-greeting::before { content: ''; width: 16px; height: 1px; background: var(--gold); }
+    .dash-title { font-size: clamp(22px, 3vw, 36px); color: #E8EEF2; margin: 0 0 16px; font-family: 'Cormorant Garamond', serif; font-weight: 600; letter-spacing: -0.02em; }
+    .dash-favs-grid {
+      display: grid; grid-template-columns: repeat(auto-fill, minmax(110px, 1fr));
+      gap: 10px; margin-bottom: 16px;
+    }
+    .dash-fav-tile {
+      background: rgba(20,28,36,0.8);
+      border: 1px solid rgba(143,163,177,0.12);
+      border-radius: 6px; padding: 12px 10px;
+      transition: border-color 0.2s;
+      cursor: default;
+    }
+    .dash-fav-tile:hover { border-color: rgba(201,162,39,0.3); }
+    .dash-fav-lbl { font-size: 9px; font-weight: 700; letter-spacing: 0.1em; color: var(--muted); text-transform: uppercase; margin-bottom: 4px; }
+    .dash-fav-price { font-size: 15px; font-weight: 600; color: #E8EEF2; line-height: 1.2; }
+    .dash-fav-pct { font-size: 10px; font-weight: 700; margin-top: 3px; }
+    .dash-fav-pct.up { color: #48c78e; } .dash-fav-pct.down { color: #f0645a; } .dash-fav-pct.flat { color: var(--muted); }
+    .dash-empty-favs {
+      padding: 14px 16px; border: 1px dashed rgba(201,162,39,0.2);
+      border-radius: 6px; font-size: 13px; color: var(--muted); margin-bottom: 16px;
+    }
+    .dash-link {
+      display: inline-flex; align-items: center; gap: 6px;
+      font-size: 11px; letter-spacing: 0.06em; text-transform: uppercase; font-weight: 600;
+      color: var(--gold); text-decoration: none;
+      transition: color 0.15s;
+    }
+    .dash-link:hover { color: var(--gold-lt); }
+
+    /* ── DASHBOARD NAV (4 buttons; each opens its own full page) ── */
+    #dash-nav-section { display: none; padding: 0 0 48px; }
     .dash-nav-grid {
       display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
       gap: 16px; margin-top: 8px;
@@ -1364,6 +1402,20 @@
           </div>
         </div>
       </div>
+    </div>
+  </section>
+
+  <!-- ── PERSONALIZED DASHBOARD: Moji Favoriti (visible when logged in,
+       hidden again as soon as one of the 4 dash pages is open) ── -->
+  <section id="dash-favs-section">
+    <div class="section-inner">
+      <div class="dash-greeting">Moj Dashboard</div>
+      <div class="dash-title">Moji Favoriti</div>
+      <div class="dash-favs-grid" id="dash-favs-grid"></div>
+      <a href="financial-markets.html" class="dash-link">
+        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
+        Uredi favourite →
+      </a>
     </div>
   </section>
 
@@ -3911,12 +3963,15 @@ return '$' + price.toLocaleString('en-US', {maximumFractionDigits:2});
     // marketinški hero (naslov, CTA, logo) se za njega ne prikaže več.
     document.querySelector('.hero').style.display = 'none';
     const key = new URLSearchParams(window.location.search).get('dash');
-    if (key && DASH_PAGES[key]) openDashPage(key, true);
-    else document.getElementById('dash-nav-section').style.display = 'block';
+    if (key && DASH_PAGES[key]) { openDashPage(key, true); return; }
+    document.getElementById('dash-favs-section').style.display = 'block';
+    document.getElementById('dash-nav-section').style.display = 'block';
+    loadDashFavs(user);
   }
   function hidePersonalDashboard() {
     _dashUser = null;
     document.querySelector('.hero').style.removeProperty('display');
+    document.getElementById('dash-favs-section').style.display = 'none';
     document.getElementById('dash-nav-section').style.display = 'none';
     document.getElementById('dash-page-back-section').style.display = 'none';
     Object.values(DASH_PAGES).forEach(p => { document.getElementById(p.section).style.display = 'none'; });
@@ -3925,6 +3980,7 @@ return '$' + price.toLocaleString('en-US', {maximumFractionDigits:2});
   function openDashPage(key, skipPush) {
     if (!DASH_PAGES[key] || !_dashUser) return;
     if (!skipPush) history.pushState({ dash: key }, '', '?dash=' + key);
+    document.getElementById('dash-favs-section').style.display = 'none';
     document.getElementById('dash-nav-section').style.display = 'none';
     Object.values(DASH_PAGES).forEach(p => { document.getElementById(p.section).style.display = 'none'; });
     document.getElementById('dash-page-back-section').style.display = 'block';
@@ -3936,7 +3992,11 @@ return '$' + price.toLocaleString('en-US', {maximumFractionDigits:2});
     if (!skipPush) history.pushState({}, '', window.location.pathname);
     document.getElementById('dash-page-back-section').style.display = 'none';
     Object.values(DASH_PAGES).forEach(p => { document.getElementById(p.section).style.display = 'none'; });
-    if (_dashUser) document.getElementById('dash-nav-section').style.display = 'block';
+    if (_dashUser) {
+      document.getElementById('dash-favs-section').style.display = 'block';
+      document.getElementById('dash-nav-section').style.display = 'block';
+      loadDashFavs(_dashUser);
+    }
   }
   window.addEventListener('popstate', () => {
     if (!_dashUser) return;
@@ -3945,6 +4005,53 @@ return '$' + price.toLocaleString('en-US', {maximumFractionDigits:2});
     else closeDashPage(true);
   });
 
+
+  async function loadDashFavs(user) {
+    let favs = [];
+    try {
+      const { data } = await sb.from('user_favorites').select('symbols').eq('user_id', user.id).single();
+      favs = data?.symbols || [];
+    } catch {};
+    const grid = document.getElementById('dash-favs-grid');
+
+    if (!favs.length) {
+      // Zgradi prazno stanje na novo vsakič (namesto ponovne uporabe
+      // istega DOM vozlišča) — loadDashFavs se zdaj lahko pokliče
+      // večkrat v isti seji (vsakič, ko se uporabnik vrne na nadzorno
+      // ploščo), spodnji innerHTML zamenjevi pa bi sicer uničile
+      // predhodno predpomnjeno vozlišče in ob naslednjem klicu podrle.
+      grid.innerHTML = `<div class="dash-empty-favs">Ni izbranih favoritov. Dodajte jih na strani <a href="financial-markets.html" style="color:var(--gold);">Finančni Trgi</a>.</div>`;
+      return;
+    }
+
+    // Show skeleton tiles while loading
+    grid.innerHTML = favs.map(lbl => `
+      <div class="dash-fav-tile">
+        <div class="dash-fav-lbl">${lbl}</div>
+        <div class="dash-fav-price" id="dfp-${lbl.replace(/[^a-zA-Z0-9]/g,'_')}">—</div>
+        <div class="dash-fav-pct flat" id="dfpct-${lbl.replace(/[^a-zA-Z0-9]/g,'_')}">—</div>
+      </div>`).join('');
+
+    // Fetch live prices
+    try {
+      const res = await fetch('https://xurgxkrnmutmocqbjffw.supabase.co/functions/v1/clever-responder');
+      if (!res.ok) return;
+      const all = await res.json();
+      favs.forEach(lbl => {
+        const key = lbl.replace(/[^a-zA-Z0-9]/g,'_');
+        const item = all.find(d => d.label === lbl);
+        const prEl = document.getElementById('dfp-' + key);
+        const pcEl = document.getElementById('dfpct-' + key);
+        if (!item || !prEl) return;
+        if (item.price != null) prEl.textContent = '$' + item.price.toLocaleString('en-US', {maximumFractionDigits: item.price < 10 ? 4 : 2});
+        if (item.pct != null) {
+          const sign = item.pct > 0 ? '▲ +' : item.pct < 0 ? '▼ ' : '';
+          pcEl.textContent = sign + item.pct.toFixed(2) + '%';
+          pcEl.className = 'dash-fav-pct ' + (item.pct > 0 ? 'up' : item.pct < 0 ? 'down' : 'flat');
+        }
+      });
+    } catch {}
+  }
 
   // ── DASHBOARD HELPERS (shared by My Listings / My Bids / Favorites) ──
   function fmtDashDate(iso) {
