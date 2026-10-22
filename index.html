@@ -2085,9 +2085,19 @@
       <h2 style="font-family:'Cormorant Garamond',serif; font-size:28px; font-weight:600; color:#F0F4F7; margin:0 0 8px;" data-i18n="reset_newpw_title">Set New Password</h2>
       <p style="font-size:13px; color:var(--muted); font-family:'Inter',sans-serif; margin:0 0 28px; line-height:1.6;" data-i18n="reset_newpw_sub">Enter your new password twice to confirm.</p>
       <label style="display:block; font-size:11px; letter-spacing:0.08em; text-transform:uppercase; color:var(--muted); margin-bottom:6px; font-family:'Inter',sans-serif;" data-i18n="reset_newpw_label">New Password</label>
-      <input id="reset-pw1" type="password" placeholder="min. 8 characters" style="width:100%; box-sizing:border-box; background:var(--ink-3); border:1px solid rgba(143,163,177,0.2); border-radius:8px; padding:12px 14px; color:#F0F4F7; font-size:16px; font-family:'Inter',sans-serif; outline:none; margin-bottom:14px;" />
+      <div style="position:relative; margin-bottom:14px;">
+        <input id="reset-pw1" type="password" placeholder="min. 8 characters" style="width:100%; box-sizing:border-box; background:var(--ink-3); border:1px solid rgba(143,163,177,0.2); border-radius:8px; padding:12px 42px 12px 14px; color:#F0F4F7; font-size:16px; font-family:'Inter',sans-serif; outline:none;" />
+        <button type="button" onclick="togglePwVisibility('reset-pw1', this)" aria-label="Prikaži geslo" tabindex="-1" style="position:absolute; right:8px; top:50%; transform:translateY(-50%); background:none; border:none; color:var(--muted); cursor:pointer; padding:6px; display:flex; align-items:center; transition:color 0.15s ease;" onmouseover="this.style.color='var(--gold-lt)'" onmouseout="this.style.color='var(--muted)'">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+        </button>
+      </div>
       <label style="display:block; font-size:11px; letter-spacing:0.08em; text-transform:uppercase; color:var(--muted); margin-bottom:6px; font-family:'Inter',sans-serif;" data-i18n="reset_confirm_label">Confirm Password</label>
-      <input id="reset-pw2" type="password" placeholder="repeat password" style="width:100%; box-sizing:border-box; background:var(--ink-3); border:1px solid rgba(143,163,177,0.2); border-radius:8px; padding:12px 14px; color:#F0F4F7; font-size:16px; font-family:'Inter',sans-serif; outline:none;" />
+      <div style="position:relative;">
+        <input id="reset-pw2" type="password" placeholder="repeat password" style="width:100%; box-sizing:border-box; background:var(--ink-3); border:1px solid rgba(143,163,177,0.2); border-radius:8px; padding:12px 42px 12px 14px; color:#F0F4F7; font-size:16px; font-family:'Inter',sans-serif; outline:none;" />
+        <button type="button" onclick="togglePwVisibility('reset-pw2', this)" aria-label="Prikaži geslo" tabindex="-1" style="position:absolute; right:8px; top:50%; transform:translateY(-50%); background:none; border:none; color:var(--muted); cursor:pointer; padding:6px; display:flex; align-items:center; transition:color 0.15s ease;" onmouseover="this.style.color='var(--gold-lt)'" onmouseout="this.style.color='var(--muted)'">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+        </button>
+      </div>
       <p id="reset-pw-error" style="display:none; margin:8px 0 0; font-size:12px; color:#E57373; font-family:'Inter',sans-serif;"></p>
       <p id="reset-pw-success" style="display:none; margin:12px 0 0; font-size:12px; color:#4CAF50; font-family:'Inter',sans-serif;" data-i18n="reset_pw_success">Password updated! You can now sign in.</p>
       <button onclick="submitNewPassword()" id="reset-pw-btn" style="width:100%; margin-top:20px; padding:14px; background:var(--gold); border:none; border-radius:8px; color:#0A0D12; font-size:13px; font-weight:700; font-family:'Inter',sans-serif; letter-spacing:0.06em; cursor:pointer;" data-i18n="reset_pw_btn">Save New Password</button>
@@ -2209,12 +2219,17 @@
 
       <div>
         <label style="display:block; font-size:11px; letter-spacing:0.08em; text-transform:uppercase; color:var(--muted); margin-bottom:6px; font-family:'Inter',sans-serif;" data-i18n="signin_password">Password</label>
-        <input type="password" name="password" required data-i18n-placeholder="signin_password_ph" placeholder="••••••••" style="
-          width:100%; padding:11px 14px;
-          background:var(--ink-3); border:1px solid rgba(143,163,177,0.2);
-          border-radius:3px; color:#E8EEF2; font-family:'Inter',sans-serif; font-size:16px;
-          outline:none; transition:border-color 0.2s ease;
-        " onfocus="this.style.borderColor='var(--gold)'" onblur="this.style.borderColor='rgba(143,163,177,0.2)'" />
+        <div style="position:relative;">
+          <input id="signin-password" type="password" name="password" required data-i18n-placeholder="signin_password_ph" placeholder="••••••••" style="
+            width:100%; box-sizing:border-box; padding:11px 42px 11px 14px;
+            background:var(--ink-3); border:1px solid rgba(143,163,177,0.2);
+            border-radius:3px; color:#E8EEF2; font-family:'Inter',sans-serif; font-size:16px;
+            outline:none; transition:border-color 0.2s ease;
+          " onfocus="this.style.borderColor='var(--gold)'" onblur="this.style.borderColor='rgba(143,163,177,0.2)'" />
+          <button type="button" onclick="togglePwVisibility('signin-password', this)" aria-label="Prikaži geslo" tabindex="-1" style="position:absolute; right:8px; top:50%; transform:translateY(-50%); background:none; border:none; color:var(--muted); cursor:pointer; padding:6px; display:flex; align-items:center; transition:color 0.15s ease;" onmouseover="this.style.color='var(--gold-lt)'" onmouseout="this.style.color='var(--muted)'">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+          </button>
+        </div>
       </div>
 
       <!-- CAPTCHA -->
@@ -2349,11 +2364,21 @@
           <div style="font-size:11px;letter-spacing:0.08em;text-transform:uppercase;color:var(--gold);margin-bottom:16px;">Sprememba gesla</div>
           <div class="sform-field" style="max-width:360px;">
             <label class="sform-label">Novo geslo</label>
-            <input class="sform-input" id="sec-pw1" type="password" placeholder="••••••••" />
+            <div style="position:relative;">
+              <input class="sform-input" id="sec-pw1" type="password" placeholder="••••••••" style="padding-right:42px; box-sizing:border-box;" />
+              <button type="button" onclick="togglePwVisibility('sec-pw1', this)" aria-label="Prikaži geslo" tabindex="-1" style="position:absolute; right:8px; top:50%; transform:translateY(-50%); background:none; border:none; color:var(--muted); cursor:pointer; padding:6px; display:flex; align-items:center; transition:color 0.15s ease;" onmouseover="this.style.color='var(--gold-lt)'" onmouseout="this.style.color='var(--muted)'">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+              </button>
+            </div>
           </div>
           <div class="sform-field" style="max-width:360px;margin-top:12px;">
             <label class="sform-label">Potrdi geslo</label>
-            <input class="sform-input" id="sec-pw2" type="password" placeholder="••••••••" />
+            <div style="position:relative;">
+              <input class="sform-input" id="sec-pw2" type="password" placeholder="••••••••" style="padding-right:42px; box-sizing:border-box;" />
+              <button type="button" onclick="togglePwVisibility('sec-pw2', this)" aria-label="Prikaži geslo" tabindex="-1" style="position:absolute; right:8px; top:50%; transform:translateY(-50%); background:none; border:none; color:var(--muted); cursor:pointer; padding:6px; display:flex; align-items:center; transition:color 0.15s ease;" onmouseover="this.style.color='var(--gold-lt)'" onmouseout="this.style.color='var(--muted)'">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+              </button>
+            </div>
           </div>
           <div id="sec-pw-msg" style="display:none;margin-top:8px;font-size:13px;"></div>
           <button class="sform-save-btn" style="margin-top:12px;" onclick="changePassword()">Posodobi geslo</button>
