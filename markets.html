@@ -6208,6 +6208,9 @@ function triggerImageInput(slotIndex) {
 
 const WIZ_IMG_ALLOWED_MIME = ['image/jpeg', 'image/png', 'image/webp', 'image/gif'];
 const WIZ_IMG_EXT_MAP = { 'image/jpeg':'jpg', 'image/png':'png', 'image/webp':'webp', 'image/gif':'gif' };
+const WIZ_IMG_MAX_ORIGINAL_MB = 15; // pred stiskanjem (telefonske fotografije so lahko precej velike)
+const WIZ_IMG_MAX_DIM = 1600;       // največja stranica po stiskanju (px)
+const WIZ_IMG_JPEG_QUALITY = 0.82;
 
 function handleImageFile(event) {
   const file = event.target.files[0];
@@ -6218,8 +6221,8 @@ function handleImageFile(event) {
     document.getElementById('wiz-img-error').style.display = '';
     return;
   }
-  if (file.size > 5 * 1024 * 1024) {
-    document.getElementById('wiz-img-error').textContent = 'Slika je prevelika (max 5 MB).';
+  if (file.size > WIZ_IMG_MAX_ORIGINAL_MB * 1024 * 1024) {
+    document.getElementById('wiz-img-error').textContent = `Slika je prevelika (max ${WIZ_IMG_MAX_ORIGINAL_MB} MB).`;
     document.getElementById('wiz-img-error').style.display = '';
     return;
   }
@@ -6230,23 +6233,61 @@ function handleImageFile(event) {
   const oldPath = wiz.imagePaths[i];
   if (oldPath) sbM.storage.from('listing-images').remove([oldPath]).catch(() => {});
 
-  const reader = new FileReader();
-  reader.onload = (e) => {
-    wiz.imageFiles[i] = file;
-    wiz.imagePreviews[i] = e.target.result; // takojšnji lokalni predogled
-    wiz.imageUrls[i] = null;
-    wiz.imagePaths[i] = null;
-    wiz.imageUploading[i] = true;
-    updateImgSlot(i);
-    uploadWizImage(i, file);
-  };
-  reader.readAsDataURL(file);
+  wiz.imageFiles[i] = file; // tudi varovalo pred dirko, če uporabnik med obdelavo zamenja/odstrani režo
+  wiz.imagePreviews[i] = null;
+  wiz.imageUrls[i] = null;
+  wiz.imagePaths[i] = null;
+  wiz.imageUploading[i] = true;
+  updateImgSlot(i); // takoj pokaže "Stiskam sliko…" v reži
+
+  compressWizImage(file).then((compressed) => {
+    if (wiz.imageFiles[i] !== file) return; // reža je bila medtem zamenjana/odstranjena
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      if (wiz.imageFiles[i] !== file) return;
+      wiz.imagePreviews[i] = e.target.result; // lokalni predogled (iz že stisnjene slike)
+      updateImgSlot(i);
+      uploadWizImage(i, compressed, file);
+    };
+    reader.readAsDataURL(compressed);
+  });
+}
+
+// Pred nalaganjem sliko na brskalniški strani pomanjša/stisne (podobno
+// kot npr. Viber pred pošiljanjem) — manjša datoteka pomeni hitrejše
+// nalaganje. GIF-ov ne stiskamo (izgubili bi animacijo). Stisnjeno
+// različico uporabi le, če je res manjša od izvirnika — sicer pošlje
+// izvirno datoteko (varovalo, ne more biti slabše kot prej).
+function compressWizImage(file, maxDim = WIZ_IMG_MAX_DIM, quality = WIZ_IMG_JPEG_QUALITY) {
+  if (file.type === 'image/gif') return Promise.resolve(file);
+  return new Promise((resolve) => {
+    const img = new Image();
+    const url = URL.createObjectURL(file);
+    img.onload = () => {
+      URL.revokeObjectURL(url);
+      const scale = Math.min(1, maxDim / Math.max(img.naturalWidth, img.naturalHeight));
+      const w = Math.max(1, Math.round(img.naturalWidth * scale));
+      const h = Math.max(1, Math.round(img.naturalHeight * scale));
+      const canvas = document.createElement('canvas');
+      canvas.width = w; canvas.height = h;
+      const ctx = canvas.getContext('2d');
+      ctx.drawImage(img, 0, 0, w, h);
+      canvas.toBlob((blob) => {
+        if (!blob || blob.size >= file.size) { resolve(file); return; }
+        const newName = file.name.replace(/\.[^.]+$/, '') + '.jpg';
+        resolve(new File([blob], newName, { type: 'image/jpeg' }));
+      }, 'image/jpeg', quality);
+    };
+    img.onerror = () => { URL.revokeObjectURL(url); resolve(file); };
+    img.src = url;
+  });
 }
 
 // Naloži sliko na strežnik TAKOJ ko je izbrana (ne šele ob objavi
 // oglasa), tako da je sama objava skoraj takojšnja — slike so takrat
 // že nameščene, submitListing() samo prebere že pripravljene URL-je.
-async function uploadWizImage(i, file) {
+async function uploadWizImage(i, file, originalFile) {
+  originalFile = originalFile || file; // varovalo za rego primerjavo spodaj
   if (!currentUser) {
     wiz.imageUploading[i] = false;
     wiz.imagePreviews[i] = null;
@@ -6264,13 +6305,13 @@ async function uploadWizImage(i, file) {
     const { data: urlData } = sbM.storage.from('listing-images').getPublicUrl(upData.path);
     // Reža je med nalaganjem lahko bila odstranjena/zamenjana — ne
     // prikaži rezultata, ki ne sodi več sem.
-    if (wiz.imageFiles[i] !== file) { sbM.storage.from('listing-images').remove([upData.path]).catch(() => {}); return; }
+    if (wiz.imageFiles[i] !== originalFile) { sbM.storage.from('listing-images').remove([upData.path]).catch(() => {}); return; }
     wiz.imageUrls[i] = urlData?.publicUrl || null;
     wiz.imagePaths[i] = upData.path;
     wiz.imageUploading[i] = false;
     updateImgSlot(i);
   } catch (err) {
-    if (wiz.imageFiles[i] !== file) return;
+    if (wiz.imageFiles[i] !== originalFile) return;
     wiz.imageUploading[i] = false;
     wiz.imagePreviews[i] = null;
     wiz.imageFiles[i] = null;
@@ -6291,6 +6332,10 @@ function updateImgSlot(i) {
         ? `<div class="wiz-img-uploading"><div class="wiz-img-progress-track"><div class="wiz-img-progress-bar"></div></div><span>Nalagam…</span></div>`
         : `<div class="wiz-img-uploaded-badge">✓</div><button class="slot-remove" onclick="removeImg(event,${i})">×</button>`
     );
+  } else if (uploading) {
+    // Kratka faza stiskanja slike pred tem, ko je sploh kaj za predogled.
+    slot.classList.remove('filled');
+    slot.innerHTML = `<div class="wiz-img-uploading" style="position:static; height:100%;"><div class="wiz-img-progress-track"><div class="wiz-img-progress-bar"></div></div><span>Stiskam sliko…</span></div>`;
   } else {
     slot.classList.remove('filled');
     slot.innerHTML = `<div class="wiz-slot-placeholder"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg><span>Dodaj sliko</span></div>`;
