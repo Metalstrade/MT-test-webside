@@ -6765,7 +6765,7 @@ function buildListingActions(l, cur) {
           <div class="auction-current-bid" style="color:var(--gold-lt);">${totalPrice ? sym + totalPrice.toLocaleString('sl-SI', {minimumFractionDigits:2, maximumFractionDigits:2}) : 'Cena na poizvedbo'}</div>
           <div class="auction-timer">${price > 0 && l.weightRaw ? `${sym}${price.toLocaleString('sl-SI')}/${esc(l.weightUnit||'kg')} · Spot nakup` : 'Spot nakup'}</div>
         </div>
-        <button class="btn-buy-spot" onclick="event.stopPropagation(); showPaymentInfo('${l.dbId}', ${totalUsd || l.priceUsd})">Kupi zdaj</button>
+        <button class="btn-buy-spot" onclick="event.stopPropagation(); confirmSpotBuy('${l.dbId}', ${totalUsd || l.priceUsd})">Kupi zdaj</button>
       </div>`;
     }
   }
@@ -6974,6 +6974,7 @@ async function submitBid() {
   const btn    = document.getElementById('bid-submit-btn');
   errEl.textContent = '';
   if (!amount || amount <= 0) { errEl.textContent = 'Vnesite veljavno ponudbo.'; return; }
+  if (!confirm(`Ali ste prepričani, da želite oddati ponudbo $${amount.toLocaleString('sl-SI')}?`)) return;
 
   btn.disabled = true;
   btn.textContent = 'Pošiljam…';
@@ -7056,6 +7057,7 @@ async function submitBidAgent() {
 // current_bidder_id / auction_end_at enako, kot bi veljalo ob pravi zmagi.
 async function buyNowAuction(dbId) {
   if (!currentUser) { openAuthModal('signin'); return; }
+  if (!confirm('Ali ste prepričani, da želite kupiti ta izdelek po ceni "Kupi takoj"?')) return;
   if (!(await checkMarketplaceApproved())) {
     alert('Za nakup morate imeti verificiran račun. Pojdite v Nastavitve → Verifikacija in oddajte dokazila — administrator jih bo pregledal in potrdil.');
     return;
@@ -7088,6 +7090,14 @@ async function buyNowAuction(dbId) {
 
 // Pending purchase data — set in showPaymentInfo, consumed in confirmPurchase
 let _pendingPurchase = null;
+
+// Kliknjen "Kupi zdaj" na spot oglasu — preden odpremo podatke za
+// plačilo, vprašamo za potrditev (samo za novo odločitev o nakupu, ne
+// za že zaključene/zmagane nakupe, ki samo odpirajo podatke za plačilo).
+function confirmSpotBuy(dbId, amount) {
+  if (!confirm('Ali ste prepričani, da želite kupiti ta izdelek?')) return;
+  showPaymentInfo(dbId, amount);
+}
 
 async function showPaymentInfo(dbId, amount) {
   if (!currentUser) { openAuthModal('signin'); return; }
