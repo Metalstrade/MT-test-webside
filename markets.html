@@ -1149,6 +1149,14 @@
       display: flex; align-items: center; justify-content: space-between; gap: 8px;
       background: rgba(201,162,39,0.03);
     }
+    /* Aktivna dražba ima dva gumba (Ponudi + Kupi takoj) — ti skupaj s
+       ceno na ozki kartici ne gredo v eno vrstico brez obrezovanja, zato
+       gre cena/odštevalnik v svojo vrstico, gumba pa spodaj čez celo
+       širino kartice. */
+    .auction-bar-stacked { flex-direction: column; align-items: stretch; }
+    .auction-bar-btn-row { display: flex; gap: 6px; }
+    .auction-bar-btn-row .btn-bid,
+    .auction-bar-btn-row .btn-buy-spot { flex: 1; text-align: center; white-space: normal; line-height: 1.3; }
     .auction-bar-left { display: flex; flex-direction: column; gap: 2px; }
     .auction-current-bid { font-size: 22px; font-weight: 700; color: var(--gold-lt); font-family: 'Cormorant Garamond', serif; line-height: 1.2; }
     .auction-no-bid { font-size: 13px; color: var(--muted); }
@@ -6690,15 +6698,17 @@ function buildListingActions(l, cur) {
       const buyNowBtn = (canBid && l.buyNowPrice)
         ? `<button class="btn-buy-spot" onclick="event.stopPropagation(); buyNowAuction('${l.dbId}')">Kupi takoj $${l.buyNowPrice.toLocaleString('sl-SI')}</button>`
         : '';
-      bottomSection = `<div class="auction-bar">
+      const bidBtn = canBid
+        ? `<button class="btn-bid" onclick="event.stopPropagation(); openBidModal('${l.dbId}')">Ponudi 🔨</button>`
+        : !currentUser ? `<button class="btn-bid" onclick="event.stopPropagation(); openAuthModal('signin')">Prijavi se</button>` : '';
+      bottomSection = `<div class="auction-bar${buyNowBtn ? ' auction-bar-stacked' : ''}">
         <div class="auction-bar-left">
           <div class="${l.currentBid > 0 ? 'auction-current-bid' : 'auction-no-bid'}">${bidStr}</div>
           <div class="auction-timer${urgent ? ' urgent' : ''}">⏱ ${timeStr}</div>
         </div>
-        <div style="display:flex; gap:6px; align-items:center;">
-          ${canBid ? `<button class="btn-bid" onclick="event.stopPropagation(); openBidModal('${l.dbId}')">Ponudi 🔨</button>` : !currentUser ? `<button class="btn-bid" onclick="event.stopPropagation(); openAuthModal('signin')">Prijavi se</button>` : ''}
-          ${buyNowBtn}
-        </div>
+        ${buyNowBtn
+          ? `<div class="auction-bar-btn-row">${bidBtn}${buyNowBtn}</div>`
+          : bidBtn}
       </div>`;
     }
   } else {
