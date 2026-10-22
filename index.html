@@ -894,7 +894,10 @@
 
 
     /* ── DASHBOARD NAV (4 buttons; each opens its own full page) ── */
-    #dash-nav-section { display: none; padding: 48px 0; }
+    /* 130px clears the fixed nav (72px) + fixed ticker bar (34px) below
+       it, now that the hero (which used to provide that clearance via
+       its own min-height:100vh centering) is hidden for logged-in users. */
+    #dash-nav-section { display: none; padding: 130px 0 48px; }
     .dash-nav-grid {
       display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
       gap: 16px; margin-top: 8px;
@@ -924,7 +927,7 @@
       transition: color 0.15s ease;
     }
     .dash-back-btn:hover { color: var(--gold-lt); }
-    #dash-page-back-section { display: none; padding-top: 48px; }
+    #dash-page-back-section { display: none; padding-top: 130px; }
 
     /* ── MY LISTINGS SECTION ── */
     #my-listings-section { display: none; padding: 48px 0; }
@@ -3744,6 +3747,10 @@
     await sb.auth.signOut();
     localStorage.removeItem('signed_in');
     setSignedOutBtn();
+    // Ne zanašaj se izključno na onAuthStateChange(SIGNED_OUT) za
+    // skrivanje nadzorne plošče — v praksi se je dogajalo, da je
+    // uporabnik moral osvežiti stran, preden je ta izginila.
+    hidePersonalDashboard();
   }
 
   document.addEventListener('keydown', function(e) {
