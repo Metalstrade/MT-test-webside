@@ -929,6 +929,39 @@
     }
     .dash-link:hover { color: var(--gold-lt); }
 
+    /* ── DASHBOARD NAV (4 buttons; each opens its own full page) ── */
+    #dash-nav-section { display: none; padding: 48px 0; }
+    .dash-nav-grid {
+      display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 16px; margin-top: 8px;
+    }
+    .dash-nav-btn {
+      display: flex; flex-direction: column; align-items: flex-start; gap: 14px;
+      background: rgba(20,28,36,0.8); border: 1px solid rgba(143,163,177,0.14);
+      border-radius: 8px; padding: 24px 22px; cursor: pointer; text-align: left;
+      font-family: 'Inter', sans-serif; transition: border-color 0.2s ease, transform 0.2s ease;
+    }
+    .dash-nav-btn:hover { border-color: rgba(201,162,39,0.4); transform: translateY(-2px); }
+    .dash-nav-btn-icon {
+      width: 40px; height: 40px; border-radius: 8px;
+      background: rgba(201,162,39,0.1); display: flex; align-items: center; justify-content: center;
+      color: var(--gold); flex-shrink: 0;
+    }
+    .dash-nav-btn-label {
+      font-size: 14px; font-weight: 700; color: #E8EEF2;
+      text-transform: uppercase; letter-spacing: 0.04em;
+    }
+    .dash-nav-btn-sub { font-size: 12px; color: var(--muted); line-height: 1.5; }
+    .dash-back-btn {
+      background: none; border: none; cursor: pointer; padding: 0;
+      display: inline-flex; align-items: center; gap: 6px;
+      font-family: 'Inter', sans-serif; font-size: 12px; font-weight: 600;
+      letter-spacing: 0.06em; text-transform: uppercase; color: var(--muted);
+      transition: color 0.15s ease;
+    }
+    .dash-back-btn:hover { color: var(--gold-lt); }
+    #dash-page-back-section { display: none; padding-top: 48px; }
+
     /* ── MY LISTINGS SECTION ── */
     #my-listings-section { display: none; padding: 48px 0; }
     .my-listings-grid {
@@ -1378,6 +1411,46 @@
           </div>
         </div>
       </div>
+    </div>
+  </section>
+
+  <!-- ── DASHBOARD NAV (logged in) — each button opens its own page ── -->
+  <section id="dash-nav-section">
+    <div class="section-inner">
+      <div class="section-eyebrow">Moj Račun</div>
+      <h2 class="section-title dash-heading">Upravljajte svoj Trg</h2>
+      <div class="dash-nav-grid">
+        <button class="dash-nav-btn" onclick="openDashPage('listings')">
+          <span class="dash-nav-btn-icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20.59 13.41 13.42 20.6a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z"/><circle cx="7" cy="7" r="1"/></svg></span>
+          <span class="dash-nav-btn-label">Moji Oglasi</span>
+          <span class="dash-nav-btn-sub">Upravljajte z vašimi aktivnimi oglasi na trgu.</span>
+        </button>
+        <button class="dash-nav-btn" onclick="openDashPage('bids')">
+          <span class="dash-nav-btn-icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m14.5 12.5-8 8a2.12 2.12 0 1 1-3-3l8-8"/><path d="m16 16 6-6"/><path d="m8 8 6-6 4.5 4.5a2.12 2.12 0 0 1 0 3L15 13a2.12 2.12 0 0 1-3 0z"/></svg></span>
+          <span class="dash-nav-btn-label">Moje Dražbe</span>
+          <span class="dash-nav-btn-sub">Dražbe, na katerih ste oddali ponudbo.</span>
+        </button>
+        <button class="dash-nav-btn" onclick="openDashPage('favorites')">
+          <span class="dash-nav-btn-icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg></span>
+          <span class="dash-nav-btn-label">Priljubljeni Oglasi</span>
+          <span class="dash-nav-btn-sub">Oglasi, ki ste jih označili s srčkom.</span>
+        </button>
+        <button class="dash-nav-btn" onclick="openDashPage('transactions')">
+          <span class="dash-nav-btn-icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 10h18M7 15h1m4 0h5M5 20h14a2 2 0 0 0 2-2V6a2 2 0 0 0-2-2H5a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2z"/></svg></span>
+          <span class="dash-nav-btn-label">Moje Transakcije</span>
+          <span class="dash-nav-btn-sub">Aktivne in zaključene transakcije — kot kupec in prodajalec.</span>
+        </button>
+      </div>
+    </div>
+  </section>
+
+  <!-- ── Shared back button, shown above whichever dash page is open ── -->
+  <section id="dash-page-back-section">
+    <div class="section-inner">
+      <button class="dash-back-btn" onclick="closeDashPage()">
+        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
+        Nazaj
+      </button>
     </div>
   </section>
 
@@ -3876,29 +3949,60 @@ return '$' + price.toLocaleString('en-US', {maximumFractionDigits:2});
   });
 
   // ── PERSONALIZED DASHBOARD ──
+  // Moji oglasi / Moje dražbe / Priljubljeni oglasi / Moje transakcije so
+  // zdaj štirje gumbi (ne vsa vsebina naenkrat na prvi strani) — vsak
+  // odpre svojo stran (lastna URL prek history.pushState, nalaganje
+  // podatkov pa je leno: šele ko uporabnik to stran dejansko odpre).
+  let _dashUser = null;
+  const DASH_PAGES = {
+    listings:     { section: 'my-listings-section',     load: (u) => loadMyListings(u) },
+    bids:         { section: 'my-bids-section',          load: (u) => loadMyBids(u) },
+    favorites:    { section: 'fav-listings-section',      load: (u) => loadFavListings(u) },
+    transactions: { section: 'my-transactions-section',   load: (u) => loadMyTransactions(u) },
+  };
+
   function showPersonalDashboard(user) {
+    _dashUser = user;
     const els = document.querySelectorAll('.hero-eyebrow, .hero h1, .hero-sub, .hero-actions, .hero-stats');
     els.forEach(el => el.style.display = 'none');
     document.getElementById('dashboard-panel').style.display = 'block';
-    document.getElementById('my-listings-section').style.display = 'block';
-    document.getElementById('my-bids-section').style.display = 'block';
-    document.getElementById('fav-listings-section').style.display = 'block';
-    document.getElementById('my-transactions-section').style.display = 'block';
     loadDashFavs(user);
-    loadMyListings(user);
-    loadMyBids(user);
-    loadFavListings(user);
-    loadMyTransactions(user, 10);
+    const key = new URLSearchParams(window.location.search).get('dash');
+    if (key && DASH_PAGES[key]) openDashPage(key, true);
+    else document.getElementById('dash-nav-section').style.display = 'block';
   }
   function hidePersonalDashboard() {
+    _dashUser = null;
     const els = document.querySelectorAll('.hero-eyebrow, .hero h1, .hero-sub, .hero-actions, .hero-stats');
     els.forEach(el => el.style.removeProperty('display'));
     document.getElementById('dashboard-panel').style.display = 'none';
-    document.getElementById('my-listings-section').style.display = 'none';
-    document.getElementById('my-bids-section').style.display = 'none';
-    document.getElementById('fav-listings-section').style.display = 'none';
-    document.getElementById('my-transactions-section').style.display = 'none';
+    document.getElementById('dash-nav-section').style.display = 'none';
+    document.getElementById('dash-page-back-section').style.display = 'none';
+    Object.values(DASH_PAGES).forEach(p => { document.getElementById(p.section).style.display = 'none'; });
   }
+
+  function openDashPage(key, skipPush) {
+    if (!DASH_PAGES[key] || !_dashUser) return;
+    if (!skipPush) history.pushState({ dash: key }, '', '?dash=' + key);
+    document.getElementById('dash-nav-section').style.display = 'none';
+    Object.values(DASH_PAGES).forEach(p => { document.getElementById(p.section).style.display = 'none'; });
+    document.getElementById('dash-page-back-section').style.display = 'block';
+    document.getElementById(DASH_PAGES[key].section).style.display = 'block';
+    window.scrollTo(0, 0);
+    DASH_PAGES[key].load(_dashUser);
+  }
+  function closeDashPage(skipPush) {
+    if (!skipPush) history.pushState({}, '', window.location.pathname);
+    document.getElementById('dash-page-back-section').style.display = 'none';
+    Object.values(DASH_PAGES).forEach(p => { document.getElementById(p.section).style.display = 'none'; });
+    if (_dashUser) document.getElementById('dash-nav-section').style.display = 'block';
+  }
+  window.addEventListener('popstate', () => {
+    if (!_dashUser) return;
+    const key = new URLSearchParams(window.location.search).get('dash');
+    if (key && DASH_PAGES[key]) openDashPage(key, true);
+    else closeDashPage(true);
+  });
 
   async function loadDashFavs(user) {
     let favs = [];
@@ -4576,7 +4680,7 @@ return '$' + price.toLocaleString('en-US', {maximumFractionDigits:2});
     const { data, error } = await sb.rpc('buyer_confirm_receipt', { p_id: txId });
     if (error || data?.error) { alert('Napaka: ' + (error?.message || data?.error)); return; }
     const user = (await sb.auth.getUser()).data.user;
-    if (user) loadMyTransactions(user, 10);
+    if (user) loadMyTransactions(user);
   }
 </script>
 
