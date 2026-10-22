@@ -4288,10 +4288,38 @@ updateFilters();
         </div>
       </div>
       <div class="wiz-field">
-        <label>Cena (USD / enota)</label>
-        <input class="wiz-input" type="number" id="wiz-price" placeholder="npr. 2.50" min="0" step="any" oninput="updateWizTotalPrice()" />
-        <div id="wiz-total-price-hint" style="font-size:12px;color:var(--gold-lt);margin-top:6px;min-height:16px;"></div>
+        <label>Način cene</label>
+        <div class="sale-type-row">
+          <button type="button" class="sale-type-btn active" id="btn-price-total" onclick="setPriceMode('total')">
+            <span class="st-icon">💰</span>
+            <span class="st-label">Skupna cena</span>
+            <span class="st-sub">Cena za celotno količino</span>
+          </button>
+          <button type="button" class="sale-type-btn" id="btn-price-perunit" onclick="setPriceMode('perunit')">
+            <span class="st-icon">⚖️</span>
+            <span class="st-label">Cena na enoto</span>
+            <span class="st-sub">Cena za kg / tono / gram ...</span>
+          </button>
+        </div>
       </div>
+      <div class="wiz-field" id="wiz-price-total-wrap">
+        <label>Skupna cena blaga (USD)</label>
+        <input class="wiz-input" type="number" id="wiz-price-total" placeholder="npr. 2500" min="0" step="any" oninput="updateWizTotalPrice()" />
+      </div>
+      <div class="wiz-field" id="wiz-price-perunit-wrap" style="display:none;">
+        <label>Cena na enoto (USD)</label>
+        <div class="wiz-row">
+          <input class="wiz-input" type="number" id="wiz-price-perunit" placeholder="npr. 2.50" min="0" step="any" oninput="updateWizTotalPrice()" />
+          <select class="wiz-unit-select" id="wiz-price-unit" onchange="updateWizTotalPrice()">
+            <option value="g">/ g</option>
+            <option value="kg" selected>/ kg</option>
+            <option value="t">/ t</option>
+            <option value="oz">/ oz</option>
+            <option value="lb">/ lb</option>
+          </select>
+        </div>
+      </div>
+      <div id="wiz-total-price-hint" style="font-size:12px;color:var(--gold-lt);margin:-8px 0 8px;min-height:16px;"></div>
       <div class="wiz-field">
         <label>Oblika / produkt</label>
         <select class="wiz-input wiz-unit-select" id="wiz-shape" style="width:100%;">
@@ -5873,7 +5901,8 @@ const wiz = {
   name: '',
   weight: '',
   weightUnit: 'kg',
-  priceUsd: '',
+  priceUsd: '',   // vedno normalizirano na ceno / weightUnit (glej setPriceMode/updateWizTotalPrice)
+  priceMode: 'total', // 'total' (skupna cena) | 'perunit' (cena na enoto)
   shape: '',
   description: '',
   saleType: 'spot',
@@ -5896,7 +5925,7 @@ function openWizard() {
   // reset
   wiz.step = 1; wiz.category = null; wiz.treeNode = null;
   wiz.name = ''; wiz.weight = ''; wiz.weightUnit = 'kg';
-  wiz.priceUsd = ''; wiz.shape = ''; wiz.description = '';
+  wiz.priceUsd = ''; wiz.priceMode = 'total'; wiz.shape = ''; wiz.description = '';
   wiz.saleType = 'spot'; wiz.reservePrice = ''; wiz.buyNowPrice = null; wiz.auctionDuration = 7;
   document.getElementById('wiz-buy-now-price').value = '';
   wiz.imageFiles = []; wiz.imagePreviews = [];
@@ -5942,7 +5971,21 @@ function setSaleType(type) {
   document.getElementById('btn-sale-spot').classList.toggle('active', type === 'spot');
   document.getElementById('btn-sale-auction').classList.toggle('active', type === 'auction');
   document.getElementById('wiz-auction-fields').style.display = type === 'auction' ? '' : 'none';
-  const priceLabel = document.querySelector('#wiz-step-3 label[for-price]') || document.querySelector('#wiz-step-3 .wiz-field:nth-child(3) label');
+}
+
+// Prodajalec lahko ceno vnese kot skupno ceno celotne količine ALI kot
+// ceno na enoto (po svoji izbrani enoti, ki je lahko drugačna od enote
+// teže — npr. teža v tonah, cena navedena na kg). Ob oddaji se obe
+// obliki normalizirata v ceno/weightUnit (glej updateWizTotalPrice),
+// tako da ostane shranjen price_usd dosleden z vsem obstoječim
+// prikazom/izračuni na kartici, ki ta pomen že pričakujejo.
+function setPriceMode(mode) {
+  wiz.priceMode = mode;
+  document.getElementById('btn-price-total').classList.toggle('active', mode === 'total');
+  document.getElementById('btn-price-perunit').classList.toggle('active', mode === 'perunit');
+  document.getElementById('wiz-price-total-wrap').style.display = mode === 'total' ? '' : 'none';
+  document.getElementById('wiz-price-perunit-wrap').style.display = mode === 'perunit' ? '' : 'none';
+  updateWizTotalPrice();
 }
 
 function renderWizStep(n) {
@@ -5982,9 +6025,9 @@ function wizNext() {
     renderWizStep(3);
   } else if (wiz.step === 3) {
     const name = document.getElementById('wiz-name').value.trim();
-    const price = document.getElementById('wiz-price').value.trim();
     const errEl = document.getElementById('wiz-details-error');
-    if (!name || !price) { errEl.textContent = 'Izpolnite naziv in začetno ceno.'; errEl.style.display = ''; return; }
+    const priceResult = computeWizNormalizedPrice();
+    if (!name || !priceResult) { errEl.textContent = 'Izpolnite naziv, težo in ceno.'; errEl.style.display = ''; return; }
     if (wiz.saleType === 'auction') {
       const res = document.getElementById('wiz-reserve-price').value.trim();
       if (!res) { errEl.textContent = 'Vnesite minimalno (rezervno) ceno za dražbo.'; errEl.style.display = ''; return; }
@@ -6006,7 +6049,7 @@ function wizNext() {
     wiz.name = name;
     wiz.weight = document.getElementById('wiz-weight').value.trim();
     wiz.weightUnit = document.getElementById('wiz-weight-unit').value;
-    wiz.priceUsd = parseFloat(price);
+    wiz.priceUsd = priceResult.pricePerWeightUnit;
     wiz.shape = document.getElementById('wiz-shape').value;
     wiz.description = document.getElementById('wiz-description').value.trim();
     renderWizStep(4);
@@ -6024,23 +6067,50 @@ function prefillDetails() {
   document.getElementById('wiz-selected-material-display').textContent = '📦 ' + label;
   document.getElementById('wiz-name').value = label;
   document.getElementById('wiz-weight').value = '';
-  document.getElementById('wiz-price').value = '';
+  document.getElementById('wiz-price-total').value = '';
+  document.getElementById('wiz-price-perunit').value = '';
   document.getElementById('wiz-shape').value = '';
   document.getElementById('wiz-description').value = '';
-  updateWizTotalPrice();
+  setPriceMode('total');
 }
 
-// Živo preračunavanje skupne cene v 3. koraku: cena je vedno na enoto
-// (glede na izbrano enoto teže), skupna cena = cena na enoto × teža.
+const WIZ_UNIT_TO_GRAMS = { g: 1, kg: 1000, t: 1000000, oz: 28.3495, lb: 453.592 };
+
+// Normalizira vneseno ceno (ne glede na način — skupna cena ALI cena
+// na enoto, ki je lahko v drugačni enoti kot teža) v ceno/weightUnit —
+// to je oblika, ki jo pričakuje ves obstoječi prikaz/izračun na
+// kartici (listingTotalPrice, "Cena na enoto" itd.). Vrne null, če
+// podatkov (še) ni dovolj za izračun.
+function computeWizNormalizedPrice() {
+  const weight = parseFloat(document.getElementById('wiz-weight').value);
+  const weightUnit = document.getElementById('wiz-weight-unit').value;
+  if (!weight || weight <= 0) return null;
+
+  if (wiz.priceMode === 'perunit') {
+    const perUnit = parseFloat(document.getElementById('wiz-price-perunit').value);
+    const priceUnit = document.getElementById('wiz-price-unit').value;
+    if (!perUnit || perUnit <= 0) return null;
+    const pricePerWeightUnit = perUnit * (WIZ_UNIT_TO_GRAMS[weightUnit] / WIZ_UNIT_TO_GRAMS[priceUnit]);
+    return { pricePerWeightUnit, total: pricePerWeightUnit * weight, weight, weightUnit, perUnit, priceUnit };
+  }
+  const total = parseFloat(document.getElementById('wiz-price-total').value);
+  if (!total || total <= 0) return null;
+  return { pricePerWeightUnit: total / weight, total, weight, weightUnit };
+}
+
+// Živo preračunavanje v 3. koraku — prikaže tisto od (skupna cena /
+// cena na enoto), česar uporabnik trenutno NI neposredno vnesel.
 function updateWizTotalPrice() {
   const hint = document.getElementById('wiz-total-price-hint');
   if (!hint) return;
-  const weight = parseFloat(document.getElementById('wiz-weight').value);
-  const price  = parseFloat(document.getElementById('wiz-price').value);
-  const unit   = document.getElementById('wiz-weight-unit').value;
-  if (!weight || !price || weight <= 0 || price <= 0) { hint.textContent = ''; return; }
-  const total = weight * price;
-  hint.textContent = `Skupna cena: $${total.toLocaleString('sl-SI', {minimumFractionDigits:2, maximumFractionDigits:2})}  (${weight} ${unit} × $${price}/${unit})`;
+  const r = computeWizNormalizedPrice();
+  if (!r) { hint.textContent = ''; return; }
+  const fmt = (n) => n.toLocaleString('sl-SI', {minimumFractionDigits:2, maximumFractionDigits:2});
+  if (wiz.priceMode === 'perunit') {
+    hint.textContent = `Skupna cena: $${fmt(r.total)}  (${r.weight} ${r.weightUnit} × $${r.perUnit}/${r.priceUnit})`;
+  } else {
+    hint.textContent = `Cena na enoto: $${fmt(r.pricePerWeightUnit)} / ${r.weightUnit}  ($${fmt(r.total)} ÷ ${r.weight} ${r.weightUnit})`;
+  }
 }
 
 // ── WIZARD TREE ──
@@ -6522,7 +6592,11 @@ function prefillDetailsEdit() {
   document.getElementById('wiz-name').value = wiz.name;
   document.getElementById('wiz-weight').value = wiz.weight;
   document.getElementById('wiz-weight-unit').value = wiz.weightUnit;
-  document.getElementById('wiz-price').value = wiz.priceUsd;
+  // Shranjena price_usd je vedno cena/weightUnit — pri urejanju jo zato
+  // vedno prikažemo v načinu "cena na enoto", v isti enoti kot teža.
+  setPriceMode('perunit');
+  document.getElementById('wiz-price-perunit').value = wiz.priceUsd;
+  document.getElementById('wiz-price-unit').value = wiz.weightUnit;
   document.getElementById('wiz-shape').value = wiz.shape;
   document.getElementById('wiz-description').value = wiz.description;
   updateWizTotalPrice();
