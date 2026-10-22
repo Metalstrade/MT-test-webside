@@ -3957,11 +3957,17 @@ return '$' + price.toLocaleString('en-US', {maximumFractionDigits:2});
     transactions: { section: 'my-transactions-section',   load: (u) => loadMyTransactions(u) },
   };
 
+  // Marketinški razdelki med nadzorno ploščo in "Pišite nam" (materiali,
+  // zakaj mi, kako deluje, mnenja, CTA pas) — za prijavljenega uporabnika
+  // niso relevantni, zato se skrijejo; kontakt in noga ostaneta.
+  const MARKETING_MID_SECTIONS = '.metals-section, .why-section, .process-section, .testimonials-section, .cta-section';
+
   function showPersonalDashboard(user) {
     _dashUser = user;
     // Prijavljen uporabnik gre naravnost iz menija na nadzorno ploščo —
     // marketinški hero (naslov, CTA, logo) se za njega ne prikaže več.
     document.querySelector('.hero').style.display = 'none';
+    document.querySelectorAll(MARKETING_MID_SECTIONS).forEach(el => el.style.display = 'none');
     const key = new URLSearchParams(window.location.search).get('dash');
     if (key && DASH_PAGES[key]) { openDashPage(key, true); return; }
     document.getElementById('dash-favs-section').style.display = 'block';
@@ -3971,6 +3977,7 @@ return '$' + price.toLocaleString('en-US', {maximumFractionDigits:2});
   function hidePersonalDashboard() {
     _dashUser = null;
     document.querySelector('.hero').style.removeProperty('display');
+    document.querySelectorAll(MARKETING_MID_SECTIONS).forEach(el => el.style.removeProperty('display'));
     document.getElementById('dash-favs-section').style.display = 'none';
     document.getElementById('dash-nav-section').style.display = 'none';
     document.getElementById('dash-page-back-section').style.display = 'none';
