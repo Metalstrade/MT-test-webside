@@ -1003,6 +1003,33 @@
     .btn-wiz-next:disabled { opacity: 0.4; cursor: not-allowed; transform: none; }
     .wiz-error { font-size: 12px; color: #f0645a; margin-top: 8px; }
 
+    /* Step 5: review */
+    .wiz-review-section {
+      background: var(--ink-3); border: 1px solid rgba(143,163,177,0.12);
+      border-radius: 6px; padding: 14px 16px; margin-bottom: 14px;
+    }
+    .wiz-review-section-hdr {
+      display: flex; align-items: center; justify-content: space-between;
+      font-size: 11px; font-weight: 700; letter-spacing: 0.06em; text-transform: uppercase;
+      color: var(--gold-lt); margin-bottom: 10px;
+    }
+    .wiz-review-edit {
+      background: none; border: none; cursor: pointer; padding: 0;
+      font-family: 'Inter', sans-serif; font-size: 11px; font-weight: 600;
+      color: var(--muted); letter-spacing: 0.04em; transition: color 0.15s ease;
+    }
+    .wiz-review-edit:hover { color: var(--gold-lt); }
+    .wiz-review-row {
+      display: flex; justify-content: space-between; gap: 12px;
+      padding: 6px 0; border-top: 1px solid rgba(143,163,177,0.08);
+      font-size: 13px;
+    }
+    .wiz-review-row:first-of-type { border-top: none; }
+    .wiz-review-row > span:first-child { color: var(--muted); flex-shrink: 0; }
+    .wiz-review-row > span:last-child { color: #E8EEF2; text-align: right; }
+    .wiz-review-imgs { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
+    .wiz-review-imgs img { width: 100%; aspect-ratio: 1; object-fit: cover; border-radius: 4px; border: 1px solid rgba(201,162,39,0.15); }
+
     /* Cert upload rows */
     .cert-row { display: flex; flex-direction: column; gap: 4px; }
     .cert-check-label { display: flex; align-items: center; gap: 8px; font-size: 12px; color: #C0CDD6; cursor: pointer; }
@@ -1208,6 +1235,17 @@
     .bid-input { width: 100%; background: var(--ink-3); border: 1px solid rgba(143,163,177,0.2); border-radius: 3px; padding: 10px 12px; color: #E8EEF2; font-size: 16px; font-family: 'Inter', sans-serif; outline: none; }
     .bid-input:focus { border-color: rgba(201,162,39,0.4); }
     .bid-error { font-size: 12px; color: #f0645a; margin-bottom: 12px; display: none; }
+    .bid-error:not(:empty) { display: block; }
+    .bid-stat-row { flex-wrap: wrap; }
+    .bid-stat { min-width: 120px; }
+    .bid-stat-val.bid-buynow { color: rgba(72,199,142,0.9); }
+    .bid-limit-hint { font-size: 11px; color: var(--muted); margin-top: 6px; line-height: 1.5; }
+    .bid-limit-hint strong { color: var(--gold-lt); font-weight: 600; }
+    .bid-buynow-note {
+      font-size: 12px; color: rgba(72,199,142,0.9); background: rgba(72,199,142,0.08);
+      border: 1px solid rgba(72,199,142,0.2); border-radius: 3px; padding: 8px 10px; margin-bottom: 14px;
+      display: flex; align-items: center; justify-content: space-between; gap: 8px;
+    }
     .bid-agent-row {
       display: flex; align-items: center; justify-content: space-between; gap: 12px;
       background: var(--ink-3); border: 1px solid rgba(201,162,39,0.15);
@@ -4331,6 +4369,11 @@ updateFilters();
           <div class="dot">4</div>
           <div class="dot-label">Slike</div>
         </div>
+        <div class="wizard-step-line"></div>
+        <div class="wizard-step-dot" id="wdot-5">
+          <div class="dot">5</div>
+          <div class="dot-label">Pregled</div>
+        </div>
       </div>
     </div>
 
@@ -4590,6 +4633,14 @@ updateFilters();
       <div style="font-size:11px; color:var(--muted); margin-top:12px;">Slike so neobvezne. Podprti formati: JPG, PNG, WebP (max 5 MB vsaka).</div>
     </div>
 
+    <!-- Step 5: Review -->
+    <div class="wizard-body" id="wiz-step-5" style="display:none;">
+      <div class="wizard-body-title">Preglejte oglas pred objavo</div>
+      <p style="font-size:12px;color:var(--muted);margin:-8px 0 16px;">Preverite, da je vse pravilno. Pri vsakem razdelku lahko kliknete "Uredi" za popravek.</p>
+      <div id="wiz-review-content"></div>
+      <div class="wiz-error" id="wiz-review-error" style="display:none;"></div>
+    </div>
+
     <div class="wizard-footer">
       <div class="wiz-progress" id="wiz-progress">Korak 1 od 4</div>
       <div class="wizard-footer-btns">
@@ -4616,6 +4667,17 @@ updateFilters();
         <div class="bid-stat-val" id="bid-timer-val">—</div>
       </div>
     </div>
+    <div class="bid-stat-row">
+      <div class="bid-stat">
+        <div class="bid-stat-lbl">Najmanjša ponudba</div>
+        <div class="bid-stat-val" id="bid-min-val">—</div>
+      </div>
+      <div class="bid-stat" id="bid-buynow-stat" style="display:none;">
+        <div class="bid-stat-lbl">Kupi takoj</div>
+        <div class="bid-stat-val bid-buynow" id="bid-buynow-val">—</div>
+      </div>
+    </div>
+    <div class="bid-buynow-note" id="bid-buynow-note" style="display:none;"></div>
     <div class="bid-agent-row">
       <div>
         <div class="bid-agent-title">🤖 Agent za dražbo</div>
@@ -4629,12 +4691,14 @@ updateFilters();
     <div class="bid-agent-status" id="bid-agent-status" style="display:none;"></div>
 
     <div class="bid-input-wrap" id="bid-input-wrap-manual">
-      <label>Vaša ponudba (USD) — mora biti višja od trenutne</label>
-      <input class="bid-input" type="number" id="bid-amount-input" placeholder="npr. 1500" min="0" step="any" />
+      <label>Vaša ponudba (USD)</label>
+      <input class="bid-input" type="number" id="bid-amount-input" placeholder="npr. 1500" min="0" step="any" oninput="validateBidInput('bid-amount-input')" />
+      <div class="bid-limit-hint" id="bid-amount-hint"></div>
     </div>
     <div class="bid-input-wrap" id="bid-agent-max-wrap" style="display:none;">
       <label>Najvišja cena agenta (USD)</label>
-      <input class="bid-input" type="number" id="bid-agent-max-input" placeholder="npr. 2500" min="0" step="any" />
+      <input class="bid-input" type="number" id="bid-agent-max-input" placeholder="npr. 2500" min="0" step="any" oninput="validateBidInput('bid-agent-max-input')" />
+      <div class="bid-limit-hint" id="bid-agent-hint"></div>
     </div>
     <div class="bid-error" id="bid-error"></div>
     <button class="btn-submit-bid" id="bid-submit-btn" onclick="submitBid()">🔨 Oddaj ponudbo</button>
@@ -6084,18 +6148,86 @@ function setPriceMode(mode) {
 
 function renderWizStep(n) {
   wiz.step = n;
-  [1,2,3,4].forEach(i => {
+  [1,2,3,4,5].forEach(i => {
     document.getElementById('wiz-step-' + i).style.display = i === n ? '' : 'none';
     const dot = document.getElementById('wdot-' + i);
     dot.classList.remove('active','done');
     if (i < n) dot.classList.add('done');
     else if (i === n) dot.classList.add('active');
   });
-  document.getElementById('wiz-progress').textContent = 'Korak ' + n + ' od 4';
+  document.getElementById('wiz-progress').textContent = 'Korak ' + n + ' od 5';
   document.getElementById('wiz-btn-back').style.display = n > 1 ? '' : 'none';
   const nextBtn = document.getElementById('wiz-btn-next');
-  if (n === 4) { nextBtn.textContent = 'Objavi oglas ✓'; }
+  if (n === 5) { nextBtn.textContent = _editListingId ? 'Shrani spremembe ✓' : 'Objavi oglas ✓'; }
   else { nextBtn.textContent = 'Naprej →'; }
+  if (n === 5) renderWizReview();
+}
+
+const WIZ_CERT_LABELS = { auth:'Certifikat pristnosti', serial:'Serijska številka', mint:'Žig livarne', assay:'Assay certifikat', quality:'Certifikat kakovosti', weight:'Certifikat teže', analysis:'Analiza materiala' };
+
+// Zadnji korak pred objavo: prikaže CELOTEN oglas (vse od 1. koraka
+// naprej, vklj. s slikami), kot ga bo videl kupec, z možnostjo "Uredi"
+// pri vsakem razdelku za neposreden skok nazaj na ta korak. Uporabljen
+// je tudi pri urejanju že objavljenega oglasa — openEditListing()
+// uporabnika pripelje naravnost sem, namesto skozi vse korake znova.
+function renderWizReview() {
+  const container = document.getElementById('wiz-review-content');
+  if (!container) return;
+  document.getElementById('wiz-review-error').style.display = 'none';
+
+  const typeLabels = { ferrous:'Železno', nonferrous:'Neželezno', precious:'Plemenito', nonmetals:'Nekovina' };
+  const catLabel = typeLabels[wiz.category] || wiz.category || '—';
+  const matLabel = wiz.treeNode?.label || '—';
+  const shapeDisp = wiz.shape ? shapeLabelFor(wiz.category, wiz.treeNode?.matKey, wiz.shape) : '—';
+
+  const r = computeWizNormalizedPrice();
+  const fmt = (n) => '$' + n.toLocaleString('sl-SI', {minimumFractionDigits:2, maximumFractionDigits:2});
+  const perUnitStr = r ? `${fmt(r.pricePerWeightUnit)} / ${esc(wiz.weightUnit)}` : '—';
+  const totalStr = r ? fmt(r.total) : '—';
+
+  const checkedCerts = Object.keys(WIZ_CERT_LABELS).filter(k => document.getElementById('wiz-cert-' + k)?.checked);
+
+  const saleTypeStr = wiz.saleType === 'auction'
+    ? `Dražba · rezerva $${wiz.reservePrice || 0}${wiz.buyNowPrice ? ' · Kupi takoj $' + wiz.buyNowPrice : ''} · trajanje ${wiz.auctionDuration} dni`
+    : 'Spot nakup (fiksna cena)';
+
+  const imgs = (wiz.imagePreviews || []).filter(Boolean);
+
+  container.innerHTML = `
+    <div class="wiz-review-section">
+      <div class="wiz-review-section-hdr">
+        <span>Kategorija & material</span>
+        <button type="button" class="wiz-review-edit" onclick="renderWizStep(1)">✎ Uredi</button>
+      </div>
+      <div class="wiz-review-row"><span>Kategorija</span><span>${esc(catLabel)}</span></div>
+      <div class="wiz-review-row"><span>Material</span><span>${esc(matLabel)}</span></div>
+    </div>
+
+    <div class="wiz-review-section">
+      <div class="wiz-review-section-hdr">
+        <span>Podrobnosti</span>
+        <button type="button" class="wiz-review-edit" onclick="renderWizStep(3)">✎ Uredi</button>
+      </div>
+      <div class="wiz-review-row"><span>Naziv</span><span>${esc(wiz.name || '—')}</span></div>
+      <div class="wiz-review-row"><span>Teža</span><span>${esc(String(wiz.weight || '—'))} ${wiz.weight ? esc(wiz.weightUnit) : ''}</span></div>
+      <div class="wiz-review-row"><span>Cena na enoto</span><span>${perUnitStr}</span></div>
+      <div class="wiz-review-row"><span>Skupna cena</span><span style="color:var(--gold-lt);font-weight:700;">${totalStr}</span></div>
+      <div class="wiz-review-row"><span>Oblika</span><span>${esc(shapeDisp)}</span></div>
+      ${wiz.description ? `<div class="wiz-review-row"><span>Opis</span><span>${esc(wiz.description)}</span></div>` : ''}
+      <div class="wiz-review-row"><span>Način prodaje</span><span>${esc(saleTypeStr)}</span></div>
+      <div class="wiz-review-row"><span>Certifikati</span><span>${checkedCerts.length ? checkedCerts.map(k => esc(WIZ_CERT_LABELS[k])).join(', ') : 'Brez'}</span></div>
+    </div>
+
+    <div class="wiz-review-section">
+      <div class="wiz-review-section-hdr">
+        <span>Slike</span>
+        <button type="button" class="wiz-review-edit" onclick="renderWizStep(4)">✎ Uredi</button>
+      </div>
+      ${imgs.length
+        ? `<div class="wiz-review-imgs">${imgs.map(src => `<img src="${esc(src)}" alt="" />`).join('')}</div>`
+        : `<p style="color:var(--muted);font-size:13px;margin:0;">Brez slik.</p>`}
+    </div>
+  `;
 }
 
 function selectWizCategory(cat) {
@@ -6150,6 +6282,8 @@ function wizNext() {
     wiz.description = document.getElementById('wiz-description').value.trim();
     renderWizStep(4);
   } else if (wiz.step === 4) {
+    renderWizStep(5);
+  } else if (wiz.step === 5) {
     submitListing();
   }
 }
@@ -6546,6 +6680,7 @@ async function submitListing() {
     return;
   }
   if (wiz.imageUploading.some(Boolean)) {
+    renderWizStep(4); // nazaj, da je napaka/napredek nalaganja sploh viden
     document.getElementById('wiz-img-error').textContent = 'Počakajte, da se nalaganje slik zaključi.';
     document.getElementById('wiz-img-error').style.display = '';
     return;
@@ -6629,10 +6764,10 @@ async function submitListing() {
       window.history.replaceState({}, '', window.location.pathname);
     }
   } catch (err) {
-    document.getElementById('wiz-img-error').textContent = 'Napaka pri objavi: ' + (err.message || 'neznana napaka');
-    document.getElementById('wiz-img-error').style.display = '';
+    document.getElementById('wiz-review-error').textContent = 'Napaka pri objavi: ' + (err.message || 'neznana napaka');
+    document.getElementById('wiz-review-error').style.display = '';
     nextBtn.disabled = false;
-    nextBtn.textContent = 'Objavi oglas ✓';
+    nextBtn.textContent = _editListingId ? 'Shrani spremembe ✓' : 'Objavi oglas ✓';
   }
 }
 
@@ -6653,6 +6788,14 @@ async function openEditListing(dbId) {
   wiz.priceUsd = data.price_usd ? String(data.price_usd) : '';
   wiz.shape = data.shape || '';
   wiz.description = data.description || '';
+  // Prej se tu wiz.saleType/reservePrice/buyNowPrice niso nastavili iz
+  // obstoječih podatkov — brez tega bi vsako urejanje (tudi samo
+  // opisa) tiho prepisalo dražbo nazaj na "Spot" in izbrisalo
+  // rezervno/kupi-takoj ceno, saj submitListing() ta polja vedno
+  // zapiše iz trenutnega stanja wiz.
+  wiz.saleType = data.sale_type || 'spot';
+  wiz.reservePrice = data.reserve_price != null ? data.reserve_price : '';
+  wiz.buyNowPrice = data.buy_now_price != null ? data.buy_now_price : null;
   wiz.imageFiles = [null, null, null];
   wiz.imagePreviews = [null, null, null];
   wiz.cert = { auth: !!data.cert_auth, serial: !!data.cert_serial, mint: !!data.cert_mint, assay: !!data.cert_assay, quality: !!data.cert_quality, weight: !!data.cert_weight, analysis: !!data.cert_analysis };
@@ -6678,10 +6821,13 @@ async function openEditListing(dbId) {
   }
 
   renderWizStep(1);
-  // Auto-advance to details step if material already set
+  // Pri urejanju obstoječega oglasa uporabnika pripelje naravnost na
+  // pregled (korak 5) namesto da bi moral znova skozi vse korake —
+  // tam lahko vidi celoten oglas in po potrebi z "Uredi" skoči nazaj
+  // na poljuben korak.
   if (wiz.category && wiz.treeNode) {
     prefillDetailsEdit();
-    renderWizStep(3);
+    renderWizStep(5);
   }
   openOverlay('wizard-overlay');
 }
@@ -6699,6 +6845,9 @@ function prefillDetailsEdit() {
   populateWizShapeSelect(wiz.category, wiz.treeNode?.matKey, wiz.shape);
   document.getElementById('wiz-description').value = wiz.description;
   updateWizTotalPrice();
+  setSaleType(wiz.saleType);
+  document.getElementById('wiz-reserve-price').value = wiz.reservePrice || '';
+  document.getElementById('wiz-buy-now-price').value = wiz.buyNowPrice || '';
   document.getElementById('wiz-cert-auth').checked     = wiz.cert?.auth     || false;
   document.getElementById('wiz-cert-serial').checked   = wiz.cert?.serial   || false;
   document.getElementById('wiz-cert-mint').checked     = wiz.cert?.mint     || false;
@@ -7097,14 +7246,49 @@ async function openBidModal(dbId) {
   const bidVal = listing.currentBid > 0 ? `$${listing.currentBid.toLocaleString()}` : 'Ni ponudb';
   document.getElementById('bid-current-val').textContent = bidVal;
   document.getElementById('bid-timer-val').textContent = formatCountdown(listing.auctionEndAt);
+
+  // Najmanjša dovoljena ponudba: nad trenutno vodilno IN vsaj rezervna
+  // cena (enako kot preverja place_bid na strežniku). Če ima oglas ceno
+  // "Kupi takoj", mora biti ponudba nižja od nje — za ta znesek ali več
+  // je smiselno preprosto kupiti takoj.
   const minBid = Math.max(listing.currentBid + 1, listing.reservePrice || 0);
+  const buyNow = listing.buyNowPrice || null;
+  bidLimits = { min: minBid, buyNow };
+  const fmtUsd = (n) => '$' + Number(n).toLocaleString('sl-SI');
+
+  document.getElementById('bid-min-val').textContent = fmtUsd(minBid);
+  document.getElementById('bid-buynow-stat').style.display = buyNow ? '' : 'none';
+  document.getElementById('bid-buynow-val').textContent = buyNow ? fmtUsd(buyNow) : '—';
+
+  const hint = buyNow
+    ? `Najmanj <strong>${fmtUsd(minBid)}</strong>, manj kot <strong>${fmtUsd(buyNow)}</strong> (cena "Kupi takoj").`
+    : `Najmanj <strong>${fmtUsd(minBid)}</strong>.`;
+  document.getElementById('bid-amount-hint').innerHTML = hint;
+  document.getElementById('bid-agent-hint').innerHTML = hint;
+
+  // Če je najmanjša ponudba že dosegla "Kupi takoj", oddaja ponudbe
+  // nima smisla — ponudi neposreden nakup.
+  const note = document.getElementById('bid-buynow-note');
+  const biddingBlocked = buyNow && minBid >= buyNow;
+  if (biddingBlocked) {
+    note.innerHTML = `Ponudba je že dosegla ceno "Kupi takoj". <button class="btn-buy-spot" onclick="closeOverlay('bid-overlay'); buyNowAuction('${dbId}')">Kupi takoj ${fmtUsd(buyNow)}</button>`;
+    note.style.display = 'flex';
+  } else {
+    note.style.display = 'none';
+  }
+
   const inp = document.getElementById('bid-amount-input');
-  inp.value = minBid;
+  inp.value = biddingBlocked ? '' : minBid;
   inp.min = minBid;
-  document.getElementById('bid-agent-max-input').value = '';
+  if (buyNow) inp.max = buyNow; else inp.removeAttribute('max');
+  const agentInp = document.getElementById('bid-agent-max-input');
+  agentInp.value = '';
+  agentInp.min = minBid;
+  if (buyNow) agentInp.max = buyNow; else agentInp.removeAttribute('max');
   document.getElementById('bid-agent-toggle').checked = false;
   document.getElementById('bid-error').textContent = '';
   toggleBidAgentUI();
+  document.getElementById('bid-submit-btn').disabled = biddingBlocked;
   document.getElementById('bid-overlay').classList.add('open');
 
   // Preveri, ali kupec za ta oglas že ima aktivnega agenta — če da,
@@ -7117,6 +7301,24 @@ async function openBidModal(dbId) {
   } else {
     statusEl.style.display = 'none';
   }
+}
+
+let bidLimits = { min: 0, buyNow: null };
+
+// Vrne opis napake, če znesek krši meje (najmanjša ponudba / Kupi takoj),
+// sicer null. Uporablja se ob tipkanju in ob oddaji.
+function bidAmountError(amount) {
+  const fmtUsd = (n) => '$' + Number(n).toLocaleString('sl-SI');
+  if (!amount || amount <= 0) return 'Vnesite veljaven znesek.';
+  if (amount < bidLimits.min) return `Najmanjša možna ponudba je ${fmtUsd(bidLimits.min)}.`;
+  if (bidLimits.buyNow && amount >= bidLimits.buyNow) return `Ponudba mora biti nižja od cene "Kupi takoj" (${fmtUsd(bidLimits.buyNow)}) — za ta znesek raje kupite takoj.`;
+  return null;
+}
+
+function validateBidInput(inputId) {
+  const raw = document.getElementById(inputId).value;
+  const errEl = document.getElementById('bid-error');
+  errEl.textContent = raw === '' ? '' : (bidAmountError(parseFloat(raw)) || '');
 }
 
 function toggleBidAgentUI() {
@@ -7144,7 +7346,8 @@ async function submitBid() {
   const errEl  = document.getElementById('bid-error');
   const btn    = document.getElementById('bid-submit-btn');
   errEl.textContent = '';
-  if (!amount || amount <= 0) { errEl.textContent = 'Vnesite veljavno ponudbo.'; return; }
+  const limitErr = bidAmountError(amount);
+  if (limitErr) { errEl.textContent = limitErr; return; }
   if (!confirm(`Ali ste prepričani, da želite oddati ponudbo $${amount.toLocaleString('sl-SI')}?`)) return;
 
   btn.disabled = true;
@@ -7188,7 +7391,8 @@ async function submitBidAgent() {
   const errEl  = document.getElementById('bid-error');
   const btn    = document.getElementById('bid-submit-btn');
   errEl.textContent = '';
-  if (!amount || amount <= 0) { errEl.textContent = 'Vnesite veljavno najvišjo ceno.'; return; }
+  const limitErr = bidAmountError(amount);
+  if (limitErr) { errEl.textContent = limitErr; return; }
 
   btn.disabled = true;
   btn.textContent = 'Shranjujem…';
