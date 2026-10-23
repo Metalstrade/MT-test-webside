@@ -6084,7 +6084,7 @@ function openWizard() {
   wiz.step = 1; wiz.category = null; wiz.treeNode = null;
   wiz.name = ''; wiz.weight = ''; wiz.weightUnit = 'kg';
   wiz.priceUsd = ''; wiz.priceMode = 'total'; wiz.shape = ''; wiz.description = '';
-  wiz.saleType = 'spot'; wiz.reservePrice = ''; wiz.buyNowPrice = null; wiz.auctionDuration = 7;
+  wiz.saleType = 'spot'; wiz.originalSaleType = null; wiz.reservePrice = ''; wiz.buyNowPrice = null; wiz.auctionDuration = 7;
   document.getElementById('wiz-buy-now-price').value = '';
   wiz.imageFiles = []; wiz.imagePreviews = [];
   wiz.imageUrls = [null, null, null]; wiz.imagePaths = [null, null, null]; wiz.imageUploading = [false, false, false];
@@ -6713,8 +6713,6 @@ async function submitListing() {
       sale_type: wiz.saleType,
       reserve_price: wiz.saleType === 'auction' ? wiz.reservePrice : null,
       buy_now_price: wiz.saleType === 'auction' ? (wiz.buyNowPrice || null) : null,
-      auction_end_at: auctionEndAt,
-      current_bid: 0,
       cert_auth:     document.getElementById('wiz-cert-auth').checked,
       cert_serial:   document.getElementById('wiz-cert-serial').checked,
       cert_mint:     document.getElementById('wiz-cert-mint').checked,
@@ -6736,6 +6734,15 @@ async function submitListing() {
       if (!upErr) certFilePaths[key] = upData.path;
     }
     if (Object.keys(certFilePaths).length) payload.cert_files = certFilePaths;
+
+    // Trenutno ponudbo in čas konca dražbe nastavimo samo ob novem oglasu
+    // ali ko se način prodaje ob urejanju spremeni. Navadno urejanje
+    // (npr. opisa) obstoječe dražbe ju ne sme ponastaviti — prej je
+    // vsako urejanje izbrisalo ponudbe in znova zagnalo odštevanje.
+    if (!_editListingId || wiz.saleType !== wiz.originalSaleType) {
+      payload.auction_end_at = auctionEndAt;
+      payload.current_bid = 0;
+    }
 
     let data, error;
     if (_editListingId) {
@@ -6794,6 +6801,7 @@ async function openEditListing(dbId) {
   // rezervno/kupi-takoj ceno, saj submitListing() ta polja vedno
   // zapiše iz trenutnega stanja wiz.
   wiz.saleType = data.sale_type || 'spot';
+  wiz.originalSaleType = wiz.saleType;
   wiz.reservePrice = data.reserve_price != null ? data.reserve_price : '';
   wiz.buyNowPrice = data.buy_now_price != null ? data.buy_now_price : null;
   wiz.imageFiles = [null, null, null];
@@ -7247,11 +7255,14 @@ async function openBidModal(dbId) {
   document.getElementById('bid-current-val').textContent = bidVal;
   document.getElementById('bid-timer-val').textContent = formatCountdown(listing.auctionEndAt);
 
-  // Najmanjša dovoljena ponudba: nad trenutno vodilno IN vsaj rezervna
-  // cena (enako kot preverja place_bid na strežniku). Če ima oglas ceno
-  // "Kupi takoj", mora biti ponudba nižja od nje — za ta znesek ali več
-  // je smiselno preprosto kupiti takoj.
-  const minBid = Math.max(listing.currentBid + 1, listing.reservePrice || 0);
+  // Najmanjša dovoljena ponudba: prva ponudba = rezervna cena, nato
+  // trenutna + stopnjevani korak (bidIncrement — ista tabela kot
+  // _bid_increment v bazi, ki to tudi uveljavi). Če ima oglas ceno
+  // "Kupi takoj", mora biti ponudba nižja od nje.
+  const step = bidIncrement(listing.currentBid);
+  const minBid = listing.currentBid > 0
+    ? listing.currentBid + step
+    : (listing.reservePrice > 0 ? listing.reservePrice : bidIncrement(0));
   const buyNow = listing.buyNowPrice || null;
   bidLimits = { min: minBid, buyNow };
   const fmtUsd = (n) => '$' + Number(n).toLocaleString('sl-SI');
@@ -7260,9 +7271,10 @@ async function openBidModal(dbId) {
   document.getElementById('bid-buynow-stat').style.display = buyNow ? '' : 'none';
   document.getElementById('bid-buynow-val').textContent = buyNow ? fmtUsd(buyNow) : '—';
 
-  const hint = buyNow
+  const stepTxt = listing.currentBid > 0 ? ` Korak dviga: <strong>${fmtUsd(step)}</strong>.` : '';
+  const hint = (buyNow
     ? `Najmanj <strong>${fmtUsd(minBid)}</strong>, manj kot <strong>${fmtUsd(buyNow)}</strong> (cena "Kupi takoj").`
-    : `Najmanj <strong>${fmtUsd(minBid)}</strong>.`;
+    : `Najmanj <strong>${fmtUsd(minBid)}</strong>.`) + stepTxt;
   document.getElementById('bid-amount-hint').innerHTML = hint;
   document.getElementById('bid-agent-hint').innerHTML = hint;
 
@@ -7304,6 +7316,30 @@ async function openBidModal(dbId) {
 }
 
 let bidLimits = { min: 0, buyNow: null };
+
+// Stopnjevani korak dviga ponudbe — MORA se ujemati s _bid_increment()
+// v bazi (supabase-migration-bid-increments.sql), ki ga tudi uveljavi.
+function bidIncrement(current) {
+  const c = Number(current) || 0;
+  if (c < 100) return 5;
+  if (c < 1000) return 10;
+  if (c < 5000) return 50;
+  if (c < 25000) return 100;
+  if (c < 100000) return 250;
+  return 500;
+}
+
+// Napake iz baze (sprožilec trg_enforce_bid_increment) pridejo kot
+// "bid_increment_too_low:<min>" / "bid_above_buy_now:<cena>".
+function bidServerErrorText(message) {
+  const fmtUsd = (n) => '$' + Number(n).toLocaleString('sl-SI');
+  const m = String(message || '');
+  const low = m.match(/bid_increment_too_low:([\d.]+)/);
+  if (low) return `Ponudba je prenizka — najmanjša možna ponudba je ${fmtUsd(low[1])}. Medtem je morda kdo drug že dvignil ceno.`;
+  const over = m.match(/bid_above_buy_now:([\d.]+)/);
+  if (over) return `Ponudba mora biti nižja od cene "Kupi takoj" (${fmtUsd(over[1])}).`;
+  return null;
+}
 
 // Vrne opis napake, če znesek krši meje (najmanjša ponudba / Kupi takoj),
 // sicer null. Uporablja se ob tipkanju in ob oddaji.
@@ -7375,7 +7411,7 @@ async function submitBid() {
       errEl.textContent = 'Napaka pri oddaji ponudbe.';
     }
   } catch (e) {
-    errEl.textContent = 'Napaka pri oddaji ponudbe.';
+    errEl.textContent = bidServerErrorText(e && e.message) || 'Napaka pri oddaji ponudbe.';
   } finally {
     btn.disabled = false;
     btn.textContent = agentOn ? '🤖 Aktiviraj agenta' : '🔨 Oddaj ponudbo';
@@ -7408,6 +7444,8 @@ async function submitBidAgent() {
         own_listing:       'Ne morete bidati za lasten oglas.',
         invalid_amount:    'Vnesite veljavno najvišjo ceno.',
         below_reserve:     `Najvišja cena mora biti vsaj $${data.reserve_price} (rezervna cena).`,
+        above_buy_now:     `Najvišja cena mora biti nižja od cene "Kupi takoj" ($${data.buy_now_price}).`,
+        below_min_bid:     `Najvišja cena mora biti vsaj $${data.min_bid} (trenutna ponudba + korak).`,
       };
       errEl.textContent = msgs[data.error] || `Napaka: ${data.error}`;
     } else if (data && data.success) {
@@ -7418,7 +7456,7 @@ async function submitBidAgent() {
       errEl.textContent = 'Napaka pri aktivaciji agenta.';
     }
   } catch (e) {
-    errEl.textContent = 'Napaka pri aktivaciji agenta.';
+    errEl.textContent = bidServerErrorText(e && e.message) || 'Napaka pri aktivaciji agenta.';
   } finally {
     btn.disabled = false;
     btn.textContent = '🤖 Aktiviraj agenta';
